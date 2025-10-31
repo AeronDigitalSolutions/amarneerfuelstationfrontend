@@ -40,8 +40,8 @@ export default function SaleEntry() {
 
   const [sales, setSales] = useState<Sale[]>([]);
   const [search, setSearch] = useState("");
-  const [sortField, setSortField] = useState<keyof Sale>("date");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sortField] = useState<keyof Sale>("date");
+  const [sortOrder] = useState<"asc" | "desc">("desc");
 
   const [editSale, setEditSale] = useState<Sale | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -139,25 +139,8 @@ export default function SaleEntry() {
       return 0;
     });
 
-  const toggleSort = (field: keyof Sale) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
-  };
 
   // Format time in table
-  const formatDateTime = (date: string, time?: string) => {
-    const d = new Date(date);
-    const formattedDate = d.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-    return `${formattedDate} ${time || ""}`;
-  };
 
   return (
     <div className={styles.container}>
