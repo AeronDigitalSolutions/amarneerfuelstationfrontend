@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
-import styles from "../style/creditLine.module.css";
+import styles from "../style/creditline.module.css";
 
 type Account = {
   _id?: string;

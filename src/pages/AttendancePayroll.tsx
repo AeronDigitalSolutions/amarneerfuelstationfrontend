@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
-import styles from "../style/attendancePayroll.module.css";
+import styles from "../style/attendancepayroll.module.css";
 
 type Employee = {
   _id?: string;

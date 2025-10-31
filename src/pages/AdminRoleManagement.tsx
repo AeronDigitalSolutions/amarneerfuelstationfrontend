@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../utils/api";
-import styles from "../style/adminRole.module.css";
+import styles from "../style/adminrole.module.css";
 
 type User = {
   _id?: string;
