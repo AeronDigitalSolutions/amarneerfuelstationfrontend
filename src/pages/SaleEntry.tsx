@@ -56,7 +56,7 @@ export default function SaleEntry() {
   // Fetch sales
   const fetchSales = async () => {
     try {
-      const res = await API.get("/api/sales");
+      const res = await API.get("/sales"); // ✅ Updated (no /api prefix)
       setSales(res.data);
     } catch (error) {
       console.error("Failed to fetch sales:", error);
@@ -74,6 +74,7 @@ export default function SaleEntry() {
       hour: "2-digit",
       minute: "2-digit",
     });
+
     const saleData = {
       saleId,
       date,
@@ -94,7 +95,7 @@ export default function SaleEntry() {
     };
 
     try {
-      await API.post("/api/sales", saleData);
+      await API.post("/sales", saleData); // ✅ Updated
       alert("✅ Sale saved successfully!");
       fetchSales();
     } catch (err) {
@@ -112,7 +113,7 @@ export default function SaleEntry() {
   const handleUpdate = async () => {
     if (!editSale) return;
     try {
-      await API.put(`/api/sales/${editSale._id}`, editSale);
+      await API.put(`/sales/${editSale._id}`, editSale); // ✅ Updated
       alert("✅ Sale updated successfully!");
       setIsModalOpen(false);
       setEditSale(null);
@@ -138,9 +139,6 @@ export default function SaleEntry() {
       if (valA > valB) return sortOrder === "asc" ? 1 : -1;
       return 0;
     });
-
-
-  // Format time in table
 
   return (
     <div className={styles.container}>
@@ -274,8 +272,12 @@ export default function SaleEntry() {
       {/* ====== SUMMARY ====== */}
       <div className={styles.summary}>
         <h2>Summary</h2>
-        <p>Litres Sold: <strong>{litresSold.toFixed(2)}</strong> L</p>
-        <p>Total Amount: <strong>₹{totalAmount.toFixed(2)}</strong></p>
+        <p>
+          Litres Sold: <strong>{litresSold.toFixed(2)}</strong> L
+        </p>
+        <p>
+          Total Amount: <strong>₹{totalAmount.toFixed(2)}</strong>
+        </p>
       </div>
 
       <button className={styles.button} onClick={handleSave}>
@@ -309,15 +311,16 @@ export default function SaleEntry() {
           <tbody>
             {filteredSales.map((s) => (
               <tr key={s._id}>
-                <td><td>{new Date(s.createdAt || s.date).toLocaleString("en-IN", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: true
-})}</td>
-</td>
+                <td>
+                  {new Date(s.createdAt || s.date).toLocaleString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </td>
                 <td>{s.saleId}</td>
                 <td>{s.productType}</td>
                 <td>{s.litresSold.toFixed(2)}</td>
