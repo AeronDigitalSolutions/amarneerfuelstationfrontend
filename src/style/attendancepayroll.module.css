@@ -1,0 +1,60 @@
+.container {
+  padding: 20px;
+  font-family: "Inter", sans-serif;
+}
+
+h1, h2 {
+  color: #1d3557;
+  margin-bottom: 10px;
+}
+
+.section {
+  background: #f1f5f9;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+input, select {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.addButton {
+  background-color: #2a9d8f;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 12px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.table th, .table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+.deleteButton {
+  background-color: #e63946;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
