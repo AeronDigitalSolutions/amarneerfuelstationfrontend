@@ -45,67 +45,97 @@ export default function CreditLineManagement() {
   });
 
   useEffect(() => {
+    console.log("🌐 Using API Base URL:", (api.defaults.baseURL || "Not set"));
     fetchAccounts();
   }, []);
 
+  /** 🔹 Fetch All Credit Accounts */
   const fetchAccounts = async () => {
-    const res = await api.get("/api/credit");
-    setAccounts(res.data);
+    try {
+      const res = await api.get("/credit");
+      setAccounts(res.data);
+    } catch (err) {
+      console.error("❌ Failed to fetch accounts:", err);
+    }
   };
 
+  /** 🔹 Handle Account Input Change */
   const handleAccountChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setNewAccount(prev => ({ ...prev, [name]: value }));
   };
 
+  /** ➕ Add Vehicle to List */
   const addVehicle = () => {
     if (!vehicleInput.trim()) return;
     setNewAccount(prev => ({ ...prev, vehicles: [...prev.vehicles, vehicleInput.trim()] }));
     setVehicleInput("");
   };
 
+  /** ❌ Remove Vehicle */
   const removeVehicle = (v: string) => {
     setNewAccount(prev => ({ ...prev, vehicles: prev.vehicles.filter(x => x !== v) }));
   };
 
+  /** ➕ Add New Credit Account */
   const addAccount = async () => {
     if (!newAccount.accountId || !newAccount.name || !newAccount.accountName) {
       alert("Please fill Account ID, Account Name, and Customer Name");
       return;
     }
-    const res = await api.post("/api/credit", newAccount);
-    setAccounts(prev => [res.data, ...prev]);
-    setNewAccount({
-      accountId: "",
-      accountName: "",
-      name: "",
-      email: "",
-      fuelType: "Petrol",
-      vehicles: [],
-      creditLimit: 0,
-      contactPerson: "",
-    });
+    try {
+      const res = await api.post("/credit", newAccount);
+      setAccounts(prev => [res.data, ...prev]);
+      alert("✅ Credit account created successfully!");
+      setNewAccount({
+        accountId: "",
+        accountName: "",
+        name: "",
+        email: "",
+        fuelType: "Petrol",
+        vehicles: [],
+        creditLimit: 0,
+        contactPerson: "",
+      });
+    } catch (err) {
+      console.error("❌ Failed to add account:", err);
+      alert("Failed to add account. Check console for details.");
+    }
   };
 
+  /** 🔹 Handle Transaction Form */
   const handleTransactionChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setTransaction(prev => ({ ...prev, [name]: value }));
   };
 
+  /** 💰 Add Transaction (Sale / Payment) */
   const addTransaction = async () => {
     if (!transaction.accountId || !transaction.amount) {
       alert("Select account and enter amount");
       return;
     }
-    await api.post("/api/credit/transaction", transaction);
-    alert(`${transaction.type} recorded successfully!`);
-    fetchAccounts();
-    setTransaction({ accountId: "", type: "Sale", amount: 0, paymentMode: "" });
+    try {
+      await api.post("/credit/transaction", transaction);
+      alert(`${transaction.type} recorded successfully!`);
+      fetchAccounts();
+      setTransaction({ accountId: "", type: "Sale", amount: 0, paymentMode: "" });
+    } catch (err) {
+      console.error("❌ Failed to add transaction:", err);
+      alert("Failed to record transaction. Check console for details.");
+    }
   };
 
+  /** 🗑️ Delete Credit Account */
   const deleteAccount = async (id: string) => {
-    await api.delete(`/api/credit/${id}`);
-    setAccounts(prev => prev.filter(acc => acc._id !== id));
+    if (!window.confirm("Are you sure you want to delete this account?")) return;
+    try {
+      await api.delete(`/credit/${id}`);
+      setAccounts(prev => prev.filter(acc => acc._id !== id));
+    } catch (err) {
+      console.error("❌ Failed to delete account:", err);
+      alert("Error deleting account. Check console for details.");
+    }
   };
 
   return (
@@ -207,7 +237,11 @@ export default function CreditLineManagement() {
                       ? `${new Date(lastTx.date).toLocaleString()} (${lastTx.type}: ₹${lastTx.amount})`
                       : "—"}
                   </td>
-                  <td><button onClick={() => deleteAccount(acc._id!)} className={styles.deleteButton}>🗑️</button></td>
+                  <td>
+                    <button onClick={() => deleteAccount(acc._id!)} className={styles.deleteButton}>
+                      🗑️
+                    </button>
+                  </td>
                 </tr>
               );
             })}

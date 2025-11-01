@@ -38,19 +38,28 @@ export default function AccountingFinance() {
   const [isEditing, setIsEditing] = useState(false);
   const [editEntry, setEditEntry] = useState<Finance | null>(null);
 
+  // Fetch data on load
   useEffect(() => {
     fetchEntries();
     fetchSummary();
   }, []);
 
   const fetchEntries = async () => {
-    const res = await api.get("/api/finance");
-    setEntries(res.data);
+    try {
+      const res = await api.get("/finance");
+      setEntries(res.data);
+    } catch (err: any) {
+      console.error("Error fetching entries:", err.message);
+    }
   };
 
   const fetchSummary = async () => {
-    const res = await api.get("/api/finance/summary");
-    setSummary(res.data);
+    try {
+      const res = await api.get("/finance/summary");
+      setSummary(res.data);
+    } catch (err: any) {
+      console.error("Error fetching summary:", err.message);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -59,7 +68,11 @@ export default function AccountingFinance() {
   };
 
   const handleAddEntry = async () => {
-    if (!entry.category || !entry.description) return alert("Please fill all required details");
+    if (!entry.category || !entry.description) {
+      alert("Please fill all required details");
+      return;
+    }
+
     try {
       const payload = {
         ...entry,
@@ -67,7 +80,7 @@ export default function AccountingFinance() {
         credit: Number(entry.credit),
         amount: Number(entry.amount),
       };
-      await api.post("/api/finance", payload);
+      await api.post("/finance", payload);
       fetchEntries();
       fetchSummary();
       resetForm();
@@ -87,7 +100,6 @@ export default function AccountingFinance() {
     });
   };
 
-  // ✅ Edit Logic
   const handleEdit = (e: Finance) => {
     setEditEntry({ ...e });
     setIsEditing(true);
@@ -100,9 +112,13 @@ export default function AccountingFinance() {
   };
 
   const handleSaveEdit = async () => {
-    if (!editEntry || !editEntry._id) return alert("Missing entry ID");
+    if (!editEntry || !editEntry._id) {
+      alert("Missing entry ID");
+      return;
+    }
+
     try {
-      await api.put(`/api/finance/${editEntry._id}`, editEntry);
+      await api.put(`/finance/${editEntry._id}`, editEntry);
       fetchEntries();
       fetchSummary();
       setIsEditing(false);
@@ -112,12 +128,12 @@ export default function AccountingFinance() {
     }
   };
 
-  // 🗑️ Delete entry
   const handleDelete = async (id?: string) => {
     if (!id) return;
     if (!window.confirm("Are you sure you want to delete this entry?")) return;
+
     try {
-      await api.delete(`/api/finance/${id}`);
+      await api.delete(`/finance/${id}`);
       setEntries(prev => prev.filter(e => e._id !== id));
       fetchSummary();
     } catch (err: any) {
@@ -150,7 +166,9 @@ export default function AccountingFinance() {
           <input name="invoiceNo" placeholder="Invoice No (optional)" value={entry.invoiceNo || ""} onChange={handleChange} />
         </div>
 
-        <button onClick={handleAddEntry} className={styles.saveButton}>➕ Save Entry</button>
+        <button onClick={handleAddEntry} className={styles.saveButton}>
+          ➕ Save Entry
+        </button>
       </div>
 
       {/* === Summary === */}
@@ -213,7 +231,7 @@ export default function AccountingFinance() {
             <input name="amount" type="number" placeholder="Amount" value={editEntry.amount} onChange={handleEditChange} />
             <input name="debit" type="number" placeholder="Debit" value={editEntry.debit} onChange={handleEditChange} />
             <input name="credit" type="number" placeholder="Credit" value={editEntry.credit} onChange={handleEditChange} />
-            <input name="remarks" placeholder="Remarks" value={editEntry.supplierName || ""} onChange={handleEditChange} />
+            <input name="supplierName" placeholder="Supplier" value={editEntry.supplierName || ""} onChange={handleEditChange} />
 
             <div className={styles.modalButtons}>
               <button onClick={handleSaveEdit} className={styles.saveButton}>💾 Save</button>

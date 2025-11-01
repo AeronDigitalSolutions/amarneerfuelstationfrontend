@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "../style/saleentry.module.css";
-import API from "../utils/api";
+import api from "../utils/api"; // ✅ unified import name for consistency
 
 type PaymentMode = "Cash" | "UPI" | "Card" | "Credit";
 type Shift = "A" | "B" | "C";
@@ -46,20 +46,26 @@ export default function SaleEntry() {
   const [editSale, setEditSale] = useState<Sale | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Auto calculations
+  // 🚀 Debug API base once
+  useEffect(() => {
+    console.log("🌐 Using API Base URL:", api.defaults.baseURL || "Not set");
+  }, []);
+
+  // 🧮 Auto calculations
   useEffect(() => {
     const litres = closingMeter - openingMeter;
-    setLitresSold(litres > 0 ? litres : 0);
-    setTotalAmount((litres > 0 ? litres : 0) * ratePerLitre);
+    const validLitres = litres > 0 ? litres : 0;
+    setLitresSold(validLitres);
+    setTotalAmount(validLitres * ratePerLitre);
   }, [openingMeter, closingMeter, ratePerLitre]);
 
-  // Fetch sales
+  // 📦 Fetch sales
   const fetchSales = async () => {
     try {
-      const res = await API.get("/sales"); // ✅ Updated (no /api prefix)
+      const res = await api.get("/sales");
       setSales(res.data);
     } catch (error) {
-      console.error("Failed to fetch sales:", error);
+      console.error("❌ Failed to fetch sales:", error);
     }
   };
 
@@ -67,7 +73,7 @@ export default function SaleEntry() {
     fetchSales();
   }, []);
 
-  // Save new sale
+  // 💾 Save new sale
   const handleSave = async () => {
     const now = new Date();
     const formattedTime = now.toLocaleTimeString([], {
@@ -95,16 +101,16 @@ export default function SaleEntry() {
     };
 
     try {
-      await API.post("/sales", saleData); // ✅ Updated
+      await api.post("/sales", saleData);
       alert("✅ Sale saved successfully!");
       fetchSales();
     } catch (err) {
-      console.error(err);
+      console.error("❌ Failed to save sale:", err);
       alert("❌ Failed to save sale!");
     }
   };
 
-  // Edit existing sale
+  // ✏️ Edit existing sale
   const handleEdit = (sale: Sale) => {
     setEditSale(sale);
     setIsModalOpen(true);
@@ -113,18 +119,18 @@ export default function SaleEntry() {
   const handleUpdate = async () => {
     if (!editSale) return;
     try {
-      await API.put(`/sales/${editSale._id}`, editSale); // ✅ Updated
+      await api.put(`/sales/${editSale._id}`, editSale);
       alert("✅ Sale updated successfully!");
       setIsModalOpen(false);
       setEditSale(null);
       fetchSales();
     } catch (err) {
-      console.error(err);
+      console.error("❌ Failed to update sale:", err);
       alert("❌ Failed to update sale!");
     }
   };
 
-  // Filter + sort
+  // 🔍 Filter + sort
   const filteredSales = sales
     .filter(
       (s) =>

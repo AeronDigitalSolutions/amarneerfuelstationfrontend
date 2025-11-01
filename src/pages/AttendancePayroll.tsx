@@ -28,6 +28,8 @@ type Attendance = {
 export default function AttendancePayroll() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
+  const [loading, setLoading] = useState(false);
+
   const [emp, setEmp] = useState<Employee>({
     name: "",
     role: "",
@@ -37,6 +39,7 @@ export default function AttendancePayroll() {
     accountNumber: "",
     ifscCode: "",
   });
+
   const [attendance, setAttendance] = useState<Attendance>({
     employeeId: "",
     date: "",
@@ -47,6 +50,7 @@ export default function AttendancePayroll() {
     overtimeHours: 0,
   });
 
+  // 🧭 On mount, load employees & attendance
   useEffect(() => {
     fetchEmployees();
     fetchAttendances();
@@ -55,14 +59,27 @@ export default function AttendancePayroll() {
 
   /** 🔹 Fetch Employees */
   const fetchEmployees = async () => {
-    const res = await api.get("/api/payroll/employee");
-    setEmployees(res.data);
+    try {
+      setLoading(true);
+      const res = await api.get("/api/payroll/employee");
+      setEmployees(res.data);
+    } catch (err: any) {
+      console.error("Error fetching employees:", err);
+      alert("Failed to load employees.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   /** 🔹 Fetch Attendance Records */
   const fetchAttendances = async () => {
-    const res = await api.get("/api/payroll/attendance");
-    setAttendances(res.data);
+    try {
+      const res = await api.get("/api/payroll/attendance");
+      setAttendances(res.data);
+    } catch (err: any) {
+      console.error("Error fetching attendance records:", err);
+      alert("Failed to load attendance data.");
+    }
   };
 
   /** ⏰ Automatically set date, shift, and shift start time */
@@ -96,17 +113,26 @@ export default function AttendancePayroll() {
       return;
     }
 
-    const res = await api.post("/api/payroll/employee", emp);
-    setEmployees(prev => [res.data, ...prev]);
-    setEmp({
-      name: "",
-      role: "",
-      salaryType: "Monthly",
-      salaryAmount: 0,
-      bankName: "",
-      accountNumber: "",
-      ifscCode: "",
-    });
+    try {
+      setLoading(true);
+      const res = await api.post("/api/payroll/employee", emp);
+      setEmployees(prev => [res.data, ...prev]);
+      setEmp({
+        name: "",
+        role: "",
+        salaryType: "Monthly",
+        salaryAmount: 0,
+        bankName: "",
+        accountNumber: "",
+        ifscCode: "",
+      });
+      alert("✅ Employee added successfully!");
+    } catch (err: any) {
+      console.error("Error adding employee:", err);
+      alert("Failed to add employee.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   /** 🔹 Handle Attendance Change */
@@ -128,32 +154,47 @@ export default function AttendancePayroll() {
       return;
     }
 
-    const now = new Date();
-    const updatedAttendance = {
-      ...attendance,
-      outTime: now.toTimeString().substring(0, 5),
-    };
+    try {
+      setLoading(true);
+      const now = new Date();
+      const updatedAttendance = {
+        ...attendance,
+        outTime: now.toTimeString().substring(0, 5),
+      };
 
-    const res = await api.post("/api/payroll/attendance", updatedAttendance);
-    setAttendances(prev => [res.data, ...prev]);
+      const res = await api.post("/api/payroll/attendance", updatedAttendance);
+      setAttendances(prev => [res.data, ...prev]);
 
-    alert("Attendance saved successfully!");
+      alert("✅ Attendance saved successfully!");
 
-    setAttendance({
-      employeeId: "",
-      date: "",
-      shift: "",
-      inTime: "",
-      outTime: "",
-      status: "Present",
-      overtimeHours: 0,
-    });
+      setAttendance({
+        employeeId: "",
+        date: "",
+        shift: "",
+        inTime: "",
+        outTime: "",
+        status: "Present",
+        overtimeHours: 0,
+      });
+    } catch (err: any) {
+      console.error("Error saving attendance:", err);
+      alert("Failed to save attendance.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   /** 🗑️ Delete Attendance */
   const deleteAttendance = async (id: string) => {
-    await api.delete(`/api/payroll/attendance/${id}`);
-    setAttendances(prev => prev.filter(a => a._id !== id));
+    if (!window.confirm("Are you sure you want to delete this record?")) return;
+
+    try {
+      await api.delete(`/api/payroll/attendance/${id}`);
+      setAttendances(prev => prev.filter(a => a._id !== id));
+    } catch (err: any) {
+      console.error("Error deleting attendance:", err);
+      alert("Failed to delete record.");
+    }
   };
 
   return (
@@ -175,7 +216,9 @@ export default function AttendancePayroll() {
           <input name="accountNumber" placeholder="Account Number" value={emp.accountNumber} onChange={handleEmpChange} />
           <input name="ifscCode" placeholder="IFSC Code" value={emp.ifscCode} onChange={handleEmpChange} />
         </div>
-        <button onClick={addEmployee} className={styles.addButton}>Add Employee</button>
+        <button onClick={addEmployee} className={styles.addButton} disabled={loading}>
+          {loading ? "Adding..." : "Add Employee"}
+        </button>
       </section>
 
       {/* 🕒 Attendance / Shift */}
@@ -205,7 +248,9 @@ export default function AttendancePayroll() {
 
         <div className={styles.buttonRow}>
           <button onClick={startShift} className={styles.startButton}>Start Shift</button>
-          <button onClick={endShift} className={styles.addButton}>End Shift & Save</button>
+          <button onClick={endShift} className={styles.addButton} disabled={loading}>
+            {loading ? "Saving..." : "End Shift & Save"}
+          </button>
         </div>
       </section>
 

@@ -24,6 +24,8 @@ type Tank = {
 
 export default function TankManagement() {
   const [tanks, setTanks] = useState<Tank[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [tank, setTank] = useState<Tank>({
     tankId: "",
     productType: "Petrol",
@@ -44,62 +46,66 @@ export default function TankManagement() {
   const [isEditing, setIsEditing] = useState(false);
   const [editTank, setEditTank] = useState<Tank | null>(null);
 
-  // ✅ Load data from backend
-  useEffect(() => {
-    fetchTanks();
-  }, []);
-
+  // ✅ Fetch all tanks
   const fetchTanks = async () => {
     try {
-      const res = await api.get("api/tanks");
+      setLoading(true);
+      const res = await api.get("/tanks"); // ✅ backend route (no /api prefix)
       setTanks(res.data);
-    } catch (err) {
-      console.error("Error fetching tanks", err);
+      setError("");
+    } catch (err: any) {
+      console.error("Error fetching tanks:", err);
+      setError("Failed to load tanks.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Auto-calc fields
+  useEffect(() => {
+    fetchTanks();
+    const interval = setInterval(fetchTanks, 10000); // Auto-refresh every 10s
+    return () => clearInterval(interval);
+  }, []);
+
+  // 🔢 Helper for numeric conversion
+  const num = (n: any) => (isNaN(parseFloat(n)) ? 0 : parseFloat(n));
+
+  // 🧮 Auto calculate closing stock and total amount
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     const updatedTank = { ...tank, [name]: value };
-    const num = (n: any) => (isNaN(parseFloat(n)) ? 0 : parseFloat(n));
-
     updatedTank.closingStock =
       num(updatedTank.openingStock) + num(updatedTank.quantityReceived) - num(updatedTank.soldQuantity);
-    updatedTank.totalAmount =
-      num(updatedTank.quantityReceived) * num(updatedTank.ratePerLitre);
-
+    updatedTank.totalAmount = num(updatedTank.quantityReceived) * num(updatedTank.ratePerLitre);
     setTank(updatedTank);
   };
 
-  // ✅ Add to backend
+  // ✅ Save a new tank record
   const handleAddTank = async () => {
-  if (!tank.tankId) return alert("Please enter Tank ID");
+    if (!tank.tankId.trim()) return alert("⚠️ Please enter Tank ID");
 
-  // Convert numeric fields
-  const payload = {
-    ...tank,
-    capacity: Number(tank.capacity),
-    openingStock: Number(tank.openingStock),
-    quantityReceived: Number(tank.quantityReceived),
-    soldQuantity: Number(tank.soldQuantity),
-    lowStockAlertLevel: Number(tank.lowStockAlertLevel),
-    ratePerLitre: Number(tank.ratePerLitre),
-    closingStock: Number(tank.closingStock),
-    totalAmount: Number(tank.totalAmount),
+    const payload = {
+      ...tank,
+      capacity: num(tank.capacity),
+      openingStock: num(tank.openingStock),
+      quantityReceived: num(tank.quantityReceived),
+      soldQuantity: num(tank.soldQuantity),
+      lowStockAlertLevel: num(tank.lowStockAlertLevel),
+      ratePerLitre: num(tank.ratePerLitre),
+      closingStock: num(tank.closingStock),
+      totalAmount: num(tank.totalAmount),
+    };
+
+    try {
+      const res = await api.post("/tanks", payload);
+      setTanks((prev) => [res.data, ...prev]);
+      alert("✅ Tank record added successfully!");
+      resetForm();
+    } catch (err: any) {
+      console.error("❌ Error adding tank:", err.response?.data || err.message);
+      alert("Failed to add tank: " + (err.response?.data?.message || err.message));
+    }
   };
-
-  try {
-    console.log("🚀 Sending tank:", payload);
-const res = await api.post("/api/tanks", payload);
-    console.log("✅ Response:", res.data);
-    setTanks((prev) => [res.data, ...prev]);
-    resetForm();
-  } catch (err: any) {
-    console.error("❌ Error adding tank:", err.response?.data || err.message);
-    alert("Error adding tank: " + (err.response?.data?.message || err.message));
-  }
-};
 
   const resetForm = () => {
     setTank({
@@ -120,9 +126,8 @@ const res = await api.post("/api/tanks", payload);
     });
   };
 
-  // ✅ Edit modal logic
+  // 📝 Edit existing record
   const handleEdit = (t: Tank) => {
-    console.log("Editing tank:", t);
     setEditTank({ ...t });
     setIsEditing(true);
   };
@@ -130,29 +135,30 @@ const res = await api.post("/api/tanks", payload);
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (!editTank) return;
     const { name, value } = e.target;
-    const num = (n: any) => (isNaN(parseFloat(n)) ? 0 : parseFloat(n));
-    const updated = { ...editTank, [name]: value } as Tank;
+    const updated = { ...editTank, [name]: value };
     updated.closingStock =
       num(updated.openingStock) + num(updated.quantityReceived) - num(updated.soldQuantity);
-    updated.totalAmount =
-      num(updated.quantityReceived) * num(updated.ratePerLitre);
+    updated.totalAmount = num(updated.quantityReceived) * num(updated.ratePerLitre);
     setEditTank(updated);
   };
 
-  // ✅ Save edited tank to backend
+  // ✅ Update backend with edited data
   const handleSaveEdit = async () => {
     if (!editTank || !editTank._id) return alert("Missing tank ID");
     try {
-      console.log("Saving edit:", editTank);
       const res = await api.put(`/tanks/${editTank._id}`, editTank);
-      console.log("Response:", res.data);
       setTanks((prev) => prev.map((t) => (t._id === editTank._id ? res.data : t)));
+      alert("✅ Tank updated successfully!");
       setIsEditing(false);
       setEditTank(null);
     } catch (err) {
-      console.error("Error updating tank", err);
+      console.error("Error updating tank:", err);
+      alert("❌ Failed to update tank!");
     }
   };
+
+  if (loading) return <p className={styles.loading}>Loading tank data...</p>;
+  if (error) return <p className={styles.error}>{error}</p>;
 
   return (
     <div className={styles.container}>
@@ -205,8 +211,11 @@ const res = await api.post("/api/tanks", payload);
         </thead>
         <tbody>
           {tanks.map((t) => (
-            <tr key={t._id} className={t.closingStock < t.lowStockAlertLevel ? styles.lowStock : ""}>
-              <td>{t.createdAt ? new Date(t.createdAt).toLocaleString() : "-"}</td>
+            <tr
+              key={t._id}
+              className={t.closingStock < t.lowStockAlertLevel ? styles.lowStock : ""}
+            >
+              <td>{t.createdAt ? new Date(t.createdAt).toLocaleString("en-IN") : "-"}</td>
               <td>{t.tankId}</td>
               <td>{t.productType}</td>
               <td>{t.capacity}</td>
@@ -224,14 +233,25 @@ const res = await api.post("/api/tanks", payload);
         </tbody>
       </table>
 
-      {/* ====== Edit Modal ====== */}
+      {/* === Edit Modal === */}
       {isEditing && editTank && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
             <h3>Edit Tank – {editTank.tankId}</h3>
 
-            <input name="soldQuantity" type="number" value={editTank.soldQuantity} onChange={handleEditChange} placeholder="Sold Quantity (L)" />
-            <input name="remarks" value={editTank.remarks} onChange={handleEditChange} placeholder="Remarks" />
+            <input
+              name="soldQuantity"
+              type="number"
+              value={editTank.soldQuantity}
+              onChange={handleEditChange}
+              placeholder="Sold Quantity (L)"
+            />
+            <input
+              name="remarks"
+              value={editTank.remarks}
+              onChange={handleEditChange}
+              placeholder="Remarks"
+            />
 
             <div className={styles.summaryBox}>
               <p>Closing Stock: <strong>{editTank.closingStock.toFixed(2)} L</strong></p>
