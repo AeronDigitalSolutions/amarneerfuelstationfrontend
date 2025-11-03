@@ -24,7 +24,7 @@ type Attendance = {
   salaryEarned?: number;
 };
 
-const BASE_URL = "https://amarneerfuelstationbackend.onrender.com"; // 🔗 Hardcoded backend URL
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com/api"; // 🔗 Hardcoded backend URL
 
 export default function AttendancePayroll() {
   const [employees, setEmployees] = useState<Employee[]>([]);

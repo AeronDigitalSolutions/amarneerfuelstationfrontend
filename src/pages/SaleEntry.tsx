@@ -6,7 +6,7 @@ type PaymentMode = "Cash" | "UPI" | "Card" | "Credit";
 type Shift = "A" | "B" | "C";
 
 // 🌐 Hardcoded backend base URL
-const BASE_URL = "https://amarneerfuelstationbackend.onrender.com";
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com/api";
 
 interface Sale {
   _id: string;
