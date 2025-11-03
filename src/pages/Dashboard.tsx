@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../utils/api";
+import axios from "axios";
 import styles from "../style/dashboard.module.css";
 import {
   BarChart,
@@ -10,6 +10,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+
+// 🌐 Hardcoded backend base URL
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com";
 
 type DashboardData = {
   totalSales: number;
@@ -27,7 +30,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("🌐 Using API Base URL:", api.defaults.baseURL || "Not set");
+    console.log("🌐 Using API Base URL:", BASE_URL);
     fetchData();
     const interval = setInterval(fetchData, 10000); // Auto-refresh every 10s
     return () => clearInterval(interval);
@@ -36,7 +39,7 @@ export default function Dashboard() {
   /** 🔹 Fetch Dashboard Data */
   const fetchData = async () => {
     try {
-      const res = await api.get("/dashboard");
+      const res = await axios.get(`${BASE_URL}/dashboard`);
       setData(res.data);
       setLoading(false);
     } catch (err) {

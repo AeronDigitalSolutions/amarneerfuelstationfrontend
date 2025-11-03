@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import styles from "../style/saleentry.module.css";
-import api from "../utils/api"; // ✅ unified import name for consistency
 
 type PaymentMode = "Cash" | "UPI" | "Card" | "Credit";
 type Shift = "A" | "B" | "C";
+
+// 🌐 Hardcoded backend base URL
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com";
 
 interface Sale {
   _id: string;
@@ -48,7 +51,7 @@ export default function SaleEntry() {
 
   // 🚀 Debug API base once
   useEffect(() => {
-    console.log("🌐 Using API Base URL:", api.defaults.baseURL || "Not set");
+    console.log("🌐 Using API Base URL:", BASE_URL);
   }, []);
 
   // 🧮 Auto calculations
@@ -62,7 +65,7 @@ export default function SaleEntry() {
   // 📦 Fetch sales
   const fetchSales = async () => {
     try {
-      const res = await api.get("/sales");
+      const res = await axios.get(`${BASE_URL}/sales`);
       setSales(res.data);
     } catch (error) {
       console.error("❌ Failed to fetch sales:", error);
@@ -101,7 +104,7 @@ export default function SaleEntry() {
     };
 
     try {
-      await api.post("/sales", saleData);
+      await axios.post(`${BASE_URL}/sales`, saleData);
       alert("✅ Sale saved successfully!");
       fetchSales();
     } catch (err) {
@@ -119,7 +122,7 @@ export default function SaleEntry() {
   const handleUpdate = async () => {
     if (!editSale) return;
     try {
-      await api.put(`/sales/${editSale._id}`, editSale);
+      await axios.put(`${BASE_URL}/sales/${editSale._id}`, editSale);
       alert("✅ Sale updated successfully!");
       setIsModalOpen(false);
       setEditSale(null);

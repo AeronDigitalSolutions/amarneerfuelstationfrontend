@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
-import api from "../utils/api";
+import axios from "axios";
 import styles from "../style/creditline.module.css";
+
+// 🌐 Hardcoded backend base URL
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com";
 
 type Account = {
   _id?: string;
@@ -45,14 +48,14 @@ export default function CreditLineManagement() {
   });
 
   useEffect(() => {
-    console.log("🌐 Using API Base URL:", (api.defaults.baseURL || "Not set"));
+    console.log("🌐 Using API Base URL:", BASE_URL);
     fetchAccounts();
   }, []);
 
   /** 🔹 Fetch All Credit Accounts */
   const fetchAccounts = async () => {
     try {
-      const res = await api.get("/credit");
+      const res = await axios.get(`${BASE_URL}/credit`);
       setAccounts(res.data);
     } catch (err) {
       console.error("❌ Failed to fetch accounts:", err);
@@ -84,7 +87,7 @@ export default function CreditLineManagement() {
       return;
     }
     try {
-      const res = await api.post("/credit", newAccount);
+      const res = await axios.post(`${BASE_URL}/credit`, newAccount);
       setAccounts(prev => [res.data, ...prev]);
       alert("✅ Credit account created successfully!");
       setNewAccount({
@@ -116,7 +119,7 @@ export default function CreditLineManagement() {
       return;
     }
     try {
-      await api.post("/credit/transaction", transaction);
+      await axios.post(`${BASE_URL}/credit/transaction`, transaction);
       alert(`${transaction.type} recorded successfully!`);
       fetchAccounts();
       setTransaction({ accountId: "", type: "Sale", amount: 0, paymentMode: "" });
@@ -130,7 +133,7 @@ export default function CreditLineManagement() {
   const deleteAccount = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this account?")) return;
     try {
-      await api.delete(`/credit/${id}`);
+      await axios.delete(`${BASE_URL}/credit/${id}`);
       setAccounts(prev => prev.filter(acc => acc._id !== id));
     } catch (err) {
       console.error("❌ Failed to delete account:", err);

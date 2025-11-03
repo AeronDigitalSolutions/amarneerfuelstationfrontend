@@ -21,7 +21,8 @@ type Tank = {
   updatedAt?: string;
 };
 
-const BASE_URL = "https://amarneerfuelstationbackend.onrender.com"; // 🔗 Hardcoded backend URL
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com/api";
+ // 🔗 Hardcoded backend URL
 
 export default function TankManagement() {
   const [tanks, setTanks] = useState<Tank[]>([]);
