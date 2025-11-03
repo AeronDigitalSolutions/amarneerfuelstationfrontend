@@ -12,7 +12,7 @@ import {
 } from "recharts";
 
 // 🌐 Hardcoded backend base URL
-const BASE_URL = "https://amarneerfuelstationbackend.onrender.com";
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com/api";
 
 type DashboardData = {
   totalSales: number;

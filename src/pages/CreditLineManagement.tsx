@@ -3,7 +3,7 @@ import axios from "axios";
 import styles from "../style/creditline.module.css";
 
 // 🌐 Hardcoded backend base URL
-const BASE_URL = "https://amarneerfuelstationbackend.onrender.com";
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com/api";
 
 type Account = {
   _id?: string;
