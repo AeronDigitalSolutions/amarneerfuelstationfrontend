@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import api from "../utils/api";
 import styles from "../style/attendancepayroll.module.css";
 
 type Employee = {
@@ -24,6 +23,8 @@ type Attendance = {
   overtimeHours: number;
   salaryEarned?: number;
 };
+
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com"; // 🔗 Hardcoded backend URL
 
 export default function AttendancePayroll() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -50,7 +51,7 @@ export default function AttendancePayroll() {
     overtimeHours: 0,
   });
 
-  // 🧭 On mount, load employees & attendance
+  // 🧭 Load on mount
   useEffect(() => {
     fetchEmployees();
     fetchAttendances();
@@ -61,8 +62,10 @@ export default function AttendancePayroll() {
   const fetchEmployees = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/api/payroll/employee");
-      setEmployees(res.data);
+      const res = await fetch(`${BASE_URL}/api/payroll/employee`);
+      if (!res.ok) throw new Error("Failed to fetch employees");
+      const data = await res.json();
+      setEmployees(data);
     } catch (err: any) {
       console.error("Error fetching employees:", err);
       alert("Failed to load employees.");
@@ -74,15 +77,17 @@ export default function AttendancePayroll() {
   /** 🔹 Fetch Attendance Records */
   const fetchAttendances = async () => {
     try {
-      const res = await api.get("/api/payroll/attendance");
-      setAttendances(res.data);
+      const res = await fetch(`${BASE_URL}/api/payroll/attendance`);
+      if (!res.ok) throw new Error("Failed to fetch attendance");
+      const data = await res.json();
+      setAttendances(data);
     } catch (err: any) {
       console.error("Error fetching attendance records:", err);
       alert("Failed to load attendance data.");
     }
   };
 
-  /** ⏰ Automatically set date, shift, and shift start time */
+  /** ⏰ Auto Fill Shift */
   const autoFillShift = () => {
     const now = new Date();
     const hours = now.getHours();
@@ -100,7 +105,7 @@ export default function AttendancePayroll() {
     }));
   };
 
-  /** 🔹 Handle Employee Form Change */
+  /** 🔹 Handle Employee Input */
   const handleEmpChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setEmp(prev => ({ ...prev, [name]: value }));
@@ -115,8 +120,14 @@ export default function AttendancePayroll() {
 
     try {
       setLoading(true);
-      const res = await api.post("/api/payroll/employee", emp);
-      setEmployees(prev => [res.data, ...prev]);
+      const res = await fetch(`${BASE_URL}/api/payroll/employee`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(emp),
+      });
+      if (!res.ok) throw new Error("Failed to add employee");
+      const data = await res.json();
+      setEmployees(prev => [data, ...prev]);
       setEmp({
         name: "",
         role: "",
@@ -141,13 +152,13 @@ export default function AttendancePayroll() {
     setAttendance(prev => ({ ...prev, [name]: value }));
   };
 
-  /** 🕒 Start shift — sets current inTime/date/shift automatically */
+  /** 🕒 Start Shift */
   const startShift = () => {
     autoFillShift();
     alert("Shift started!");
   };
 
-  /** 🕔 End shift — saves current outTime and submits attendance */
+  /** 🕔 End Shift & Save */
   const endShift = async () => {
     if (!attendance.employeeId) {
       alert("Select an employee first!");
@@ -162,9 +173,16 @@ export default function AttendancePayroll() {
         outTime: now.toTimeString().substring(0, 5),
       };
 
-      const res = await api.post("/api/payroll/attendance", updatedAttendance);
-      setAttendances(prev => [res.data, ...prev]);
+      const res = await fetch(`${BASE_URL}/api/payroll/attendance`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedAttendance),
+      });
 
+      if (!res.ok) throw new Error("Failed to save attendance");
+      const data = await res.json();
+
+      setAttendances(prev => [data, ...prev]);
       alert("✅ Attendance saved successfully!");
 
       setAttendance({
@@ -189,7 +207,10 @@ export default function AttendancePayroll() {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
 
     try {
-      await api.delete(`/api/payroll/attendance/${id}`);
+      const res = await fetch(`${BASE_URL}/api/payroll/attendance/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete attendance");
       setAttendances(prev => prev.filter(a => a._id !== id));
     } catch (err: any) {
       console.error("Error deleting attendance:", err);

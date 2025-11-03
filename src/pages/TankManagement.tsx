@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import api from "../utils/api";
 import styles from "../style/tankmanagement.module.css";
 
 type Tank = {
@@ -21,6 +20,8 @@ type Tank = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com"; // 🔗 Hardcoded backend URL
 
 export default function TankManagement() {
   const [tanks, setTanks] = useState<Tank[]>([]);
@@ -50,8 +51,10 @@ export default function TankManagement() {
   const fetchTanks = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/tanks"); // ✅ backend route (no /api prefix)
-      setTanks(res.data);
+      const res = await fetch(`${BASE_URL}/tanks`);
+      if (!res.ok) throw new Error("Failed to fetch tanks");
+      const data = await res.json();
+      setTanks(data);
       setError("");
     } catch (err: any) {
       console.error("Error fetching tanks:", err);
@@ -97,13 +100,19 @@ export default function TankManagement() {
     };
 
     try {
-      const res = await api.post("/tanks", payload);
-      setTanks((prev) => [res.data, ...prev]);
+      const res = await fetch(`${BASE_URL}/tanks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("Failed to add tank record");
+      const data = await res.json();
+      setTanks(prev => [data, ...prev]);
       alert("✅ Tank record added successfully!");
       resetForm();
     } catch (err: any) {
-      console.error("❌ Error adding tank:", err.response?.data || err.message);
-      alert("Failed to add tank: " + (err.response?.data?.message || err.message));
+      console.error("❌ Error adding tank:", err);
+      alert("Failed to add tank record!");
     }
   };
 
@@ -142,12 +151,18 @@ export default function TankManagement() {
     setEditTank(updated);
   };
 
-  // ✅ Update backend with edited data
+  // ✅ Save edited data to backend
   const handleSaveEdit = async () => {
     if (!editTank || !editTank._id) return alert("Missing tank ID");
     try {
-      const res = await api.put(`/tanks/${editTank._id}`, editTank);
-      setTanks((prev) => prev.map((t) => (t._id === editTank._id ? res.data : t)));
+      const res = await fetch(`${BASE_URL}/tanks/${editTank._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editTank),
+      });
+      if (!res.ok) throw new Error("Failed to update tank");
+      const data = await res.json();
+      setTanks(prev => prev.map(t => (t._id === data._id ? data : t)));
       alert("✅ Tank updated successfully!");
       setIsEditing(false);
       setEditTank(null);
@@ -211,10 +226,7 @@ export default function TankManagement() {
         </thead>
         <tbody>
           {tanks.map((t) => (
-            <tr
-              key={t._id}
-              className={t.closingStock < t.lowStockAlertLevel ? styles.lowStock : ""}
-            >
+            <tr key={t._id} className={t.closingStock < t.lowStockAlertLevel ? styles.lowStock : ""}>
               <td>{t.createdAt ? new Date(t.createdAt).toLocaleString("en-IN") : "-"}</td>
               <td>{t.tankId}</td>
               <td>{t.productType}</td>
@@ -224,9 +236,7 @@ export default function TankManagement() {
               <td>{t.supplierName || "-"}</td>
               <td>{t.totalAmount ? t.totalAmount.toFixed(2) : "0.00"}</td>
               <td>
-                <button className={styles.editButton} onClick={() => handleEdit(t)}>
-                  ✏️
-                </button>
+                <button className={styles.editButton} onClick={() => handleEdit(t)}>✏️</button>
               </td>
             </tr>
           ))}

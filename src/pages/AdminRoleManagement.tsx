@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import api from "../utils/api";
 import styles from "../style/adminrole.module.css";
 
 type User = {
@@ -17,6 +16,8 @@ type Log = {
   action: string;
   timestamp: string;
 };
+
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com"; // 🔗 Hard-coded backend URL
 
 export default function AdminRoleManagement() {
   const [users, setUsers] = useState<User[]>([]);
@@ -38,8 +39,10 @@ export default function AdminRoleManagement() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/api/admin/users");
-      setUsers(res.data);
+      const res = await fetch(`${BASE_URL}/api/admin/users`);
+      if (!res.ok) throw new Error("Failed to fetch users");
+      const data = await res.json();
+      setUsers(data);
     } catch (err: any) {
       console.error("Error fetching users:", err);
       alert("Failed to load users");
@@ -50,8 +53,10 @@ export default function AdminRoleManagement() {
 
   const fetchLogs = async () => {
     try {
-      const res = await api.get("/api/admin/logs");
-      setLogs(res.data);
+      const res = await fetch(`${BASE_URL}/api/admin/logs`);
+      if (!res.ok) throw new Error("Failed to fetch logs");
+      const data = await res.json();
+      setLogs(data);
     } catch (err: any) {
       console.error("Error fetching logs:", err);
     }
@@ -70,7 +75,13 @@ export default function AdminRoleManagement() {
 
     try {
       setLoading(true);
-      await api.post("/api/admin/user", { ...newUser, performedBy: "Admin" });
+      const res = await fetch(`${BASE_URL}/api/admin/user`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...newUser, performedBy: "Admin" }),
+      });
+
+      if (!res.ok) throw new Error("Failed to create user");
       alert("✅ User added successfully!");
       fetchUsers();
       fetchLogs();
@@ -88,7 +99,11 @@ export default function AdminRoleManagement() {
 
     try {
       setLoading(true);
-      await api.delete(`/api/admin/user/${id}`);
+      const res = await fetch(`${BASE_URL}/api/admin/user/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete user");
       fetchUsers();
       fetchLogs();
     } catch (err: any) {

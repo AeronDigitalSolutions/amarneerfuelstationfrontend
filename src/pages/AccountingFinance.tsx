@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../utils/api";
+import axios from "axios";
 import styles from "../style/accountingfinance.module.css";
 
 type Finance = {
@@ -15,6 +15,8 @@ type Finance = {
   invoiceNo?: string;
   createdAt?: string;
 };
+
+const BASE_URL = "https://amarneerfuelstationbackend.onrender.com/api"; // ✅ Hardcoded backend URL
 
 export default function AccountingFinance() {
   const [entries, setEntries] = useState<Finance[]>([]);
@@ -46,7 +48,7 @@ export default function AccountingFinance() {
 
   const fetchEntries = async () => {
     try {
-      const res = await api.get("/finance");
+      const res = await axios.get(`${BASE_URL}/finance`);
       setEntries(res.data);
     } catch (err: any) {
       console.error("Error fetching entries:", err.message);
@@ -55,7 +57,7 @@ export default function AccountingFinance() {
 
   const fetchSummary = async () => {
     try {
-      const res = await api.get("/finance/summary");
+      const res = await axios.get(`${BASE_URL}/finance/summary`);
       setSummary(res.data);
     } catch (err: any) {
       console.error("Error fetching summary:", err.message);
@@ -80,7 +82,7 @@ export default function AccountingFinance() {
         credit: Number(entry.credit),
         amount: Number(entry.amount),
       };
-      await api.post("/finance", payload);
+      await axios.post(`${BASE_URL}/finance`, payload);
       fetchEntries();
       fetchSummary();
       resetForm();
@@ -118,7 +120,7 @@ export default function AccountingFinance() {
     }
 
     try {
-      await api.put(`/finance/${editEntry._id}`, editEntry);
+      await axios.put(`${BASE_URL}/finance/${editEntry._id}`, editEntry);
       fetchEntries();
       fetchSummary();
       setIsEditing(false);
@@ -133,7 +135,7 @@ export default function AccountingFinance() {
     if (!window.confirm("Are you sure you want to delete this entry?")) return;
 
     try {
-      await api.delete(`/finance/${id}`);
+      await axios.delete(`${BASE_URL}/finance/${id}`);
       setEntries(prev => prev.filter(e => e._id !== id));
       fetchSummary();
     } catch (err: any) {
