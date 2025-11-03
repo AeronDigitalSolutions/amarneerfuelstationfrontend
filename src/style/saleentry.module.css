@@ -1,5 +1,4 @@
-/* SaleEntry.module.css */
-
+/* ===== Base Container ===== */
 .container {
   max-width: 800px;
   margin: 2rem auto;
@@ -10,14 +9,17 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  transition: padding 0.3s ease;
 }
 
 .title {
   text-align: center;
   font-size: 1.75rem;
   font-weight: 700;
+  color: #1e293b;
 }
 
+/* ===== Form Grid ===== */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -38,8 +40,16 @@
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
   font-size: 1rem;
+  transition: border-color 0.2s ease;
 }
 
+.input:focus,
+.select:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+/* ===== Summary Section ===== */
 .summary {
   background-color: #f9fafb;
   border: 1px solid #e5e7eb;
@@ -51,8 +61,10 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  color: #1e293b;
 }
 
+/* ===== Button Styles ===== */
 .button {
   background-color: #2563eb;
   color: white;
@@ -67,6 +79,8 @@
 .button:hover {
   background-color: #1e40af;
 }
+
+/* ===== Table Section ===== */
 .tableSection {
   margin-top: 3rem;
 }
@@ -77,6 +91,12 @@
   border-radius: 8px;
   border: 1px solid #ccc;
   margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto; /* ✅ Scroll for mobile tables */
 }
 
 .table {
@@ -85,9 +105,12 @@
   background: white;
   border-radius: 8px;
   overflow: hidden;
+  font-size: 0.95rem;
+  min-width: 700px;
 }
 
-.table th, .table td {
+.table th,
+.table td {
   padding: 10px 12px;
   border-bottom: 1px solid #eee;
   text-align: left;
@@ -103,7 +126,8 @@
   background-color: #fafafa;
   transition: 0.2s ease;
 }
-/* --- Edit Button --- */
+
+/* ===== Edit Button ===== */
 .editButton {
   background: #007bff;
   color: white;
@@ -119,7 +143,7 @@
   background: #0056b3;
 }
 
-/* --- Modal Styles --- */
+/* ===== Modal ===== */
 .modalBackdrop {
   position: fixed;
   inset: 0;
@@ -128,6 +152,7 @@
   align-items: center;
   justify-content: center;
   z-index: 50;
+  padding: 1rem;
 }
 
 .modal {
@@ -135,6 +160,7 @@
   padding: 24px;
   border-radius: 12px;
   width: 400px;
+  max-width: 90%;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
   animation: fadeIn 0.3s ease-in-out;
 }
@@ -143,6 +169,8 @@
   display: flex;
   justify-content: space-between;
   margin-top: 16px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .modalActions button {
@@ -151,6 +179,7 @@
   border: none;
   cursor: pointer;
   font-size: 14px;
+  flex: 1;
 }
 
 .modalActions button:first-child {
@@ -163,6 +192,7 @@
   color: white;
 }
 
+/* ===== Animation ===== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -171,5 +201,88 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* ===== Responsive Design ===== */
+
+/* 📱 Small Phones (max 480px) */
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr; /* stack fields */
+    gap: 0.75rem;
+  }
+
+  .input,
+  .select {
+    font-size: 0.95rem;
+    padding: 0.45rem;
+  }
+
+  .summary {
+    padding: 0.75rem;
+  }
+
+  .summary h2 {
+    font-size: 1.1rem;
+  }
+
+  .button {
+    width: 100%;
+    padding: 0.75rem;
+  }
+
+  .tableSection {
+    margin-top: 2rem;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 90%;
+    padding: 1rem;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .modalActions button {
+    width: 100%;
+  }
+}
+
+/* 📲 Tablets (max 768px) */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .table {
+    font-size: 0.9rem;
+  }
+
+  .modal {
+    width: 80%;
+  }
+}
+
+/* 💻 Medium Screens (max 1024px) */
+@media (max-width: 1024px) {
+  .container {
+    padding: 1.75rem;
   }
 }

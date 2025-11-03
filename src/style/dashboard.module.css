@@ -1,8 +1,12 @@
+/* ===== Base Layout ===== */
 .container {
   padding: 2rem;
   background: #f8fafc;
   min-height: 100vh;
   font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
@@ -10,16 +14,21 @@ h1 {
   color: #1e3a8a;
   margin-bottom: 2rem;
   font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: 0.5px;
 }
 
+/* ===== Stat Cards Grid ===== */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
+  width: 100%;
+  max-width: 1200px;
 }
 
 .card {
-  background: white;
+  background: #ffffff;
   border-radius: 1rem;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   padding: 1.5rem;
@@ -28,39 +37,122 @@ h1 {
 }
 
 .card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
   box-shadow: 0 6px 15px rgba(37, 99, 235, 0.2);
 }
 
 .card h3 {
   font-size: 1rem;
   color: #334155;
+  margin-bottom: 0.5rem;
 }
 
 .card p {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #1e3a8a;
-  margin-top: 0.5rem;
 }
 
+/* ===== Chart Section ===== */
 .chartSection {
   margin-top: 3rem;
-  background: white;
+  background: #ffffff;
   padding: 1.5rem;
   border-radius: 1rem;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 1200px;
 }
 
 .chartSection h2 {
   text-align: center;
   color: #1e293b;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
 }
 
+.chartWrapper {
+  width: 100%;
+  overflow-x: auto; /* ✅ Enables scroll for small screens */
+}
+
+/* ===== Loading State ===== */
 .loading {
   text-align: center;
   padding: 4rem;
   font-size: 1.5rem;
   color: #475569;
+}
+
+/* ===== Responsiveness ===== */
+
+/* 📱 Small Phones (max 480px) */
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .grid {
+    gap: 1rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .card h3 {
+    font-size: 0.9rem;
+  }
+
+  .card p {
+    font-size: 1.3rem;
+  }
+
+  .chartSection {
+    padding: 1rem;
+    margin-top: 2rem;
+  }
+
+  .chartSection h2 {
+    font-size: 1.1rem;
+  }
+
+  .loading {
+    font-size: 1.2rem;
+  }
+}
+
+/* 📲 Tablets (max 768px) */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .card p {
+    font-size: 1.4rem;
+  }
+
+  .chartSection {
+    padding: 1.2rem;
+  }
+}
+
+/* 💻 Medium Screens (max 1024px) */
+@media (max-width: 1024px) {
+  .container {
+    padding: 1.8rem;
+  }
+
+  .chartSection {
+    margin-top: 2.5rem;
+  }
 }
