@@ -67,6 +67,33 @@ export default function DashboardMain() {
       >
       <p> Dashboard</p>
       </Link>
+
+
+
+      <Link
+        to="/fuelrate"
+        className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+      <p> Fuel Rates</p>
+      </Link>
+
+
+      
+      <Link
+        to="/pump"
+        className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+      <p> Add Pump</p>
+      </Link>
+
+
+
+            <Link
+        to="/addtank"
+        className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+      <p> Add tank</p>
+      </Link>
     </div>
   );
 }

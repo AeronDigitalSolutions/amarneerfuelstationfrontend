@@ -10,6 +10,9 @@ import AdminRoleManagement from "./pages/AdminRoleManagement";
 import Dashboard from "./pages/Dashboard";
 import ThemeToggle from "./component/ThemeToggle"; // ✅ Import ThemeToggle
 import "./global.css"; // ✅ Import global theme styles
+import FuelRates from "./pages/FuelRates";
+import PumpNo from "./pages/PumpNo";
+import AddTank from "./pages/AddTank";
 
 function App() {
   return (
@@ -27,6 +30,9 @@ function App() {
         <Route path="/creditline" element={<CreditLineManagement />} />
         <Route path="/admin" element={<AdminRoleManagement />} />
         <Route path="/dash" element={<Dashboard />} />
+              <Route path="/fuelrate" element={<FuelRates/>} />
+                            <Route path="/pump" element={<PumpNo/>} />
+                                                        <Route path="/addtank" element={<AddTank/>} />
       </Routes>
     </BrowserRouter>
   );

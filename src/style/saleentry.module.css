@@ -1,6 +1,7 @@
 /* ===== Base Container ===== */
 .container {
-  max-width: 800px;
+  width: 100%;
+  max-width: 95%;
   margin: 2rem auto;
   background: #fff;
   padding: 2rem;
@@ -9,280 +10,250 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  transition: padding 0.3s ease;
+  overflow-x: hidden !important; /* Prevent page horizontal scroll */
+}
+
+/* ===== Header ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .title {
-  text-align: center;
   font-size: 1.75rem;
   font-weight: 700;
   color: #1e293b;
 }
 
-/* ===== Form Grid ===== */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.label {
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-}
-
-.input,
-.select {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
-}
-
-.input:focus,
-.select:focus {
-  border-color: #2563eb;
-  outline: none;
-}
-
-/* ===== Summary Section ===== */
-.summary {
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  padding: 1rem;
-}
-
-.summary h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #1e293b;
-}
-
-/* ===== Button Styles ===== */
-.button {
-  background-color: #2563eb;
-  color: white;
-  padding: 0.6rem 1.25rem;
+/* ===== Add Button ===== */
+.addButton {
+  background-color: #007bff;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  padding: 10px 16px;
+  color: #fff;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
+}
+.addButton:hover {
+  background-color: #0056b3;
 }
 
-.button:hover {
-  background-color: #1e40af;
-}
-
-/* ===== Table Section ===== */
+/* ===============================
+   TABLE SECTION (NO PAGE OVERFLOW)
+   =============================== */
 .tableSection {
-  margin-top: 3rem;
+  width: 100%;
+  overflow-x: hidden; /* prevents whole page scroll */
 }
 
+/* SEARCH BOX */
 .search {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
   margin-bottom: 1rem;
-  font-size: 1rem;
+  box-sizing: border-box;
 }
 
+/* TABLE WRAPPER — ONLY THIS DIV CAN SCROLL */
 .tableWrapper {
   width: 100%;
-  overflow-x: auto; /* ✅ Scroll for mobile tables */
+  overflow-x: auto;  /* ONLY place that scrolls */
+  overflow-y: hidden;
+  border-radius: 8px;
+  padding-bottom: 6px;
 }
 
+/* TABLE */
 .table {
-  width: 100%;
+  width: max-content; /* makes table scroll instead of page */
+  min-width: 100%;    /* never smaller than screen */
   border-collapse: collapse;
   background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  font-size: 0.95rem;
-  min-width: 700px;
 }
 
+/* TABLE CELL STYLES */
 .table th,
 .table td {
   padding: 10px 12px;
-  border-bottom: 1px solid #eee;
-  text-align: left;
+  border: 1px solid #ddd;
+  text-align: center;
+  white-space: nowrap; /* prevents cell wrapping */
+  font-size: 14px;
 }
 
 .table th {
-  background-color: #f8f8f8;
-  cursor: pointer;
+  background-color: #f0f0f0;
   font-weight: 600;
 }
 
-.table tr:hover {
-  background-color: #fafafa;
-  transition: 0.2s ease;
+/* ===============================
+   HIDE Cash / UPI / Card Columns
+   =============================== */
+.table th:nth-child(10),
+.table th:nth-child(11),
+.table th:nth-child(12),
+.table td:nth-child(10),
+.table td:nth-child(11),
+.table td:nth-child(12) {
+  display: none !important;
 }
 
-/* ===== Edit Button ===== */
-.editButton {
-  background: #007bff;
-  color: white;
+/* ===============================
+   HIDE FOOTER TOTAL ROW
+   =============================== */
+.table tfoot {
+  display: none !important;
+}
+
+/* ===============================
+   ACTION BUTTONS
+   =============================== */
+.editBtn,
+.deleteBtn {
+  padding: 6px 10px;
   border: none;
-  padding: 5px 12px;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s;
+  color: #fff;
+  margin: 2px;
 }
 
-.editButton:hover {
-  background: #0056b3;
+.editBtn {
+  background: #2563eb;
 }
 
-/* ===== Modal ===== */
+.deleteBtn {
+  background: #dc2626;
+}
+
+/* ===============================
+   MODAL
+   =============================== */
 .modalBackdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 50;
-  padding: 1rem;
+  z-index: 200;
 }
 
 .modal {
   background: #fff;
-  padding: 24px;
-  border-radius: 12px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
-  animation: fadeIn 0.3s ease-in-out;
+  padding: 25px;
+  border-radius: 10px;
+  width: 550px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
 }
 
-.modalActions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.modalActions button {
-  padding: 8px 14px;
-  border-radius: 8px;
+.closeBtn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 22px;
+  background: none;
   border: none;
   cursor: pointer;
-  font-size: 14px;
-  flex: 1;
 }
 
-.modalActions button:first-child {
-  background: #28a745;
-  color: white;
+/* MODAL FORM ELEMENTS */
+.form label {
+  display: block;
+  font-weight: 600;
+  margin-top: 10px;
 }
 
-.modalActions button:last-child {
-  background: #dc3545;
-  color: white;
+.form input,
+.form select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 4px;
 }
 
-/* ===== Animation ===== */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* SAVE BUTTON */
+.saveBtn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background: #16a34a;
+  border: none;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+}
+.saveBtn:hover {
+  background: #15803d;
 }
 
-/* ===== Responsive Design ===== */
-
-/* 📱 Small Phones (max 480px) */
-@media (max-width: 480px) {
-  .container {
-    padding: 1rem;
-    margin: 1rem;
-  }
-
-  .title {
-    font-size: 1.4rem;
-  }
-
-  .grid {
-    grid-template-columns: 1fr; /* stack fields */
-    gap: 0.75rem;
-  }
-
-  .input,
-  .select {
-    font-size: 0.95rem;
-    padding: 0.45rem;
-  }
-
-  .summary {
-    padding: 0.75rem;
-  }
-
-  .summary h2 {
-    font-size: 1.1rem;
-  }
-
-  .button {
-    width: 100%;
-    padding: 0.75rem;
-  }
-
-  .tableSection {
-    margin-top: 2rem;
-  }
-
-  .modal {
-    width: 100%;
-    max-width: 90%;
-    padding: 1rem;
-  }
-
-  .modalActions {
-    flex-direction: column;
-  }
-
-  .modalActions button {
-    width: 100%;
-  }
+/* ===============================
+   MODAL SUMMARY BOX
+   =============================== */
+.modalSummary {
+  border: 1px dashed #d1d5db;
+  background: #fafafa;
+  padding: 14px;
+  border-radius: 8px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* 📲 Tablets (max 768px) */
+.summaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.summaryRow label {
+  font-weight: 700;
+}
+
+/* OK / MISMATCH BOXES */
+.matchBox {
+  padding: 10px;
+  background: #e6ffed;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  text-align: center;
+  color: #064e3b;
+  font-weight: 700;
+}
+
+.mismatchBox {
+  padding: 10px;
+  background: #fff0f0;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  text-align: center;
+  color: #7f1d1d;
+  font-weight: 700;
+}
+
+/* ===============================
+   RESPONSIVE
+   =============================== */
 @media (max-width: 768px) {
-  .container {
-    padding: 1.5rem;
-  }
-
-  .grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.8rem;
-  }
-
-  .table {
-    font-size: 0.9rem;
-  }
-
   .modal {
-    width: 80%;
+    width: 90%;
   }
-}
 
-/* 💻 Medium Screens (max 1024px) */
-@media (max-width: 1024px) {
-  .container {
-    padding: 1.75rem;
+  .summaryRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .summaryRow input {
+    width: 100%;
   }
 }

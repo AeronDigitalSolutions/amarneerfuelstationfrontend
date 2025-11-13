@@ -1,23 +1,49 @@
-import { useState, useEffect } from "react";
+// SaleEntry.tsx — UPDATED WITH TABLE WRAPPER
+import React, { useState, useEffect, type MouseEvent, type JSX } from "react";
 import axios from "axios";
 import styles from "../style/saleentry.module.css";
 
 type PaymentMode = "Cash" | "UPI" | "Card" | "Credit";
 type Shift = "A" | "B" | "C";
 
-// 🌐 Hardcoded backend base URL
-const BASE_URL = "https://amarneerfuelstationbackend.onrender.com/api";
+const BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://localhost:5000/api"
+    : "https://amarneerfuelstationbackend.onrender.com/api");
+
+interface Pump {
+  _id?: string;
+  pumpNo: string;
+  pumpName: string;
+  fuels: { type: string }[];
+}
+
+interface FuelRates {
+  petrol: number;
+  diesel: number;
+  premiumPetrol: number;
+  cng: number;
+}
 
 interface Sale {
-  _id: string;
+  _id?: string;
   saleId: string;
   date: string;
   time: string;
   shift: string;
-  pumpNumber: number;
+  pumpNumber: string;
   productType: string;
+  openingMeter?: number;
+  closingMeter?: number;
+  testFuel?: number;
   litresSold: number;
+  ratePerLitre: number;
   totalAmount: number;
+  cashAmount?: number;
+  upiAmount?: number;
+  cardAmount?: number;
+  totalPayment?: number;
   paymentMode: PaymentMode;
   attendant?: string;
   creditParty?: string;
@@ -25,77 +51,130 @@ interface Sale {
   createdAt?: string;
 }
 
-export default function SaleEntry() {
-  const [saleId] = useState(() => "SALE-" + Date.now());
+export default function SaleEntry(): JSX.Element {
+  const [sales, setSales] = useState<Sale[]>([]);
+  const [pumps, setPumps] = useState<Pump[]>([]);
+  const [rates, setRates] = useState<FuelRates>({
+    petrol: 0,
+    diesel: 0,
+    premiumPetrol: 0,
+    cng: 0,
+  });
+
+  const [search, setSearch] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editSale, setEditSale] = useState<Sale | null>(null);
+
+  const [saleId, setSaleId] = useState(() => "SALE-" + Date.now());
   const [date] = useState(() => new Date().toISOString().split("T")[0]);
   const [shift, setShift] = useState<Shift>("A");
-  const [pumpNumber, setPumpNumber] = useState<number>(1);
+  const [pumpNumber, setPumpNumber] = useState("");
   const [productType, setProductType] = useState("Petrol");
   const [openingMeter, setOpeningMeter] = useState<number>(0);
   const [closingMeter, setClosingMeter] = useState<number>(0);
-  const [ratePerLitre, setRatePerLitre] = useState<number>(105.5);
+  const [testFuel, setTestFuel] = useState<number>(0);
+  const [ratePerLitre, setRatePerLitre] = useState<number>(0);
   const [litresSold, setLitresSold] = useState<number>(0);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+
+  const [cashAmount, setCashAmount] = useState<number>(0);
+  const [upiAmount, setUpiAmount] = useState<number>(0);
+  const [cardAmount, setCardAmount] = useState<number>(0);
+  const [totalPayment, setTotalPayment] = useState<number>(0);
+
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("Cash");
   const [creditParty, setCreditParty] = useState("");
   const [remarks, setRemarks] = useState("");
   const [attendant, setAttendant] = useState("");
 
-  const [sales, setSales] = useState<Sale[]>([]);
-  const [search, setSearch] = useState("");
-  const [sortField] = useState<keyof Sale>("date");
-  const [sortOrder] = useState<"asc" | "desc">("desc");
-
-  const [editSale, setEditSale] = useState<Sale | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // 🚀 Debug API base once
   useEffect(() => {
-    console.log("🌐 Using API Base URL:", BASE_URL);
+    void fetchSales();
+    void fetchPumps();
+    void fetchFuelRates();
   }, []);
 
-  // 🧮 Auto calculations
-  useEffect(() => {
-    const litres = closingMeter - openingMeter;
-    const validLitres = litres > 0 ? litres : 0;
-    setLitresSold(validLitres);
-    setTotalAmount(validLitres * ratePerLitre);
-  }, [openingMeter, closingMeter, ratePerLitre]);
-
-  // 📦 Fetch sales
   const fetchSales = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/sales`);
       setSales(res.data);
-    } catch (error) {
-      console.error("❌ Failed to fetch sales:", error);
+    } catch (err) {
+      console.error("❌ Failed to fetch sales:", err);
+    }
+  };
+
+  const fetchPumps = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/pumps`);
+      setPumps(res.data);
+    } catch (err) {
+      console.error("❌ Failed to fetch pumps:", err);
+    }
+  };
+
+  const fetchFuelRates = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/fuel-rates`);
+      setRates(res.data);
+      setRatePerLitre(res.data?.petrol ?? 0);
+    } catch (err) {
+      console.error("❌ Failed to fetch fuel rates:", err);
     }
   };
 
   useEffect(() => {
-    fetchSales();
-  }, []);
+    const litresRaw =
+      Number(closingMeter || 0) -
+      Number(openingMeter || 0) -
+      Number(testFuel || 0);
+    const litres = litresRaw > 0 ? litresRaw : 0;
+    setLitresSold(litres);
 
-  // 💾 Save new sale
+    const total = litres * Number(ratePerLitre || 0);
+    setTotalAmount(Number(total.toFixed(2)));
+  }, [openingMeter, closingMeter, testFuel, ratePerLitre]);
+
+  useEffect(() => {
+    const map: Record<string, number> = {
+      Petrol: rates.petrol,
+      Diesel: rates.diesel,
+      "Premium Petrol": rates.premiumPetrol,
+      CNG: rates.cng,
+    };
+    setRatePerLitre(map[productType] ?? 0);
+  }, [productType, rates]);
+
+  useEffect(() => {
+    setTotalPayment(
+      Number(
+        ((cashAmount || 0) + (upiAmount || 0) + (cardAmount || 0)).toFixed(2)
+      )
+    );
+  }, [cashAmount, upiAmount, cardAmount]);
+
   const handleSave = async () => {
-    const now = new Date();
-    const formattedTime = now.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    if (!pumpNumber) {
+      alert("⚠️ Please select a pump number");
+      return;
+    }
 
-    const saleData = {
+    const now = new Date();
+    const saleData: Partial<Sale> = {
       saleId,
       date,
-      time: formattedTime,
+      time: now.toLocaleTimeString(),
       shift,
       pumpNumber,
       productType,
       openingMeter,
       closingMeter,
+      testFuel,
       litresSold,
       ratePerLitre,
       totalAmount,
+      cashAmount,
+      upiAmount,
+      cardAmount,
+      totalPayment,
       paymentMode,
       creditParty,
       remarks,
@@ -104,296 +183,375 @@ export default function SaleEntry() {
     };
 
     try {
-      await axios.post(`${BASE_URL}/sales`, saleData);
-      alert("✅ Sale saved successfully!");
-      fetchSales();
+      if (editSale && editSale._id) {
+        await axios.put(`${BASE_URL}/sales/${editSale._id}`, saleData);
+        alert("✅ Sale updated successfully!");
+      } else {
+        await axios.post(`${BASE_URL}/sales`, saleData);
+        alert("✅ Sale added successfully!");
+      }
+
+      await fetchSales();
+      resetForm();
+      setModalOpen(false);
     } catch (err) {
       console.error("❌ Failed to save sale:", err);
       alert("❌ Failed to save sale!");
     }
   };
 
-  // ✏️ Edit existing sale
-  const handleEdit = (sale: Sale) => {
-    setEditSale(sale);
-    setIsModalOpen(true);
-  };
-
-  const handleUpdate = async () => {
-    if (!editSale) return;
+  const handleDelete = async (id?: string) => {
+    if (!id) return;
+    if (!window.confirm("Are you sure you want to delete this sale?")) return;
     try {
-      await axios.put(`${BASE_URL}/sales/${editSale._id}`, editSale);
-      alert("✅ Sale updated successfully!");
-      setIsModalOpen(false);
-      setEditSale(null);
-      fetchSales();
+      await axios.delete(`${BASE_URL}/sales/${id}`);
+      await fetchSales();
+      alert("🗑️ Sale deleted successfully!");
     } catch (err) {
-      console.error("❌ Failed to update sale:", err);
-      alert("❌ Failed to update sale!");
+      console.error("❌ Delete failed:", err);
+      alert("❌ Failed to delete sale!");
     }
   };
 
-  // 🔍 Filter + sort
-  const filteredSales = sales
-    .filter(
-      (s) =>
-        s.productType.toLowerCase().includes(search.toLowerCase()) ||
-        s.paymentMode.toLowerCase().includes(search.toLowerCase()) ||
-        s.attendant?.toLowerCase().includes(search.toLowerCase())
-    )
-    .sort((a, b) => {
-      const valA = a[sortField] ?? "";
-      const valB = b[sortField] ?? "";
-      if (valA < valB) return sortOrder === "asc" ? -1 : 1;
-      if (valA > valB) return sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
+  const handleEdit = (sale: Sale) => {
+    setEditSale(sale);
+    setModalOpen(true);
+
+    setSaleId(sale.saleId);
+    setShift(sale.shift as Shift);
+    setPumpNumber(sale.pumpNumber);
+    setProductType(sale.productType);
+    setOpeningMeter(sale.openingMeter ?? 0);
+    setClosingMeter(sale.closingMeter ?? 0);
+    setTestFuel((sale as any).testFuel ?? 0);
+    setRatePerLitre(sale.ratePerLitre ?? 0);
+    setCashAmount(sale.cashAmount ?? 0);
+    setUpiAmount(sale.upiAmount ?? 0);
+    setCardAmount(sale.cardAmount ?? 0);
+    setRemarks(sale.remarks ?? "");
+    setAttendant(sale.attendant ?? "");
+  };
+
+  const resetForm = () => {
+    setEditSale(null);
+    setSaleId("SALE-" + Date.now());
+    setShift("A");
+    setPumpNumber("");
+    setProductType("Petrol");
+    setOpeningMeter(0);
+    setClosingMeter(0);
+    setTestFuel(0);
+    setRatePerLitre(rates.petrol ?? 0);
+    setLitresSold(0);
+    setTotalAmount(0);
+    setCashAmount(0);
+    setUpiAmount(0);
+    setCardAmount(0);
+    setTotalPayment(0);
+    setPaymentMode("Cash");
+    setCreditParty("");
+    setRemarks("");
+    setAttendant("");
+  };
+
+  const filteredSales = sales.filter((s) =>
+    [
+      s.productType,
+      s.pumpNumber,
+      s.saleId,
+      s.attendant,
+      s.paymentMode,
+    ]
+      .join(" ")
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+  const totalCash = sales.reduce((acc, s) => acc + (s.cashAmount || 0), 0);
+  const totalUpi = sales.reduce((acc, s) => acc + (s.upiAmount || 0), 0);
+  const totalCard = sales.reduce((acc, s) => acc + (s.cardAmount || 0), 0);
+  const grandTotal = sales.reduce((acc, s) => acc + (s.totalAmount || 0), 0);
+
+  const totalTestFuel = sales.reduce(
+    (acc, s) => acc + ((s as any).testFuel || 0),
+    0
+  );
+
+  const totalReceivedFromSales = sales.reduce(
+    (acc, s) =>
+      acc + ((s.cashAmount || 0) + (s.upiAmount || 0) + (s.cardAmount || 0)),
+    0
+  );
+
+  const handleBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).classList.contains(styles.modalBackdrop)) {
+      setModalOpen(false);
+    }
+  };
+
+  const amountsMatch = (a: number, b: number, eps = 0.01) =>
+    Math.abs(a - b) <= eps;
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>⛽ Fuel Sale Entry</h1>
-
-      {/* ====== FORM ====== */}
-      <div className={styles.grid}>
-        <div>
-          <label className={styles.label}>Sale ID</label>
-          <input className={styles.input} value={saleId} disabled />
-        </div>
-
-        <div>
-          <label className={styles.label}>Date</label>
-          <input className={styles.input} value={date} disabled />
-        </div>
-
-        <div>
-          <label className={styles.label}>Shift</label>
-          <select
-            className={styles.select}
-            value={shift}
-            onChange={(e) => setShift(e.target.value as Shift)}
-          >
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-          </select>
-        </div>
-
-        <div>
-          <label className={styles.label}>Pump Number</label>
-          <input
-            type="number"
-            className={styles.input}
-            value={pumpNumber}
-            onChange={(e) => setPumpNumber(Number(e.target.value))}
-          />
-        </div>
-
-        <div>
-          <label className={styles.label}>Product Type</label>
-          <select
-            className={styles.select}
-            value={productType}
-            onChange={(e) => setProductType(e.target.value)}
-          >
-            <option>Petrol</option>
-            <option>Diesel</option>
-            <option>Oil</option>
-          </select>
-        </div>
-
-        <div>
-          <label className={styles.label}>Rate per Litre (₹)</label>
-          <input
-            type="number"
-            className={styles.input}
-            value={ratePerLitre}
-            onChange={(e) => setRatePerLitre(Number(e.target.value))}
-          />
-        </div>
-
-        <div>
-          <label className={styles.label}>Opening Meter Reading</label>
-          <input
-            type="number"
-            className={styles.input}
-            value={openingMeter}
-            onChange={(e) => setOpeningMeter(Number(e.target.value))}
-          />
-        </div>
-
-        <div>
-          <label className={styles.label}>Closing Meter Reading</label>
-          <input
-            type="number"
-            className={styles.input}
-            value={closingMeter}
-            onChange={(e) => setClosingMeter(Number(e.target.value))}
-          />
-        </div>
-
-        <div>
-          <label className={styles.label}>Payment Mode</label>
-          <select
-            className={styles.select}
-            value={paymentMode}
-            onChange={(e) => setPaymentMode(e.target.value as PaymentMode)}
-          >
-            <option>Cash</option>
-            <option>UPI</option>
-            <option>Card</option>
-            <option>Credit</option>
-          </select>
-        </div>
-
-        {paymentMode === "Credit" && (
-          <div>
-            <label className={styles.label}>Credit Party</label>
-            <input
-              type="text"
-              className={styles.input}
-              value={creditParty}
-              onChange={(e) => setCreditParty(e.target.value)}
-            />
-          </div>
-        )}
-
-        <div>
-          <label className={styles.label}>Attendant Name</label>
-          <input
-            type="text"
-            className={styles.input}
-            value={attendant}
-            onChange={(e) => setAttendant(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className={styles.label}>Remarks</label>
-          <input
-            type="text"
-            className={styles.input}
-            value={remarks}
-            onChange={(e) => setRemarks(e.target.value)}
-          />
-        </div>
+      <div className={styles.header}>
+        <h1 className={styles.title}>⛽ Fuel Sale Records</h1>
+        <button className={styles.addButton} onClick={() => setModalOpen(true)}>
+          ➕ Add Sale Entry
+        </button>
       </div>
 
-      {/* ====== SUMMARY ====== */}
-      <div className={styles.summary}>
-        <h2>Summary</h2>
-        <p>
-          Litres Sold: <strong>{litresSold.toFixed(2)}</strong> L
-        </p>
-        <p>
-          Total Amount: <strong>₹{totalAmount.toFixed(2)}</strong>
-        </p>
-      </div>
-
-      <button className={styles.button} onClick={handleSave}>
-        💾 Save Sale
-      </button>
-
-      {/* ====== TABLE SECTION ====== */}
+      {/* ===== TABLE SECTION ===== */}
       <div className={styles.tableSection}>
-        <h2>📊 Sale Records</h2>
         <input
           type="text"
-          placeholder="Search by product, mode, or attendant"
+          placeholder="Search..."
           className={styles.search}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Date & Time</th>
-              <th>Sale ID</th>
-              <th>Product</th>
-              <th>Litres</th>
-              <th>Amount (₹)</th>
-              <th>Payment</th>
-              <th>Attendant</th>
-              <th>Edit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredSales.map((s) => (
-              <tr key={s._id}>
-                <td>
-                  {new Date(s.createdAt || s.date).toLocaleString("en-IN", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </td>
-                <td>{s.saleId}</td>
-                <td>{s.productType}</td>
-                <td>{s.litresSold.toFixed(2)}</td>
-                <td>{s.totalAmount.toFixed(2)}</td>
-                <td>{s.paymentMode}</td>
-                <td>{s.attendant || "-"}</td>
-                <td>
-                  <button
-                    className={styles.editButton}
-                    onClick={() => handleEdit(s)}
-                  >
-                    ✏️ Edit
-                  </button>
-                </td>
+        {/* ⭐ TABLE WRAPPER ADDED HERE */}
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Sale ID</th>
+                <th>Pump</th>
+                <th>Product</th>
+                <th>Rate</th>
+                <th>Litres</th>
+                <th>Test Fuel</th>
+                <th>Total ₹</th>
+                <th>Total Received</th>
+                <th>Cash</th>
+                <th>UPI</th>
+                <th>Card</th>
+                <th>Attendant</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {filteredSales.length > 0 ? (
+                filteredSales.map((s) => (
+                  <tr key={s._id}>
+                    <td>
+                      {new Date(s.createdAt || s.date).toLocaleString("en-IN")}
+                    </td>
+                    <td>{s.saleId}</td>
+                    <td>{s.pumpNumber}</td>
+                    <td>{s.productType}</td>
+                    <td>{s.ratePerLitre}</td>
+                    <td>{(s.litresSold || 0).toFixed(2)}</td>
+                    <td>{((s as any).testFuel ?? 0).toFixed(2)}</td>
+                    <td>{(s.totalAmount || 0).toFixed(2)}</td>
+                    <td>
+                      {(
+                        (s.cashAmount || 0) +
+                        (s.upiAmount || 0) +
+                        (s.cardAmount || 0)
+                      ).toFixed(2)}
+                    </td>
+                    <td>{s.cashAmount || 0}</td>
+                    <td>{s.upiAmount || 0}</td>
+                    <td>{s.cardAmount || 0}</td>
+                    <td>{s.attendant || "-"}</td>
+                    <td>
+                      <button
+                        className={styles.editBtn}
+                        onClick={() => handleEdit(s)}
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={() => handleDelete(s._id!)}
+                      >
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={14}>No records found</td>
+                </tr>
+              )}
+            </tbody>
+
+            <tfoot>
+              <tr>
+                <td
+                  colSpan={6}
+                  style={{ textAlign: "right", fontWeight: "bold" }}
+                >
+                  Totals:
+                </td>
+                <td style={{ fontWeight: "bold" }}>
+                  {totalTestFuel.toFixed(2)}
+                </td>
+                <td style={{ fontWeight: "bold" }}>{grandTotal.toFixed(2)}</td>
+                <td style={{ fontWeight: "bold" }}>
+                  {totalReceivedFromSales.toFixed(2)}
+                </td>
+                <td>{totalCash.toFixed(2)}</td>
+                <td>{totalUpi.toFixed(2)}</td>
+                <td>{totalCard.toFixed(2)}</td>
+                <td colSpan={2} />
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </div>
 
-      {/* ====== EDIT MODAL ====== */}
-      {isModalOpen && editSale && (
-        <div className={styles.modalBackdrop}>
+      {/* ===== MODAL ===== */}
+      {modalOpen && (
+        <div className={styles.modalBackdrop} onClick={handleBackdropClick}>
           <div className={styles.modal}>
-            <h2>Edit Sale</h2>
-
-            <label>Product Type</label>
-            <input
-              className={styles.input}
-              value={editSale.productType}
-              onChange={(e) =>
-                setEditSale({ ...editSale, productType: e.target.value })
-              }
-            />
-
-            <label>Payment Mode</label>
-            <select
-              className={styles.select}
-              value={editSale.paymentMode}
-              onChange={(e) =>
-                setEditSale({
-                  ...editSale,
-                  paymentMode: e.target.value as PaymentMode,
-                })
-              }
+            <h2>{editSale ? "✏️ Edit Sale Entry" : "➕ Add Sale Entry"}</h2>
+            <button
+              className={styles.closeBtn}
+              onClick={() => setModalOpen(false)}
             >
-              <option>Cash</option>
-              <option>UPI</option>
-              <option>Card</option>
-              <option>Credit</option>
-            </select>
+              ✖
+            </button>
 
-            <label>Attendant</label>
-            <input
-              className={styles.input}
-              value={editSale.attendant || ""}
-              onChange={(e) =>
-                setEditSale({ ...editSale, attendant: e.target.value })
-              }
-            />
+            <div className={styles.form}>
+              <label>Sale ID</label>
+              <input value={saleId} disabled />
 
-            <div className={styles.modalActions}>
-              <button onClick={handleUpdate}>💾 Update</button>
-              <button onClick={() => setIsModalOpen(false)}>❌ Cancel</button>
+              <label>Shift</label>
+              <select
+                value={shift}
+                onChange={(e) => setShift(e.target.value as Shift)}
+              >
+                <option>A</option>
+                <option>B</option>
+                <option>C</option>
+              </select>
+
+              <label>Pump</label>
+              <select
+                value={pumpNumber}
+                onChange={(e) => setPumpNumber(e.target.value)}
+              >
+                <option value="">Select Pump</option>
+                {pumps.map((p) => (
+                  <option key={p._id} value={p.pumpNo}>
+                    {p.pumpNo} - {p.pumpName}
+                  </option>
+                ))}
+              </select>
+
+              <label>Product</label>
+              <select
+                value={productType}
+                onChange={(e) => setProductType(e.target.value)}
+              >
+                <option>Petrol</option>
+                <option>Diesel</option>
+                <option>Premium Petrol</option>
+                <option>CNG</option>
+              </select>
+
+              <label>Rate per Litre ₹</label>
+              <input type="number" value={ratePerLitre} readOnly />
+
+              <label>Opening Meter</label>
+              <input
+                type="number"
+                value={openingMeter}
+                onChange={(e) => setOpeningMeter(Number(e.target.value))}
+              />
+
+              <label>Closing Meter</label>
+              <input
+                type="number"
+                value={closingMeter}
+                onChange={(e) => setClosingMeter(Number(e.target.value))}
+              />
+
+              <label>Test Fuel (L)</label>
+              <input
+                type="number"
+                value={testFuel}
+                onChange={(e) => setTestFuel(Number(e.target.value))}
+              />
+
+              <label>Cash ₹</label>
+              <input
+                type="number"
+                value={cashAmount}
+                onChange={(e) => setCashAmount(Number(e.target.value))}
+              />
+
+              <label>UPI ₹</label>
+              <input
+                type="number"
+                value={upiAmount}
+                onChange={(e) => setUpiAmount(Number(e.target.value))}
+              />
+
+              <label>Card ₹</label>
+              <input
+                type="number"
+                value={cardAmount}
+                onChange={(e) => setCardAmount(Number(e.target.value))}
+              />
+
+              <label>Attendant</label>
+              <input
+                type="text"
+                value={attendant}
+                onChange={(e) => setAttendant(e.target.value)}
+              />
+
+              <label>Remarks</label>
+              <input
+                type="text"
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+              />
+
+              <div className={styles.modalSummary}>
+                <div className={styles.summaryRow}>
+                  <label>Total Litres (L)</label>
+                  <input value={litresSold.toFixed(2)} readOnly />
+                </div>
+
+                <div className={styles.summaryRow}>
+                  <label>Total Amount ₹</label>
+                  <input value={totalAmount.toFixed(2)} readOnly />
+                </div>
+
+                <div className={styles.summaryRow}>
+                  <label>Total Received ₹</label>
+                  <input value={totalPayment.toFixed(2)} readOnly />
+                </div>
+
+                <div
+                  className={
+                    amountsMatch(totalAmount, totalPayment)
+                      ? styles.matchBox
+                      : styles.mismatchBox
+                  }
+                >
+                  {amountsMatch(totalAmount, totalPayment) ? (
+                    <strong>OK — Received equals total</strong>
+                  ) : (
+                    <strong>
+                      MISMATCH — Difference ₹
+                      {(totalAmount - totalPayment).toFixed(2)}
+                    </strong>
+                  )}
+                </div>
+              </div>
+
+              <button className={styles.saveBtn} onClick={handleSave}>
+                💾 {editSale ? "Update" : "Save"}
+              </button>
             </div>
           </div>
         </div>
