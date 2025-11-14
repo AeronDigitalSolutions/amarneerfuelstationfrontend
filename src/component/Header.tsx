@@ -1,6 +1,7 @@
 // import React from 'react'
 import '../style/Header.css';
 import logo from '../assets/Logo.png'
+import { Link } from 'react-router-dom';
 import { LuArrowUpRight } from "react-icons/lu";
 const Header = () => {
   return (
@@ -17,7 +18,7 @@ const Header = () => {
           <a href="#">PROJECTS</a>
           <a href="#">PAGE</a>
           <a href="#">BLOG</a>
-          <a href="#">CONTACT</a>
+          <a><Link  to="/contact">CONTACT</Link></a>
         </nav>
 
         {/* <button className="contact-btn">

@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import ThemeToggle from "./component/ThemeToggle"; // ✅ Import ThemeToggle
 import "./global.css"; // ✅ Import global theme styles
 import Home from "./pages/Home";
+import ContactRoute from "./component/ContactRoute";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/creditline" element={<CreditLineManagement />} />
         <Route path="/admin" element={<AdminRoleManagement />} />
         <Route path="/dash" element={<Dashboard />} />
+         <Route path="/contact" element={<ContactRoute/>} />
       </Routes>
     </BrowserRouter>
   );
