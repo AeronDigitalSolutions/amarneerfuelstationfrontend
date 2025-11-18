@@ -1,7 +1,7 @@
 // import React from 'react'
 import '../style/Insight.css'
 import img1 from '../assets/insight1.jpg'
-import img2 from '../assets/insight2.jpg'
+import img2 from '../assets/Insight2.jpg'
 import img3 from '../assets/insight3.jpg'
 
 
