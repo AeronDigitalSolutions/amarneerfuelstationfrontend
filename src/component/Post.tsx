@@ -1,6 +1,6 @@
 // import React from 'react'
 import '../style/Post.css'
-import { LuArrowUpRight } from "react-icons/lu";
+// import { LuArrowUpRight } from "react-icons/lu";
 import about from '../assets/about.png'
 const Post = () => {
   return (
@@ -25,8 +25,9 @@ const Post = () => {
             creative people who aspire to achieve incredible things
             together—while having some fun along the way.
           </p>
-          <button className="discover-btn">
-            DISCOVER MORE <LuArrowUpRight className="arrow-icon" />
+          <button className="discover-btn_post">
+            DISCOVER MORE 
+            {/* <LuArrowUpRight className="arrow-icon" /> */}
           </button>
         </div>
       </div>

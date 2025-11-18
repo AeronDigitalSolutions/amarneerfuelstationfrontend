@@ -11,6 +11,9 @@ import Dashboard from "./pages/Dashboard";
 import ThemeToggle from "./component/ThemeToggle"; // ✅ Import ThemeToggle
 import "./global.css"; // ✅ Import global theme styles
 import Home from "./pages/Home";
+import ContactRoute from "./component/ContactRoute";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 import AddTank from "./pages/AddTank";
 import FuelRates from "./pages/FuelRates";
 import PumpNo from "./pages/PumpNo";
@@ -34,6 +37,9 @@ function App() {
         <Route path="/creditline" element={<CreditLineManagement />} />
         <Route path="/admin" element={<AdminRoleManagement />} />
         <Route path="/dash" element={<Dashboard />} />
+         <Route path="/contact" element={<ContactRoute/>} />
+         <Route path="/sign" element={<SignIn/>}/>
+         <Route path="/signup" element={<SignUp/>}/>
         <Route path="/dashboardmain" element={<DashboardMain />} />
 
         <Route path="/fuelrate" element={<FuelRates />} />

@@ -17,7 +17,6 @@ const Slider = () => {
   const prevSlide = () => setSlide(slide === 1 ? 4 : slide - 1);
   return (
     <div className="slider-container">
-      {/* ---------- Slide 1 ---------- */}
       {slide === 1 && (
         <div className="slider-card">
           <div className="slider-content">
@@ -41,7 +40,6 @@ const Slider = () => {
         </div>
       )}
 
-      {/* ---------- Slide 2 ---------- */}
       {slide === 2 && (
         <div className="slider-card">
           <div className="slider-content">
@@ -110,7 +108,6 @@ const Slider = () => {
         </div>
       )}
 
-      {/* ---------- Controls ---------- */}
       <div className="slider-controls">
         <button onClick={prevSlide} className="nav-btn">
           {/* <ChevronLeft /> */}

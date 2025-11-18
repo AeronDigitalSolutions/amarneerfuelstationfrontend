@@ -1,5 +1,4 @@
 // import React from 'react'
-// import { BrowserRouter as Router, Routes, Route, BrowserRouter } from "react-router-dom";
 import Header from '../component/Header'
 import Custom from '../component/Custom'
 import Post from '../component/Post'
@@ -12,41 +11,92 @@ import Insight from '../component/Insight'
 import Question from '../component/Question'
 import ChatProject from '../component/ChatProject'
 import Footer from '../component/Footer'
+// import Testingheader from '../component/testingheader'
+// import ContactRoute from '../component/ContactRoute'
+
+// import Image from '../component/Image'
 // import Pos from './Pos'
 // import SaleEntry from './SaleEntry';
 const Home = () => {
   return (
-    <div>
+  <>
+  
+  <Header/>
+  < Custom/>
+  <Services/>
+  <Post/>
+  <StateSection/>
+  <Slider/>
+  <Whychooseus/>
+  <Testimonials/>
+  <Insight/>
+  <Question/>
+  <ChatProject/>
+  {/* <Testingheader/> */}
+  <Footer/>
+  
 
-      <Header/>
-      <Custom/>
-      <Post/>
-      <StateSection/>
-      <Services/>
-      <Slider/>
-      <Whychooseus/>
-      <Testimonials/>
-      <Insight/>
-      <Question/>
-      <ChatProject/>
-      <Footer/>
-    </div>
-    // <BrowserRouter>
+  </>
+    //   <Router>
     //   <Header />
+
     //   <Routes>
+       
     //     <Route
     //       path="/"
     //       element={
-        //     <>
-        //       <Custom />
-        //       <Post />
-        //       <StateSection />
-        //       <Services />
-        //       <Slider />
-        //       <Footer />
-        //   //   </>
-        //   // }
-        // />
+    //         <>
+    //        <Header/>
+    //    <Custom/>
+    //    <Post/>
+    //    <Services/>
+    //    <StateSection/>
+     
+    //    <Slider/>
+    //    <Whychooseus/>
+    //    <Testimonials/>
+    //    <Insight/>
+    //    <Question/>
+    //    <ChatProject/>
+    //           <Footer />
+    //         </>
+    //       }
+    //     />
+
+    //     {/* <Route path="/contact" element={<ContactRoute />} /> */}
+    //   </Routes>
+    // </Router>
+    // <div>
+
+    //   <Header/>
+    //   <ContactRoute/>
+    //   <Custom/>
+    //   <Post/>
+    //    <Services/>
+    //   <StateSection/>
+     
+    //   <Slider/>
+    //   <Whychooseus/>
+    //   <Testimonials/>
+    //   <Insight/>
+    //   <Question/>
+    //   <ChatProject/>
+    //   <Footer/>
+    //   {/* <Image/> */}
+    // </div>
+
+    // <Router>
+    //   <Header/>
+    //   <Routes>
+    //     <Route path="/" element={
+    //       <>
+    //       <Custom/>
+    //       </>
+    //     }
+    //     <Route path="/contact" element={<ContactRoute/>}/>
+    //   </Routes>
+    // </Router>
+    
 
 
 

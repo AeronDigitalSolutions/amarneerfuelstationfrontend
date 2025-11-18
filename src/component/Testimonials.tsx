@@ -78,7 +78,6 @@ const Testimonials: React.FC = () => {
           ))}
         </Slider>
 
-        {/* ✅ Type-safe arrow handlers */}
         <div
           className="custom-arrow custom-prev"
           onClick={() => sliderRef.current?.slickPrev()}

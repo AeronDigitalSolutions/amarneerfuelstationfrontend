@@ -1,76 +1,178 @@
-.footer{
-    /* padding: 20px; */
-    height: 100vh;
-    background: radial-gradient(circle at center, #3b26d4, #0a0020);
+
+.footer {
+  background: radial-gradient(circle at center, #3b26d4, #0a0020);
+  padding: 60px 40px;
+  color: white;
+  font-family: "Poppins", sans-serif;
 }
-.footer-content{
-    padding: 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;             
+  gap: 40px;
 }
-.footer-content img{
-    width: 230px;
+
+.footer-content img {
+  width: 220px;
 }
-.footer_para{
-    font-size: 17px;
-    line-height: 1.2rem;
-    color: grey;
-    flex: 1;
+
+.footer_para {
+  font-size: 16px;
+  line-height: 1.4rem;
+  color: #cfcfcf;
+  max-width: 330px;
 }
-.footer-column h4{
-    margin-bottom: 0px;
-    font-size: 20px;
-    margin-top: 0px;
+
+.footer-column h4 {
+  margin-bottom: 10px;
+  font-size: 20px;
 }
-.footer-column{
-    list-style: none;
-    display: flex;
-    flex-direction: column;
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
 }
-.footer-column ul li{
-    list-style: none;
-    padding: 0;
-    font-size: 20px;
-    line-height: 2rem;
-    cursor: pointer;
-    padding-top: 0px;
-    color: rgb(197, 192, 192);
-    display: flex;
-    font-weight: 500;
-    justify-content: flex-start;
+
+.footer-column ul {
+  padding: 0;
 }
-.footer-column ul li:hover{
-    color: yellow;
+
+.footer-column ul li {
+  list-style: none;
+  color: #d0d0d0;
+  font-size: 17px;
+  line-height: 1.9rem;
+  cursor: pointer;
+  transition: color 0.3s;
 }
-.footer-column ul{
-    padding: 0%;
+
+.footer-column ul li:hover {
+  color: yellow;
 }
-.footer_bottom{
-    display: flex;
-    justify-content: space-between;
-    padding: 30px;
+
+
+.footer_bottom {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;         
+  gap: 25px;
 }
-.social_media_fotter{
-    display: flex;
-    gap: 2rem;cursor: pointer;
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: grey;
+
+.social_media_fotter {
+  display: flex;
+  gap: 1.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #cfcfcf;
 }
-.right_para_yellow{
-    font-size: 2rem;
-    font-weight: 500;
-    margin-top: 0px;
-    color: yellow;
-    cursor: pointer;
+
+.social_media_fotter a:hover {
+  color: #f5b811;
 }
-.footer_copy{
-    display: flex;
-    cursor: pointer;
+
+.right_footer_text p {
+  margin: 0;
+}
+
+.right_para_yellow {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: yellow;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.footer_copy {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #d3d3d3;
+}
+
+/* From Uiverse.io by gharsh11032000 */ 
+.discover-btn {
+  cursor: pointer;
+  position: relative;
+  padding: 10px 24px;
+  font-size: 18px;
+  color: #fff;
+  border: 2px solid rgb(193, 163, 98);
+  border-radius: 34px;
+  background-color: #FDC448;
+  /* font-weight: 600; */
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+  overflow: hidden;
+}
+
+.discover-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 69px;
+  height: 50px;
+  border-radius: inherit;
+  scale: 0;
+  z-index: -1;
+  background-color: #A06BF2;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.discover-btn:hover::before {
+  scale: 3;
+}
+
+.discover-btn:hover {
+  color: #212121;
+  scale: 1.1;
+  box-shadow: 0 0px 20px rgba(193, 163, 98,0.4);
+}
+
+.discover-btn:active {
+  scale: 1;
+}
+
+
+
+@media (max-width: 900px) {
+  .footer-content {
     justify-content: center;
-    /* margin-bottom: 80px; */
+    text-align: center;
+  }
+
+  .footer-column {
+    align-items: center;
+  }
+
+  .footer_bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .social_media_fotter {
+    justify-content: center;
+  }
 }
-.social_media_fotter a:hover{
-    color: rgb(245, 184, 17);
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 40px 20px;
+  }
+
+  .footer-content img {
+    width: 180px;
+  }
+
+  .right_para_yellow {
+    font-size: 1.3rem;
+  }
+
+  .footer-column ul li {
+    font-size: 16px;
+  }
 }
