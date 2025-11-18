@@ -13,7 +13,7 @@ const ChatProject = () => {
         </p>
         <button className="contact-button">
           CONTACT US
-          <span className="arrow">↗</span>
+          {/* <span className="arrow">↗</span> */}
         </button>
       </div>
     </div>

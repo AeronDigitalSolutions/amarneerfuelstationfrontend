@@ -12,6 +12,8 @@ import ThemeToggle from "./component/ThemeToggle"; // ✅ Import ThemeToggle
 import "./global.css"; // ✅ Import global theme styles
 import Home from "./pages/Home";
 import ContactRoute from "./component/ContactRoute";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
         <Route path="/admin" element={<AdminRoleManagement />} />
         <Route path="/dash" element={<Dashboard />} />
          <Route path="/contact" element={<ContactRoute/>} />
+         <Route path="/sign" element={<SignIn/>}/>
+         <Route path="/signup" element={<SignUp/>}/>
       </Routes>
     </BrowserRouter>
   );

@@ -27,14 +27,14 @@
     margin-bottom: 30px;
 }
 .span_custom{
-    color: yellow;
+    color: #FDC448;
     font-size: 4rem;
     font-weight: bold;
     margin-top: 20px;
 }
-.custom_hr{
+/* .custom_hr{
     margin-top: 50px;
-}
+} */
 .star{
     font-size: 3rem;
 }
@@ -51,7 +51,77 @@
     color: white;
 }
 
-.custom_button{
+/* .discover-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffc64d;
+  color: black;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.discover-custom:hover {
+  background-color: #a06bf2;
+  color: black;
+} */
+/* From Uiverse.io by gharsh11032000 */ 
+.discover-custom {
+  cursor: pointer;
+  position: relative;
+  padding: 10px 24px;
+  font-size: 18px;
+  color: #fff;
+  border: 2px solid rgb(193, 163, 98);
+  border-radius: 34px;
+  background-color: #FDC448;
+  font-weight: 600;
+  transition: all 3s cubic-bezier(0.23, 1, 0.320, 1);
+  overflow: hidden;
+}
+
+.discover-custom::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 50px;
+  height: 50px;
+  border-radius: inherit;
+  scale: 0;
+  z-index: -1;
+  background-color: #A06BF2;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.discover-custom:hover::before {
+  scale: 3;
+}
+
+.discover-custom:hover {
+  color: #212121;
+  scale: 1.1;
+  box-shadow: 0 0px 20px rgba(193, 163, 98,0.4);
+}
+
+.discover-custom:active {
+  scale: 1;
+}
+
+
+
+.arrow-icon_custom {
+  background-color: white;
+  border-radius: 50%;
+  padding: 4px;
+}
+
+/* .custom_button{
    display: flex;
    align-items: center;
    gap: 8px;
@@ -64,19 +134,19 @@
   font-weight: 500;
   cursor: pointer;
   transition: background 0.3s;
-}
-.custom_button:hover{
+} */
+/* .custom_button:hover{
      background-color:#A06BF2;
     color: #fff;
-}
-.arrow_icon_custom{
+} */
+/* .arrow_icon_custom{
     background-color: white;
   border-radius: 50%;
   padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
+} */
 .arrow_icon_custom:hover{
     background-color: blue;
 }
@@ -126,7 +196,6 @@ object-fit: contain;
   justify-content: space-between;
 }
 
-/* Left Section */
 .left_custom {
   width: 76%;
   background: #4A31FE;
@@ -198,7 +267,6 @@ object-fit: contain;
   background-color: blue;
 }
 
-/* Right Section */
 .right_custom {
   width: 30%;
   display: flex;
@@ -217,4 +285,114 @@ object-fit: contain;
   height: auto;
   object-fit: contain;
   border-radius: 15px;
+}
+
+@media (max-width: 1024px) {
+  .custom_container {
+    flex-direction: column;
+    padding: 30px;
+    gap: 2rem;
+  }
+.image_custom img {
+    width: 100%;
+    /* max-width: 24%; */
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+}
+  .left_custom {
+    width: 100%;
+  }
+
+  .right_custom {
+    width: 80%;
+  }
+
+  .heading_custom,
+  .span_custom {
+    font-size: 3rem;
+  }
+
+  .display_custom_bottom {
+    gap: 2rem;
+    justify-content: flex-start;
+  }
+
+  .para_custom {
+    font-size: 18px;
+  }
+}
+
+
+
+@media (max-width: 768px) {
+
+  .heading_custom,
+  .span_custom {
+    font-size: 2.4rem;
+  }
+
+  .display_custom_bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .star {
+    font-size: 2.4rem;
+  }
+
+  .para_custom {
+    font-size: 16px;
+  }
+
+  .right_custom {
+    width: 90%;
+  }
+}
+
+
+
+@media (max-width: 480px) {
+
+  .custom_container {
+    padding: 20px;
+    gap: 1.5rem;
+  }
+
+  .left_custom {
+    padding: 20px;
+  }
+
+  .heading_custom,
+  .span_custom {
+    font-size: 1.8rem;
+    line-height: 2.2rem;
+  }
+
+  .display_custom_bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .star {
+    font-size: 2rem;
+  }
+
+  .para_custom {
+    font-size: 15px;
+  }
+
+  .discover-btn {
+    padding: 8px 18px;
+    font-size: 13px;
+  }
+
+  .right_custom {
+    width: 100%;
+  }
+
+  .image_custom img {
+    width: 100%;
+  }
 }

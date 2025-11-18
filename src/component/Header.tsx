@@ -1,37 +1,53 @@
-// import React from 'react'
 import '../style/Header.css';
 import logo from '../assets/Logo.png'
 import { Link } from 'react-router-dom';
-import { LuArrowUpRight } from "react-icons/lu";
+// import { LuArrowUpRight } from "react-icons/lu";
+import { FaBars } from "react-icons/fa6";
+import { useState } from 'react';
+
 const Header = () => {
+
+  const [isOpen ,setIsOpen] = useState(false);
+  const toggleMenu =()=>{
+    setIsOpen(!isOpen);
+  }
   return (
-    
-    <header className="header">
-      <div className="header-container">
-        <div className="logo-section">
+<>
+
+ <header>
+      <div className="container_header">
+        <nav>
+
+          <div className="logo_header">
+            {/* <h2>DesignStudio</h2> */}
           <img src={logo} alt="logo" className="logo" />
-        </div>
 
-        <nav className="nav-menu">
-          <a href="#">HOME</a>
-          <a href="#">SERVICES</a>
-          <a href="#">PROJECTS</a>
-          <a href="#">PAGE</a>
-          <a href="#">BLOG</a>
-          <a><Link  to="/contact">CONTACT</Link></a>
+          </div>
+
+          <ul className={isOpen ? "nav_link active" : "nav_link"}>
+            <li><a href='#'>Home</a></li>
+            <li><a href='#'>Services</a></li>
+            <li><a href='#'>Projects</a></li>
+            <li><Link  to="/sign">Sign</Link></li>
+            <li><Link  to="/contact">CONTACT</Link></li>
+
+            <button className="discover-btn_header">
+                 <Link  to="/sign" style={{color:'#fff'}}>Sign In</Link>
+                  {/* <LuArrowUpRight className="arrow-icon_header" /> */}
+               </button>
+          </ul>
+
+ 
+          <div className="icon_header" onClick={toggleMenu}>
+            <FaBars />
+          </div>
+
         </nav>
-
-        {/* <button className="contact-btn">
-          CONTACT US
-<span className="arrow-icon">
-            <LuArrowUpRight size={16} />
-          </span>
-        </button> */}
-         <button className="discover-btn">
-                    DISCOVER MORE <LuArrowUpRight className="arrow-icon" />
-                  </button>
       </div>
     </header>
+ 
+   </>   
+    
   )
 }
           

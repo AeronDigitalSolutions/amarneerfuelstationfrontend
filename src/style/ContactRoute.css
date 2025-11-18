@@ -95,7 +95,6 @@
   color: blue;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
   .contact-title {
     font-size: 34px;
@@ -108,7 +107,7 @@
 
 
 .form-wrapper {
-  width: 100%;
+  /* width: 100%; */
   min-height: 100vh;
   background-color: #01011a;
   display: flex;
@@ -121,9 +120,8 @@
 .top_white{
   width: 370px;
     height: auto;
-    translate: 0px 11px;
+    translate: -305px 11px;
 }
-/* White Box */
 .form-container {
   width: 100%;
   max-width: 900px;
@@ -132,7 +130,6 @@
   padding: 40px;
 }
 
-/* Grid Layout */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

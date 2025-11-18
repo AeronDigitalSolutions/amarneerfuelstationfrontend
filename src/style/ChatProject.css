@@ -1,27 +1,27 @@
-.chat{
-    padding: 80px;
+.chat {
+  padding: 80px;
 }
+
 .contact-container {
   background: radial-gradient(circle at center, #3b26d4, #0a0020);
-  min-height: 100vh;
+  /* min-height: 100vh; */
   display: flex;
   justify-content: center;
   align-items: center;
-  /* padding: 20px; */
   border-radius: 30px;
+  padding: 20px;
 }
 
-/* White box */
 .contact-box {
   background: white;
   border-radius: 20px;
   text-align: center;
   padding: 60px 80px;
   max-width: 800px;
+  width: 100%;
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* Title text */
 .contact-title {
   font-size: 2.5rem;
   font-weight: 700;
@@ -30,15 +30,57 @@
   margin-bottom: 20px;
 }
 
-/* Subtitle text */
 .contact-subtitle {
   font-size: 1.2rem;
   color: #4c36db;
   margin-bottom: 40px;
 }
-
-/* Contact button */
 .contact-button {
+  cursor: pointer;
+  position: relative;
+  padding: 14px 28px;
+  font-size: 18px;
+  color: #fff;
+  border: 2px solid rgb(193, 163, 98);
+  border-radius: 34px;
+  background-color: #FDC448;
+  /* font-weight: 600; */
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+  overflow: hidden;
+}
+
+.contact-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 59px;
+  height: 50px;
+  border-radius: inherit;
+  scale: 0;
+  z-index: -1;
+  background-color: #A06BF2;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.contact-button:hover::before {
+  scale: 3;
+}
+
+.contact-button:hover {
+  color: #212121;
+  scale: 1.1;
+  box-shadow: 0 0px 20px rgba(193, 163, 98,0.4);
+}
+
+.contact-button:active {
+  scale: 1;
+}
+
+
+
+
+/* .contact-button {
   background-color: #f5b93f;
   color: #000;
   font-weight: 600;
@@ -51,10 +93,8 @@
   align-items: center;
   gap: 8px;
   transition: all 0.3s ease;
-  position: relative;
 }
 
-/* Arrow inside button */
 .arrow {
   background: white;
   border-radius: 50%;
@@ -63,7 +103,6 @@
   transition: transform 0.3s ease;
 }
 
-/* Hover effects */
 .contact-button:hover {
   background-color: #ffcc4d;
   transform: translateY(-3px);
@@ -72,4 +111,57 @@
 
 .contact-button:hover .arrow {
   transform: translate(2px, -2px);
+} */
+
+@media (max-width: 992px) {
+  .chat {
+    padding: 40px;
+  }
+
+  .contact-box {
+    padding: 50px 40px;
+  }
+
+  .contact-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .chat {
+    padding: 20px;
+  }
+
+  .contact-box {
+    padding: 40px 20px;
+  }
+
+  .contact-title {
+    font-size: 1.8rem;
+  }
+
+  .contact-subtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-title {
+    font-size: 1.6rem;
+  }
+
+  .contact-box {
+    padding: 30px 15px;
+  }
+
+  .contact-button {
+    width: 100%;
+    justify-content: center;
+    font-size: 1rem;
+    padding: 14px;
+  }
+
+  .arrow {
+    padding: 3px 5px;
+  }
 }

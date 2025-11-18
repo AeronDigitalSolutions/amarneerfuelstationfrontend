@@ -1,33 +1,298 @@
+/* header{
+    background-color: aliceblue;
+    padding: 2rem 0;
+    box-shadow: 0 0 5px rgba((red), green, blue, alpha);
+}
+a{
+  text-decoration: none;
+}
+.container_header{
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+.container_header nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.container_header nav.logo{
+    color: black;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+.container_header .nav_link{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.container_header .nav_link li{
+    list-style: none;
+    margin:  0 0.5rem;
+}
+.container_header ul li a{
+    color: #212a3c;
+    font-size: 1.3rem;
+    padding: 0.7rem 1rem;
+    display: block;
+    border-radius: 10px;
+}
+.content{
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50px, 0%);
+}
+
+.contenth2{
+  font-size: 6rem;
+  color: white;
+}
+.icon_header{
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none;
+} */
+/* @media(max-width:768px){
+  .icon_header{
+    display: block;
+  }
+
+  .nav_link{
+    position: absolute;
+    top: 110px;
+    right: 00%;
+    width: 150px;
+    height: 40vh;
+    flex-direction: column;
+    background-color: #fff;
+    transition: 0.4s ease;
+    padding-top: 1rem;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  }
+
+  .nav_link.active{
+    right: 0;
+  }
+} */
+
+/* @media(max-width:768px){
+  .content h2{
+     font-size: 4rem;
+     text-align: center;
+  }
+  .icon_header{
+    display: block;
+  }
+  .container_header .nav_link{
+    flex-direction: column;
+    justify-content: space-evenly;
+    background-color: #fff;
+    position: absolute;
+    width: 1050px;
+    height: 40vh;
+    top: 110px;
+    right: 0px;
+    z-index: 10;
+  }
+} */
+
+
+header {
+  /* background-color: aliceblue; */
+  padding: 1rem 0;
+   background-color: #01011a;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+a {
+  text-decoration: none;
+}
+.logo {
+  width: 16rem;
+  height: auto;
+}
+
+.container_header {
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.container_header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative; 
+}
+
+.logo_header {
+  color: black;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.nav_link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav_link li {
+  list-style: none;
+  margin: 0 0.5rem;
+}
+
+.nav_link li a {
+  color: #fff;
+  font-size: 1rem;
+  text-transform: uppercase;
+  padding: 0.7rem 1rem;
+  display: block;
+}
+
+.icon_header {
+  font-size: 1.7rem;
+  cursor: pointer;
+  display: none;
+}
+.discover-btn_header {
+  /* background-color: #ffC64D;
+  color: #000;
+  border: none;
+  padding: 10px 58px;
+  font-weight: 500;
+  font-size:1.3rem;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer; */
+   cursor: pointer;
+  position: relative;
+  padding: 10px 54px;
+  font-size: 18px;
+  color: rgb(193, 163, 98);
+  border: 2px solid rgb(193, 163, 98);
+  border-radius: 34px;
+  background-color: #FDC448;
+  font-weight: 400;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+  overflow: hidden;
+}
+
+.discover-btn_header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 70px;
+  height: 50px;
+  border-radius: inherit;
+  scale: 0;
+  z-index: -1;
+  color: black;
+  background-color: #A06BF2;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+}
+.discover-btn_header:hover::before {
+  scale: 3;
+}
+
+.discover-btn_header:hover {
+  color: #212121;
+  scale: 1.1;
+  box-shadow: 0 0px 20px rgba(193, 163, 98,0.4);
+}
+
+.discover-btn_header:active {
+  scale: 1;
+}
+
+
+
+/* .discover-btn_header:hover {
+  background-color: #A06BF2;
+} */
+
+@media (max-width: 768px) {
+
+  body {
+    overflow-x: hidden;
+  }
+
+  .logo {
+    width: 9rem;
+  }
+
+  .nav_link {
+    position: absolute;
+    top: 37px;
+    right: 0;
+
+    width: 0px;         
+    overflow: hidden;     
+
+    background: white;
+    flex-direction: column;
+    padding: 0;          
+    border-radius: 10px 0 0 10px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    z-index: 999;
+    transition: width 0.4s ease;  
+  }
+
+  .nav_link.active {
+    width: 180px;  
+    padding: 1rem 0;
+  }
+
+  .nav_link li a {
+    color: #1f1c1c;
+    padding: 0.7rem 1rem;
+    font-size: 1.1rem;
+    display: block;
+  }
+
+  .discover-btn_header {
+    display: none;
+  }
+
+  .icon_header {
+    display: block;
+  }
+}
+
+
+
+/* 
 .header {
   background-color: #01011a;
-  margin-top: 38px;
   border-top: 1px solid #6c6c77;
   border-bottom: 1px solid #868697;
   padding: 30px 0;
-  /* width: 90%; */
   font-family: "Poppins", sans-serif;
 }
 
 .header-container {
   max-width: 1200px;
   margin: 0 auto;
-  /* padding: 0 30px; */
+  padding: 0 25px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+
 .logo-section {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
 .logo {
   width: 12rem;
-  height: 2.5rem;
+  height: auto;
 }
-
 
 .nav-menu {
   display: flex;
@@ -38,7 +303,6 @@
   color: white;
   text-decoration: none;
   font-size: 15px;
-  font-family: sans-serif;
   letter-spacing: 1px;
   font-weight: 500;
   transition: color 0.3s;
@@ -48,7 +312,7 @@
   color: #ffc64d;
 }
 
-.contact-btn {
+.discover-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -56,30 +320,67 @@
   color: black;
   border: none;
   padding: 10px 22px;
-  border-radius: 999px;
+  border-radius: 50px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.3s;
 }
 
-.contact-btn:hover {
-  background-color: #ffda75;
+.discover-btn:hover {
+  background-color: #a06bf2;
+  color: #fff;
 }
 
 .arrow-icon {
   background-color: white;
   border-radius: 50%;
   padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.arrow-icon:hover{
-background-color: blue;
-}
-.contact-btn:hover{
-    background-color:#A06BF2;
-    color: #fff;
 }
 
+.mobile-menu-icon {
+  display: none;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .nav-menu {
+    position: absolute;
+    top: 95px;
+    right: -100%;
+    width: 70%;
+    height: 100vh;
+    background: #01011a;
+    flex-direction: column;
+    padding: 40px 20px;
+    gap: 25px;
+    transition: 0.4s ease;
+  }
+
+  .nav-menu.active {
+    right: 0;
+  }
+
+  .mobile-menu-icon {
+    display: block;
+  }
+
+  .discover-btn {
+    display: none;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .logo {
+    width: 9rem;
+  }
+
+  .header-container {
+    padding: 0 15px;
+  }
+
+  .nav-menu {
+    width: 80%;
+  }
+} */

@@ -30,7 +30,6 @@ const Question = () => {
             </div>
 
 
-            {/* right side */}
             {/* <div className=''></div> */}
             <div className="right-panel">
                 <details className="accordion-item">

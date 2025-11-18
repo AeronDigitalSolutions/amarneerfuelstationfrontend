@@ -1,13 +1,13 @@
 // import React from 'react'
 import '../style/Custom.css'
 import Image from '../assets/right_custom.jpg'
-import { LuArrowUpRight } from "react-icons/lu";
+// import { LuArrowUpRight } from "react-icons/lu";
 const Custom = () => {
   return (
     <section className='custom'>
       <div className='custom_container'>
         <div className='left_custom'>
-          <p className='heading_custom'>HELPING VISIT BRAND REACH THE</p>
+          <p className='heading_custom'>HELPING VISIONARY BRANDS REACH THE</p>
           <span className='span_custom'>TOP 1%</span>
           <hr className='custom_hr'></hr>
 
@@ -19,8 +19,9 @@ const Custom = () => {
             {/* <button className='custom_button'>
               Contact US <span className='arrow_icon_custom'> <LuArrowUpRight size={16} /></span>
             </button> */}
-             <button className="discover-btn">
-                        DISCOVER MORE <LuArrowUpRight className="arrow-icon" />
+             <button className="discover-custom">
+                        Contact Us
+                         {/* <LuArrowUpRight className="arrow-icon_custom" /> */}
                       </button>
           </div>
         </div>

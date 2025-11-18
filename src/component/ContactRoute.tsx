@@ -100,8 +100,8 @@ const ContactRoute = () => {
       </div>
     </div>
      <Post/>
+       <Services/>
   <StateSection/>
-  <Services/>
   <Slider/>
   <Whychooseus/>
   <Testimonials/>

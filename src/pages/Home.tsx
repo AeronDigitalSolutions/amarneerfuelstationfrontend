@@ -11,6 +11,7 @@ import Insight from '../component/Insight'
 import Question from '../component/Question'
 import ChatProject from '../component/ChatProject'
 import Footer from '../component/Footer'
+// import Testingheader from '../component/testingheader'
 // import ContactRoute from '../component/ContactRoute'
 
 // import Image from '../component/Image'
@@ -19,18 +20,21 @@ import Footer from '../component/Footer'
 const Home = () => {
   return (
   <>
+  
   <Header/>
   < Custom/>
+  <Services/>
   <Post/>
   <StateSection/>
-  <Services/>
   <Slider/>
   <Whychooseus/>
   <Testimonials/>
   <Insight/>
   <Question/>
   <ChatProject/>
+  {/* <Testingheader/> */}
   <Footer/>
+  
 
   </>
     //   <Router>

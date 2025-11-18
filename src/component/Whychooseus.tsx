@@ -1,7 +1,7 @@
 // import React from "react";
 import "../style/Whychooseus.css";
 import Slider from "../assets/slider4.jpg";
-import Slider1 from '../assets/right_custom.jpg'
+import why from '../assets/whychooseus.png'
 
 const Whychooseus = () => {
   return (
@@ -35,10 +35,10 @@ const Whychooseus = () => {
 
         <div className="why-card white box5">
           <p className="why-title2 ">Let’s Build Your Brand Together</p>
-          <button className="contact-btn">
+          <button className="contact-btn_why">
             CONTACT US <span>→</span>
           </button>
-          <img src={Slider1} alt="person" className="person-img" />
+          <img src={why} alt="person" className="person-img" />
         </div>
       </div>
     </section>
