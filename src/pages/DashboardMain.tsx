@@ -94,6 +94,24 @@ export default function DashboardMain() {
       >
       <p> Add tank</p>
       </Link>
+
+
+
+      
+            <Link
+        to="/testfuel"
+        className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+      <p> Test Fuel</p>
+      </Link>
+
+
+       <Link
+        to="/shift"
+        className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+      <p> Add Shift</p>
+      </Link>
     </div>
   );
 }

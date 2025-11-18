@@ -1,0 +1,97 @@
+.articles {
+  background: radial-gradient(circle at top left, #261b72, #0b0624);
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+  padding: 100px 40px;
+}
+
+.articles-header {
+  margin-bottom: 60px;
+}
+
+.subtext {
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  color: #c1bdf8;
+}
+
+.heading {
+  font-size: 3rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #b397ff, #7e68ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-top: 10px;
+}
+
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.article-card {
+  /* background: linear-gradient(180deg, #3b2ff5 0%, #5d48ff 100%); */
+  border-radius: 16px;
+  padding: 25px;
+  text-align: left;
+    background: radial-gradient(circle at center, #3b26d4, #0a0020);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  /* transition: transform 0.4s ease, box-shadow 0.4s ease; */
+}
+
+/* .article-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+} */
+
+.article-image img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.meta {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-bottom: 10px;
+}
+
+.article-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.author {
+  font-size: 12px;
+  color: #c1bdf8;
+  opacity: 0.9;
+}
+
+/* 🌐 Responsive */
+@media (max-width: 1024px) {
+  .articles-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+
+  .heading {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .articles-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .heading {
+    font-size: 2rem;
+  }
+}

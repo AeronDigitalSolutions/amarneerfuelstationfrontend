@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import DashboardMain from "./pages/DashboardMain";
+// import DashboardMain from "./pages/DashboardMain";
 import Pos from "./pages/Pos";
 import SaleEntry from "./pages/SaleEntry";
 import TankManagement from "./pages/TankManagement";
@@ -10,18 +10,22 @@ import AdminRoleManagement from "./pages/AdminRoleManagement";
 import Dashboard from "./pages/Dashboard";
 import ThemeToggle from "./component/ThemeToggle"; // ✅ Import ThemeToggle
 import "./global.css"; // ✅ Import global theme styles
+import Home from "./pages/Home";
+import AddTank from "./pages/AddTank";
 import FuelRates from "./pages/FuelRates";
 import PumpNo from "./pages/PumpNo";
-import AddTank from "./pages/AddTank";
+import DashboardMain from "./pages/DashboardMain";
+import TestFuel from "./pages/TestFuel";
+import ShiftTiming from "./pages/ShiftTiming";
 
 function App() {
   return (
     <BrowserRouter>
       {/* 🌗 Theme Toggle stays fixed at top-right */}
       <ThemeToggle />
-
+      {/* <Home/> */}
       <Routes>
-        <Route path="/" element={<DashboardMain />} />
+        <Route path="/" element={<Home />} />
         <Route path="/pos" element={<Pos />} />
         <Route path="/saleentry" element={<SaleEntry />} />
         <Route path="/tanks" element={<TankManagement />} />
@@ -30,9 +34,13 @@ function App() {
         <Route path="/creditline" element={<CreditLineManagement />} />
         <Route path="/admin" element={<AdminRoleManagement />} />
         <Route path="/dash" element={<Dashboard />} />
-              <Route path="/fuelrate" element={<FuelRates/>} />
-                            <Route path="/pump" element={<PumpNo/>} />
-                                                        <Route path="/addtank" element={<AddTank/>} />
+        <Route path="/dashboardmain" element={<DashboardMain />} />
+
+        <Route path="/fuelrate" element={<FuelRates />} />
+        <Route path="/pump" element={<PumpNo />} />
+        <Route path="/addtank" element={<AddTank />} />
+        <Route path="/testfuel" element={<TestFuel />} />
+                <Route path="/shift" element={<ShiftTiming/>} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,10 +1,10 @@
-// SaleEntry.tsx — UPDATED WITH TABLE WRAPPER
-import React, { useState, useEffect, type MouseEvent, type JSX } from "react";
+// SaleEntry.tsx — UPDATED WITH AUTO TEST FUEL FETCH + TABLE WRAPPER + DYNAMIC SHIFTS
+import { useState, useEffect, type MouseEvent, type JSX } from "react";
 import axios from "axios";
 import styles from "../style/saleentry.module.css";
 
 type PaymentMode = "Cash" | "UPI" | "Card" | "Credit";
-type Shift = "A" | "B" | "C";
+type Shift = string;
 
 const BASE_URL =
   import.meta.env.VITE_API_URL ||
@@ -24,6 +24,17 @@ interface FuelRates {
   diesel: number;
   premiumPetrol: number;
   cng: number;
+}
+
+interface FuelTest {
+  pumpId: string;
+  pumpNo: string;
+  pumpName: string;
+  fuelType: string;
+  liters: number;
+  startTime: string;
+  stopTime: string;
+  duration: number;
 }
 
 interface Sale {
@@ -67,7 +78,12 @@ export default function SaleEntry(): JSX.Element {
 
   const [saleId, setSaleId] = useState(() => "SALE-" + Date.now());
   const [date] = useState(() => new Date().toISOString().split("T")[0]);
-  const [shift, setShift] = useState<Shift>("A");
+  const [shift, setShift] = useState<Shift>("");
+
+  const [shiftList, setShiftList] = useState<
+    { _id: string; shiftName: string; startTime: string; endTime: string }[]
+  >([]);
+
   const [pumpNumber, setPumpNumber] = useState("");
   const [productType, setProductType] = useState("Petrol");
   const [openingMeter, setOpeningMeter] = useState<number>(0);
@@ -91,6 +107,7 @@ export default function SaleEntry(): JSX.Element {
     void fetchSales();
     void fetchPumps();
     void fetchFuelRates();
+    void fetchShifts(); // ⭐ ADDED
   }, []);
 
   const fetchSales = async () => {
@@ -121,11 +138,27 @@ export default function SaleEntry(): JSX.Element {
     }
   };
 
+  // ⭐ FETCH SHIFTS (NEW)
+  const fetchShifts = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/shifts`);
+      setShiftList(res.data);
+    } catch (err) {
+      console.error("❌ Failed to fetch shifts:", err);
+    }
+  };
+
+  // Rest of your existing code remains **unchanged**
+  // -------------------------------------------------- 
+  // AUTO CALCULATE, AUTO RATE, AUTO PAYMENT, AUTO TEST FUEL
+  // --------------------------------------------------
+
   useEffect(() => {
     const litresRaw =
       Number(closingMeter || 0) -
       Number(openingMeter || 0) -
       Number(testFuel || 0);
+
     const litres = litresRaw > 0 ? litresRaw : 0;
     setLitresSold(litres);
 
@@ -151,13 +184,47 @@ export default function SaleEntry(): JSX.Element {
     );
   }, [cashAmount, upiAmount, cardAmount]);
 
+  useEffect(() => {
+    const loadTestFuel = async () => {
+      if (!pumpNumber) return;
+
+      const pump = pumps.find((p) => p.pumpNo === pumpNumber);
+      if (!pump) return;
+
+      try {
+        const res = await axios.get(
+          `${BASE_URL}/fueltest/by-date?pumpId=${pump._id}&date=${date}`
+        );
+
+        const total = res.data.reduce(
+          (sum: number, t: FuelTest) => sum + (t.liters || 0),
+          0
+        );
+
+        setTestFuel(total);
+      } catch (err) {
+        console.error("❌ Failed to load test fuel:", err);
+      }
+    };
+
+    loadTestFuel();
+  }, [pumpNumber, pumps, date]);
+
+  // ---------------- SAVE, DELETE, EDIT ---------------------
+
   const handleSave = async () => {
     if (!pumpNumber) {
       alert("⚠️ Please select a pump number");
       return;
     }
 
+    if (!shift) {
+      alert("⚠️ Please select shift");
+      return;
+    }
+
     const now = new Date();
+
     const saleData: Partial<Sale> = {
       saleId,
       date,
@@ -203,6 +270,7 @@ export default function SaleEntry(): JSX.Element {
   const handleDelete = async (id?: string) => {
     if (!id) return;
     if (!window.confirm("Are you sure you want to delete this sale?")) return;
+
     try {
       await axios.delete(`${BASE_URL}/sales/${id}`);
       await fetchSales();
@@ -218,7 +286,7 @@ export default function SaleEntry(): JSX.Element {
     setModalOpen(true);
 
     setSaleId(sale.saleId);
-    setShift(sale.shift as Shift);
+    setShift(sale.shift);
     setPumpNumber(sale.pumpNumber);
     setProductType(sale.productType);
     setOpeningMeter(sale.openingMeter ?? 0);
@@ -235,7 +303,7 @@ export default function SaleEntry(): JSX.Element {
   const resetForm = () => {
     setEditSale(null);
     setSaleId("SALE-" + Date.now());
-    setShift("A");
+    setShift("");
     setPumpNumber("");
     setProductType("Petrol");
     setOpeningMeter(0);
@@ -253,6 +321,8 @@ export default function SaleEntry(): JSX.Element {
     setRemarks("");
     setAttendant("");
   };
+
+  // ---------------- FILTER, TABLE, TOTALS ---------------------
 
   const filteredSales = sales.filter((s) =>
     [
@@ -279,7 +349,10 @@ export default function SaleEntry(): JSX.Element {
 
   const totalReceivedFromSales = sales.reduce(
     (acc, s) =>
-      acc + ((s.cashAmount || 0) + (s.upiAmount || 0) + (s.cardAmount || 0)),
+      acc +
+      ((s.cashAmount || 0) +
+        (s.upiAmount || 0) +
+        (s.cardAmount || 0)),
     0
   );
 
@@ -292,6 +365,8 @@ export default function SaleEntry(): JSX.Element {
   const amountsMatch = (a: number, b: number, eps = 0.01) =>
     Math.abs(a - b) <= eps;
 
+  // ---------------- UI RENDER ---------------------
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -301,7 +376,7 @@ export default function SaleEntry(): JSX.Element {
         </button>
       </div>
 
-      {/* ===== TABLE SECTION ===== */}
+      {/* TABLE SECTION */}
       <div className={styles.tableSection}>
         <input
           type="text"
@@ -311,7 +386,6 @@ export default function SaleEntry(): JSX.Element {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        {/* ⭐ TABLE WRAPPER ADDED HERE */}
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
             <thead>
@@ -337,9 +411,7 @@ export default function SaleEntry(): JSX.Element {
               {filteredSales.length > 0 ? (
                 filteredSales.map((s) => (
                   <tr key={s._id}>
-                    <td>
-                      {new Date(s.createdAt || s.date).toLocaleString("en-IN")}
-                    </td>
+                    <td>{new Date(s.createdAt || s.date).toLocaleString("en-IN")}</td>
                     <td>{s.saleId}</td>
                     <td>{s.pumpNumber}</td>
                     <td>{s.productType}</td>
@@ -383,15 +455,10 @@ export default function SaleEntry(): JSX.Element {
 
             <tfoot>
               <tr>
-                <td
-                  colSpan={6}
-                  style={{ textAlign: "right", fontWeight: "bold" }}
-                >
+                <td colSpan={6} style={{ textAlign: "right", fontWeight: "bold" }}>
                   Totals:
                 </td>
-                <td style={{ fontWeight: "bold" }}>
-                  {totalTestFuel.toFixed(2)}
-                </td>
+                <td style={{ fontWeight: "bold" }}>{totalTestFuel.toFixed(2)}</td>
                 <td style={{ fontWeight: "bold" }}>{grandTotal.toFixed(2)}</td>
                 <td style={{ fontWeight: "bold" }}>
                   {totalReceivedFromSales.toFixed(2)}
@@ -406,15 +473,12 @@ export default function SaleEntry(): JSX.Element {
         </div>
       </div>
 
-      {/* ===== MODAL ===== */}
+      {/* MODAL */}
       {modalOpen && (
         <div className={styles.modalBackdrop} onClick={handleBackdropClick}>
           <div className={styles.modal}>
             <h2>{editSale ? "✏️ Edit Sale Entry" : "➕ Add Sale Entry"}</h2>
-            <button
-              className={styles.closeBtn}
-              onClick={() => setModalOpen(false)}
-            >
+            <button className={styles.closeBtn} onClick={() => setModalOpen(false)}>
               ✖
             </button>
 
@@ -425,11 +489,14 @@ export default function SaleEntry(): JSX.Element {
               <label>Shift</label>
               <select
                 value={shift}
-                onChange={(e) => setShift(e.target.value as Shift)}
+                onChange={(e) => setShift(e.target.value)}
               >
-                <option>A</option>
-                <option>B</option>
-                <option>C</option>
+                <option value="">Select Shift</option>
+                {shiftList.map((s) => (
+                  <option key={s._id} value={s.shiftName}>
+                    {s.shiftName} ({s.startTime} - {s.endTime})
+                  </option>
+                ))}
               </select>
 
               <label>Pump</label>
@@ -473,12 +540,8 @@ export default function SaleEntry(): JSX.Element {
                 onChange={(e) => setClosingMeter(Number(e.target.value))}
               />
 
-              <label>Test Fuel (L)</label>
-              <input
-                type="number"
-                value={testFuel}
-                onChange={(e) => setTestFuel(Number(e.target.value))}
-              />
+              <label>Test Fuel (Auto)</label>
+              <input type="number" value={testFuel} readOnly />
 
               <label>Cash ₹</label>
               <input
