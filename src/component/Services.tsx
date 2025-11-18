@@ -54,19 +54,7 @@ const Services = () => {
           <p className='services_desc'>Lorem ipsum dolor sit amet perferendis? Illo recusandae error odio eius voluptatibus officiis.</p>
         </Link> */}
 
-        <Link to='/pos' className="service-box">
-          <div className="top-tab">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services">
-          <div className="icon">
-          <img className='img_services_img' src={shape} alt="icon" />
-          </div>
-          <h3 className='services_para'>POS Screen</h3>
-            <p className='services_desc'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-          </div>
-        </Link>
-
+       
 
  <Link to='/creditline' className="service-box">
           <div className="top-tab">
@@ -138,6 +126,18 @@ const Services = () => {
         </Link>
 
 
+ <Link to='/dashboard' className="service-box">
+          <div className="top-tab">
+            <img src={top} alt='top' />
+          </div>
+          <div className="box_grid_services">
+          <div className="icon">
+          <img className='img_services_img' src={shape} alt="icon" />
+          </div>
+          <h3 className='services_para'>Dashboard</h3>
+            <p className='services_desc'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          </div>
+        </Link>
 
 
    

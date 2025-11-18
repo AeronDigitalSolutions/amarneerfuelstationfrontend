@@ -29,7 +29,7 @@ function App() {
       {/* <Home/> */}
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/pos" element={<Pos />} />
+        <Route path="/dashboard" element={<DashboardMain/>} />
         <Route path="/saleentry" element={<SaleEntry />} />
         <Route path="/tanks" element={<TankManagement />} />
         <Route path="/finance" element={<AccountingFinance />} />
