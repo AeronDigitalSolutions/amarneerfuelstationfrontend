@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 // import DashboardMain from "./pages/DashboardMain";
-import Pos from "./pages/Pos";
+// import Pos from "./pages/Pos";
 import SaleEntry from "./pages/SaleEntry";
 import TankManagement from "./pages/TankManagement";
 import AccountingFinance from "./pages/AccountingFinance";
