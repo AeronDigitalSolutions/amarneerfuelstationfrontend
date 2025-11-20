@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+
 export default function DashboardMain() {
   return (
     <div className="">
@@ -111,6 +112,22 @@ export default function DashboardMain() {
         className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
       <p> Add Shift</p>
+      </Link>
+
+
+      <Link
+        to="/payment"
+        className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+      <p> Add Payment</p>
+      </Link>
+
+
+            <Link
+        to="/paymentcomp"
+        className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+      <p> Payment Comparison</p>
       </Link>
     </div>
   );

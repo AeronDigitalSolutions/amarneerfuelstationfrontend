@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+// PumpNo.tsx
+import { useEffect, useState } from "react";
 import axios from "axios";
+import styles from "../style/pumpno.module.css";
 
-// ✅ Backend connection logic
 const BASE_URL =
   import.meta.env.VITE_API_URL ||
   (window.location.hostname === "localhost"
@@ -24,6 +25,8 @@ export default function PumpNo() {
   });
 
   const [selectedFuels, setSelectedFuels] = useState<string[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchPumps();
@@ -45,9 +48,7 @@ export default function PumpNo() {
 
   const handleFuelToggle = (fuel: string) => {
     setSelectedFuels((prev) =>
-      prev.includes(fuel)
-        ? prev.filter((f) => f !== fuel)
-        : [...prev, fuel]
+      prev.includes(fuel) ? prev.filter((f) => f !== fuel) : [...prev, fuel]
     );
   };
 
@@ -58,6 +59,7 @@ export default function PumpNo() {
     }
 
     try {
+      setLoading(true);
       const payload = {
         pumpNo: newPump.pumpNo,
         pumpName: newPump.pumpName,
@@ -67,221 +69,97 @@ export default function PumpNo() {
       alert("✅ Pump added successfully!");
       setNewPump({ pumpNo: "", pumpName: "", fuels: [] });
       setSelectedFuels([]);
-      fetchPumps();
+      await fetchPumps();
+      setShowModal(false);
     } catch (err) {
       console.error("❌ Error saving pump:", err);
       alert("Failed to save pump.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).classList.contains(styles.modalBackdrop)) {
+      setShowModal(false);
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        padding: "40px 20px",
-        backgroundColor: "#f9fafc",
-        minHeight: "100vh",
-        fontFamily: "Inter, sans-serif",
-      }}
-    >
-      <div
-        style={{
-          background: "white",
-          width: "100%",
-          maxWidth: "650px",
-          padding: "30px",
-          borderRadius: "16px",
-          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.08)",
-        }}
-      >
-        <h2
-          style={{
-            textAlign: "center",
-            color: "#28408f",
-            marginBottom: "25px",
-            fontSize: "1.8rem",
-            fontWeight: 600,
-          }}
-        >
-          🛢 Pump Management
-        </h2>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          <label style={{ fontWeight: 500 }}>Pump Number</label>
-          <input
-            type="text"
-            name="pumpNo"
-            value={newPump.pumpNo}
-            onChange={handleChange}
-            style={{
-              padding: "10px",
-              border: "1px solid #d2d6dc",
-              borderRadius: "8px",
-              fontSize: "1rem",
-            }}
-          />
-
-          <label style={{ fontWeight: 500 }}>Pump Name</label>
-          <input
-            type="text"
-            name="pumpName"
-            value={newPump.pumpName}
-            onChange={handleChange}
-            style={{
-              padding: "10px",
-              border: "1px solid #d2d6dc",
-              borderRadius: "8px",
-              fontSize: "1rem",
-            }}
-          />
-
-          <label style={{ fontWeight: 500 }}>Select Fuel Types</label>
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            {["Petrol", "Diesel", "Premium Petrol"].map((fuel) => (
-              <label
-                key={fuel}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  background: selectedFuels.includes(fuel)
-                    ? "#dbe3ff"
-                    : "#eef2ff",
-                  padding: "6px 10px",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  border: selectedFuels.includes(fuel)
-                    ? "1px solid #28408f"
-                    : "1px solid transparent",
-                  transition: "0.2s",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedFuels.includes(fuel)}
-                  onChange={() => handleFuelToggle(fuel)}
-                />
-                {fuel}
-              </label>
-            ))}
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <div className={styles.header}>
+          <h2>🛢 Pump Management</h2>
+          <div>
+            <button className={styles.primaryBtn} onClick={() => setShowModal(true)}>
+              ➕ Add Pump
+            </button>
           </div>
-
-          <button
-            onClick={savePump}
-            style={{
-              backgroundColor: "#28408f",
-              color: "white",
-              fontSize: "1rem",
-              padding: "12px",
-              border: "none",
-              borderRadius: "8px",
-              marginTop: "15px",
-              cursor: "pointer",
-              transition: "background-color 0.2s, transform 0.1s",
-            }}
-            onMouseOver={(e) =>
-              ((e.target as HTMLButtonElement).style.backgroundColor = "#3b56d6")
-            }
-            onMouseOut={(e) =>
-              ((e.target as HTMLButtonElement).style.backgroundColor = "#28408f")
-            }
-          >
-            💾 Save Pump
-          </button>
         </div>
 
-        {pumps.length > 0 && (
-          <div style={{ marginTop: "40px" }}>
-            <h3
-              style={{
-                color: "#1f2937",
-                marginBottom: "12px",
-                fontSize: "1.2rem",
-              }}
-            >
-              📋 Pump List
-            </h3>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                fontSize: "0.95rem",
-              }}
-            >
+        <div className={styles.listSection}>
+          {pumps.length === 0 ? (
+            <p className={styles.noData}>No pumps yet. Add one.</p>
+          ) : (
+            <table className={styles.table}>
               <thead>
-                <tr style={{ backgroundColor: "#e6e9f5" }}>
-                  <th
-                    style={{
-                      padding: "10px",
-                      border: "1px solid #cbd5e1",
-                      textAlign: "center",
-                    }}
-                  >
-                    Pump No
-                  </th>
-                  <th
-                    style={{
-                      padding: "10px",
-                      border: "1px solid #cbd5e1",
-                      textAlign: "center",
-                    }}
-                  >
-                    Pump Name
-                  </th>
-                  <th
-                    style={{
-                      padding: "10px",
-                      border: "1px solid #cbd5e1",
-                      textAlign: "center",
-                    }}
-                  >
-                    Fuel Types
-                  </th>
+                <tr>
+                  <th>Pump No</th>
+                  <th>Pump Name</th>
+                  <th>Fuel Types</th>
                 </tr>
               </thead>
               <tbody>
                 {pumps.map((p, i) => (
-                  <tr
-                    key={p._id || i}
-                    style={{
-                      backgroundColor: i % 2 === 0 ? "#f9fafc" : "#fff",
-                    }}
-                  >
-                    <td
-                      style={{
-                        border: "1px solid #e5e7eb",
-                        padding: "10px",
-                        textAlign: "center",
-                      }}
-                    >
-                      {p.pumpNo}
-                    </td>
-                    <td
-                      style={{
-                        border: "1px solid #e5e7eb",
-                        padding: "10px",
-                        textAlign: "center",
-                      }}
-                    >
-                      {p.pumpName}
-                    </td>
-                    <td
-                      style={{
-                        border: "1px solid #e5e7eb",
-                        padding: "10px",
-                        textAlign: "center",
-                      }}
-                    >
-                      {p.fuels.map((f) => f.type).join(", ")}
-                    </td>
+                  <tr key={p._id || i}>
+                    <td>{p.pumpNo}</td>
+                    <td>{p.pumpName}</td>
+                    <td>{p.fuels?.map((f) => f.type).join(", ")}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
-        )}
+          )}
+        </div>
       </div>
+
+      {showModal && (
+        <div className={styles.modalBackdrop} onClick={handleBackdrop}>
+          <div className={`${styles.modalForm} ${styles.modalScrollable}`} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.closeBtn} onClick={() => setShowModal(false)}>✖</button>
+
+            <h2>Add Pump</h2>
+
+            <label>Pump Number</label>
+            <input name="pumpNo" value={newPump.pumpNo} onChange={handleChange} />
+
+            <label>Pump Name</label>
+            <input name="pumpName" value={newPump.pumpName} onChange={handleChange} />
+
+            <label>Select Fuel Types</label>
+            <div className={styles.fuelChips}>
+              {["Petrol", "Diesel", "Premium Petrol", "CNG"].map((fuel) => (
+                <button
+                  key={fuel}
+                  type="button"
+                  className={`${styles.chip} ${selectedFuels.includes(fuel) ? styles.chipActive : ""}`}
+                  onClick={() => handleFuelToggle(fuel)}
+                >
+                  {fuel}
+                </button>
+              ))}
+            </div>
+
+            <div className={styles.modalButtons}>
+              <button className={styles.saveBtn} onClick={savePump} disabled={loading}>
+                {loading ? "Saving..." : "💾 Save Pump"}
+              </button>
+
+              <button className={styles.cancelBtn} onClick={() => setShowModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

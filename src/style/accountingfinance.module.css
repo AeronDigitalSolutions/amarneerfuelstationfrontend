@@ -1,25 +1,25 @@
 /* ================================
-   GLOBAL CONTAINER + TITLE
-   ================================ */
+   GLOBAL CONTAINER
+================================ */
 .container {
   padding: 30px;
   background: #eef3f7;
   min-height: 100vh;
   font-family: "Segoe UI", sans-serif;
+  padding-bottom: 120px; /* space for fixed summary */
 }
 
 .title {
   font-size: 2rem;
   font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 25px;
   text-align: center;
-  letter-spacing: 0.5px;
+  color: #1f2937;
+  margin-bottom: 20px;
 }
 
 /* ================================
    BUTTON ROW
-   ================================ */
+================================ */
 .buttonRow {
   display: flex;
   justify-content: space-between;
@@ -30,202 +30,167 @@
 .leftButtons {
   display: flex;
   gap: 12px;
-  align-items: center;
 }
 
 .openButton,
 .secondaryButton {
   padding: 12px 18px;
   border-radius: 10px;
-  font-size: 1rem;
-  cursor: pointer;
   border: none;
-  color: #fff;
-  transition: 0.25s ease;
+  cursor: pointer;
+  color: white;
   font-weight: 600;
+  font-size: 1rem;
 }
 
 .openButton {
   background: linear-gradient(135deg, #007bff, #0060d0);
 }
 
-.openButton:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #0056b3, #0048a3);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.35);
-}
-
 .secondaryButton {
   background: linear-gradient(135deg, #17a2b8, #118a9d);
 }
 
-.secondaryButton:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #0e8a96, #0b6f79);
-  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+/* ================================
+   FILTER ROW
+================================ */
+.filterRow {
+  margin-bottom: 15px;
+}
+
+.dateFilter {
+  padding: 10px 14px;
+  width: 200px;
+  border: 1px solid #cfd5df;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: white;
 }
 
 /* ================================
    TABLE SWITCH TABS
-   ================================ */
+================================ */
 .tableSwitch {
   display: flex;
   gap: 10px;
 }
 
 .tabButton {
-  padding: 9px 15px;
+  padding: 10px 16px;
   border-radius: 8px;
-  font-weight: 600;
-  background:linear-gradient(135deg, #17a2b8, #118a9d);
-  border: 1px solid #d5dce2;
+  border: none;
+  background: #d1e6ff;
   cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.tabButton:hover {
-  background: #f0f4f9;
+  font-weight: 600;
 }
 
 .activeTab {
-  background: #007bff !important;
-  color: white !important;
-  border-color: #007bff !important;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+  background: #007bff;
+  color: white;
 }
 
 /* ================================
    TABLE CONTAINER
-   ================================ */
+================================ */
 .tableContainer {
-  background: #ffffff;
+  background: white;
   border-radius: 14px;
   padding: 20px;
   margin-bottom: 25px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
   overflow-x: auto;
-  animation: fadeUp 0.3s ease;
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ================================
-   TABLE DESIGN
-   ================================ */
+   TABLE
+================================ */
 .table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 7px;
 }
 
-.table thead tr th {
+.table thead th {
   background: #f0f3f7;
-  color: #374151;
   padding: 12px;
   font-weight: 700;
-  text-align: left;
   border-bottom: 2px solid #d9dde3;
-  position: sticky;
-  top: 0;
-  z-index: 5;
 }
 
 .table tbody tr {
-  background: #ffffff;
-  border-radius: 12px;
-  transition: 0.25s ease;
-}
-
-.table tbody tr td {
-  padding: 12px;
-  border-top: 1px solid #e5e7eb;
+  background: white;
 }
 
 .table tbody tr:hover {
   background: #f7faff;
-  transform: scale(1.005);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
 }
 
-/* icon buttons */
+.table tbody td {
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
 .editButton,
 .deleteButton {
-  font-size: 1.2rem;
   border: none;
-  background: transparent;
+  background: none;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.editButton:hover {
-  color: #007bff;
-  transform: scale(1.3);
-}
-
-.deleteButton:hover {
-  color: #dc3545;
-  transform: scale(1.3);
 }
 
 /* ================================
-   MODAL OVERLAY
-   ================================ */
+   FIXED SUMMARY BAR
+================================ */
+.fixedSummary {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #ffffff, #f3f6fa);
+  border-top: 1px solid #d3d9e0;
+  box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  z-index: 999;
+  border-radius: 10px;
+}
+
+.fixedSummary span {
+  padding: 6px 12px;
+  background: #eef3f7;
+  border-radius: 10px;
+  border: 1px solid #d7dee6;
+}
+
+/* ================================
+   MODALS
+================================ */
 .modalOverlay {
   position: fixed;
   inset: 0;
   background: rgba(5, 13, 28, 0.55);
-  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.25s ease;
-  z-index: 999;
+  backdrop-filter: blur(4px);
+  z-index: 9999;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ================================
-   MODAL BODY
-   ================================ */
 .modalContent {
-  background: #ffffff;
+  background: white;
+  padding: 25px;
   width: 520px;
-  padding: 25px 28px;
   border-radius: 15px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
-  animation: zoomIn 0.25s ease;
 }
 
-@keyframes zoomIn {
-  from { transform: scale(0.85); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.modalContent h3 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #1e293b;
-  letter-spacing: 0.5px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #e2e8f0;
-}
-
-/* ================================
-   FORM INPUT GRID
-   ================================ */
 .formGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 14px;
-  margin-bottom: 20px;
 }
 
 input,
@@ -234,99 +199,26 @@ select {
   border: 1px solid #cfd5df;
   border-radius: 10px;
   font-size: 0.95rem;
-  background: #fafbfe;
-  transition: 0.25s ease;
 }
 
-input:focus,
-select:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
-  background: white;
-}
-
-/* ================================
-   MODAL BUTTONS
-   ================================ */
 .modalButtons {
   display: flex;
   justify-content: space-between;
-  margin-top: 15px;
-}
-
-.saveButton,
-.cancelButton {
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: 0.25s ease;
-  border: none;
+  margin-top: 20px;
 }
 
 .saveButton {
+  padding: 10px 18px;
   background: #007bff;
   color: white;
-}
-
-.saveButton:hover {
-  background: #0056b3;
-  transform: translateY(-2px);
+  border: none;
+  border-radius: 10px;
 }
 
 .cancelButton {
+  padding: 10px 18px;
   background: #6b7280;
-  color: #fff;
-}
-
-.cancelButton:hover {
-  background: #4b5563;
-  transform: translateY(-2px);
-}
-
-/* ================================
-   SUMMARY CARD
-   ================================ */
-.summaryCard {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
-  animation: fadeUp 0.3s ease;
-}
-
-.summaryGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-}
-
-.summaryGrid p {
-  padding: 12px;
-  background: #f8fafc;
+  color: white;
+  border: none;
   border-radius: 10px;
-  font-size: 1rem;
-  color: #374151;
-}
-
-.profit {
-  color: #16a34a !important;
-}
-.balance {
-  color: #007bff !important;
-}
-
-/* ================================
-   RESPONSIVE
-   ================================ */
-@media (max-width: 700px) {
-  .buttonRow {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 15px;
-  }
-
-  .modalContent {
-    width: calc(100% - 40px);
-  }
 }

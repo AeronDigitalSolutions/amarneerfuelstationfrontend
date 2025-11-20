@@ -1,0 +1,40 @@
+/* pumpno.module.css */
+.container {
+  display:flex; justify-content:center; padding: 36px 18px; background:#f7fafc; min-height:100vh; font-family:Inter, sans-serif;
+}
+.card {
+  width:100%; max-width:800px; background:white; padding:18px; border-radius:12px; box-shadow:0 10px 24px rgba(2,6,23,0.06);
+}
+.header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.primaryBtn { background:#2563eb; color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700; }
+.primaryBtn:hover { background:#1e40af; }
+
+.listSection { margin-top:8px; }
+.table { width:100%; border-collapse:collapse; }
+.table th, .table td { padding:10px; border:1px solid #eef2ff; text-align:center; }
+.table th { background:#f1f5f9; font-weight:700; }
+
+.noData { color:#6b7280; }
+
+.fuelChips { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.chip {
+  padding:8px 10px; border-radius:8px; background:#eef2ff; border:1px solid transparent; cursor:pointer; font-weight:600;
+}
+.chipActive { background:#dbeafe; border:1px solid #2563eb; color:#0f172a; }
+
+.saveBtn {
+  background:#16a34a; color:white; padding:10px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:700;
+}
+.cancelBtn { margin-left:10px; background:#64748b; color:white; padding:10px 12px; border-radius:8px; border:none; cursor:pointer; }
+
+/* modal style (match SaleEntry modal) */
+.modalBackdrop { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.55); z-index:9999; padding:16px;}
+.modalForm { background:white; width:100%; max-width:560px; border-radius:12px; padding:16px; box-shadow:0 10px 28px rgba(2,6,23,0.2); position:relative;}
+.modalScrollable{ max-height:90vh; overflow-y:auto; }
+.closeBtn { position:absolute; right:12px; top:10px; background:#ef4444; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer;}
+.closeBtn:hover { background:#dc2626; }
+.modalButtons { display:flex; justify-content:flex-end; margin-top:12px; gap:8px; }
+
+/* inputs */
+input { width:100%; padding:10px; border:1px solid #e6e9ef; border-radius:8px; margin-top:6px; }
+label { font-weight:600; margin-top:8px; display:block; }
