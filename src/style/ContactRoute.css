@@ -4,6 +4,7 @@
   padding: 50px 20px;
   text-align: center;
   flex-direction: column;
+  border-radius: 0px;
   font-family: "Poppins", sans-serif;
 }
 

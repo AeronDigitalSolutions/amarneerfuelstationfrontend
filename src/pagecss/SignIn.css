@@ -1,9 +1,13 @@
 .login-wrapper {
   width: 100%;
   height: 100vh;
-  /* background: #e8fff5; */
+  /* background: #e5bfff; */
   display: flex;
-  background-image: url('../assets//background-3.png');
+  background-image: url('../assets//backgroundSign.png');
+  /* background-image: url('../assets//bg_sign.jpg'); */
+  /* opacity: 70%; */
+  /* background-color: purple; */
+  /* background-image: url('../assets//background-3.png'); */
   justify-content: center;
   align-items: center;
   position: relative;
@@ -18,10 +22,17 @@
   transition: transform 0.2s ease-out;
 }
 
-.shape-1 { top: 10%; left: 8%; }
-.shape-2 { top: 25%; right: 10%; }
-.shape-3 { bottom: 15%; left: 15%; }
-.shape-4 { bottom: 10%; right: 20%; }
+.shape-1 {top: -3%;
+    left: 31%;
+   /* top: 0%; left: 23%;  */
+  width: 230px;}
+.shape-2 {    top: 3%;
+    right: 16%; width: 230px;}
+.shape-3 { bottom: 5%; left: 6%; width: 230px;}
+.shape-4 { bottom: 3%;
+    right: 3%;
+  width: 180px;}
+.shape-5{ bottom: 48%;  right: 81%; width: 230px;}
 
 .login-box {
   width: 290px;
@@ -34,7 +45,7 @@
 }
 
 .title_login {
-  font-size: 39px;
+  font-size: 30px;
   font-weight: 700;
   /* margin-bottom: 25px; */
       margin-top: 24px;
@@ -42,8 +53,8 @@
   font-family: "Poppins", sans-serif;
 }
 
-.green { color: #2ecc9a; }
-.dot { color: #2ecc9a;
+.green { color: #6f2775; }
+.dot { color: #6f2775;
   border-radius: 50%;
  }
 
@@ -93,6 +104,9 @@
   justify-content: center;
   margin: 12px 0;
 }
+.checkbox_signIn:hover{
+  color: #000;
+}
 .remember-row {
   display: flex;
   justify-content: space-between;
@@ -105,21 +119,17 @@
   align-items: center;
 }
 .forgot {
-  color: #2ecc9a;
+  color: #6f2775;
   margin: 12px 0;
+  font-weight: bold;
   text-decoration: none;
 }
-
+.forgot:hover{
+  color: black;
+}
 .login-btn {
-  /* width: 100%;
-  padding: 12px;
-  background: #2ecc9a;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer; */
-  background-color: #48cba4;
+ background-color: #6f2775;
+  /* background-color: #48cba4; */
     color: white;
     padding: 8px 15px;
     /* margin: 8px 0; */
@@ -138,8 +148,8 @@ ease-in-out;
 }
 .login-btn:hover{
   background-color: #fff;
-  border: 2px solid #48cba4;
-  color: #48cba4;
+  border: 2px solid #6f2775;
+  color: #6f2775;
 }
 
 .divider {

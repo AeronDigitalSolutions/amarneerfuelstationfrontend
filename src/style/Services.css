@@ -1,5 +1,5 @@
 .services {
-  background-color: #01011a;
+  /* background-color: #01011a; */
   padding: 15px 20px;
   font-family: "Poppins", sans-serif;
 }
@@ -10,7 +10,7 @@
 
 .services_para {
   font-size: 1rem;
-  color: white;
+  /* color: white; */
   text-transform: uppercase;
   font-weight: bold;
   margin-bottom: 5px;
