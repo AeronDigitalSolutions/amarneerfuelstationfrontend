@@ -1,63 +1,87 @@
-import '../pagecss/SignIn.css'
-// import Ilogo from '../assets/images.jpeg'
-import signIn from '../assets/signin.png'
-import { Link } from 'react-router-dom'
+
+
+import { useEffect } from "react";
+import { FaEye, FaGoogle, FaFacebookF, FaTwitter, FaLinkedinIn } from "react-icons/fa";
+import "../pagecss/SignIn.css";
+import { Link } from "react-router-dom";
+import shape1 from "../assets/shape1.png";
+import shape2 from "../assets/shape2.png";
+import shape3 from "../assets/shape3.png";
+import shape4 from "../assets/shape4.png";
+import Header from "../component/Header";
+import Footer from "../component/Footer";
+
 const SignIn = () => {
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      const shapes = document.querySelectorAll<HTMLImageElement>(".parallax");
+
+      shapes.forEach((shape) => {
+        const speed = Number(shape.getAttribute("data-speed") || 20);
+
+        const x = (window.innerWidth - e.pageX * speed) / 200;
+        const y = (window.innerHeight - e.pageY * speed) / 200;
+
+        shape.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    return () => window.removeEventListener("mousemove", handleMove);
+  }, []);
+
   return (
-     <div className="login-page">
+    <>
+      <Header />
+      <div className="login-wrapper">
+        {/* Parallax Shapes */}
+        <img src={shape1} className="parallax shape-1" data-speed="10" />
+        <img src={shape2} className="parallax shape-2" data-speed="16" />
+        <img src={shape3} className="parallax shape-3" data-speed="20" />
+        <img src={shape4} className="parallax shape-4" data-speed="14" />
+        <img src={shape4} className="parallax shape-4" data-speed="22" />
 
-      <div className="left-box">
-        <div className="left-content">
-          <div className="logo-row">
-            {/* <img src={Ilogo} className="logo-img" alt="" /> */}
-            <p className="logo-text">innap</p>
-          </div>
-
-          <p className="welcome-title">Welcome back!</p>
-
-          <p className="left-subtext">User Experience & Interface Design<br></br>
-          Strategy SaaS Solutions</p>
-
-          <img src={signIn} className="illustration-img" alt="" />
-        </div>
-      </div>
-
-      <div className="right-box">
-        <div className="form-card">
-
-          <p className="signin-title">Sign in your account</p>
-
-          <label className="form-label">Email <span className='label_ex'>*</span></label>
-          <input
-            type="email"
-            placeholder="demo@example.com"
-            required
-            className="input-field"
-          />
-
-          <label className="form-label">Password <span className='label_ex'>*</span></label>
-          <input
-            type="password"
-            placeholder="••••••"
-            className="input-field"
-          />
-
-          <div className="remember-row">
-            <input type="checkbox" className='signCheck' />
-            <span style={{fontSize:'14px'}}>Remember my preference</span>
-          </div>
-
-          <button className="sign-btn">Sign In</button>
-
-          <p className="signup-text">
-            Don’t have an account? <Link to='/signup' className="signup-link">Sign up</Link>
+        {/* Login Box */}
+        <div className="login-box">
+          <p className="title_login">
+            <span className="green">E</span>rratum<span className="dot">.</span>
           </p>
 
+          <input type="text" placeholder="Enter Username" className="input-box_sign" />
+
+          <div className="password-wrapper">
+            <input type="password" placeholder="Enter Password" className="input-box_sign" />
+            <FaEye className="eye-icon" />
+          </div>
+
+          <div className="remember-row_sign">
+            <label className="checkbox_signIn">
+              <input type="radio"/>Remember
+            </label>
+            <a href="/" className="forgot">Forgot password?</a>
+          </div>
+
+          <button className="login-btn">Login</button>
+
+          <div className="divider">
+            <span>OR LOGIN WITH</span>
+          </div>
+
+          <div className="social-icons">
+            <div className="iconG"><FaGoogle /></div>
+            <div className="iconf"><FaFacebookF /></div>
+            <div className="iconT"><FaTwitter /></div>
+            <div className="iconL"><FaLinkedinIn /></div>
+          </div>
+
+          <p className="bottom-text_signIN">
+            Not a member? <Link to="/signup" style={{ fontWeight: "bold", color: "#2ecc9a" }}>Sign up</Link>
+          </p>
         </div>
       </div>
+      <Footer />
+    </>
+  );
+};
 
-    </div>
-  )
-}
-
-export default SignIn
+export default SignIn;

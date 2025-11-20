@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-
+import '../style/PumpNo.css'
 // ✅ Backend connection logic
 const BASE_URL =
   import.meta.env.VITE_API_URL ||
@@ -75,70 +75,46 @@ export default function PumpNo() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        padding: "40px 20px",
-        backgroundColor: "#f9fafc",
-        minHeight: "100vh",
-        fontFamily: "Inter, sans-serif",
-      }}
-    >
-      <div
-        style={{
-          background: "white",
-          width: "100%",
-          maxWidth: "650px",
-          padding: "30px",
-          borderRadius: "16px",
-          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.08)",
-        }}
-      >
-        <h2
-          style={{
-            textAlign: "center",
-            color: "#28408f",
-            marginBottom: "25px",
-            fontSize: "1.8rem",
-            fontWeight: 600,
-          }}
-        >
-          🛢 Pump Management
-        </h2>
+    <div className="pump_container">
+      <div className="conatiner_pump">
+        <p className="heading_pump">
+          Pump Management
+        </p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          <label style={{ fontWeight: 500 }}>Pump Number</label>
-          <input
-            type="text"
-            name="pumpNo"
-            value={newPump.pumpNo}
-            onChange={handleChange}
-            style={{
-              padding: "10px",
-              border: "1px solid #d2d6dc",
-              borderRadius: "8px",
-              fontSize: "1rem",
-            }}
-          />
+        <div className="pump_form_conatiner">
+          <div>
+            <label>Pump Number</label>
+            <input className="input-pump"
+              type="text"
+              name="pumpNo"
+              value={newPump.pumpNo}
+              onChange={handleChange}
+            />
+          </div>
 
-          <label style={{ fontWeight: 500 }}>Pump Name</label>
-          <input
-            type="text"
-            name="pumpName"
-            value={newPump.pumpName}
-            onChange={handleChange}
-            style={{
-              padding: "10px",
-              border: "1px solid #d2d6dc",
-              borderRadius: "8px",
-              fontSize: "1rem",
-            }}
-          />
 
-          <label style={{ fontWeight: 500 }}>Select Fuel Types</label>
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            {["Petrol", "Diesel", "Premium Petrol"].map((fuel) => (
+          <div>
+            <label>Pump Name</label>
+            <input className="input-pump"
+              type="text"
+              name="pumpName"
+              value={newPump.pumpName}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+
+
+
+
+        <div className="select_fuel_conatiner" >
+          <label className="select_label">Select Fuel Types</label>
+
+          <div className="option_Pump"
+          style={{ display: "flex", gap: "23px", flexWrap: "wrap", justifyContent:'center' }}
+          >
+            {["Petrol", "Diesel", "PrePetrol"].map((fuel) => (
               <label
                 key={fuel}
                 style={{
@@ -148,7 +124,7 @@ export default function PumpNo() {
                   background: selectedFuels.includes(fuel)
                     ? "#dbe3ff"
                     : "#eef2ff",
-                  padding: "6px 10px",
+                  padding: "16px 40px",
                   borderRadius: "6px",
                   cursor: "pointer",
                   border: selectedFuels.includes(fuel)
@@ -167,19 +143,19 @@ export default function PumpNo() {
             ))}
           </div>
 
-          <button
+          <button className="pump_button_Save"
             onClick={savePump}
-            style={{
-              backgroundColor: "#28408f",
-              color: "white",
-              fontSize: "1rem",
-              padding: "12px",
-              border: "none",
-              borderRadius: "8px",
-              marginTop: "15px",
-              cursor: "pointer",
-              transition: "background-color 0.2s, transform 0.1s",
-            }}
+            // style={{
+            //   backgroundColor: "#28408f",
+            //   color: "white",
+            //   fontSize: "1rem",
+            //   padding: "12px",
+            //   border: "none",
+            //   borderRadius: "8px",
+            //   marginTop: "15px",
+            //   cursor: "pointer",
+            //   transition: "background-color 0.2s, transform 0.1s",
+            // }}
             onMouseOver={(e) =>
               ((e.target as HTMLButtonElement).style.backgroundColor = "#3b56d6")
             }
@@ -202,39 +178,40 @@ export default function PumpNo() {
             >
               📋 Pump List
             </h3>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                fontSize: "0.95rem",
-              }}
+            <table className="table_pump"
+              // style={{
+              //   width: "100%",
+              //   borderCollapse: "collapse",
+              //   fontSize: "0.95rem",
+              // }}
             >
               <thead>
-                <tr style={{ backgroundColor: "#e6e9f5" }}>
-                  <th
-                    style={{
-                      padding: "10px",
-                      border: "1px solid #cbd5e1",
-                      textAlign: "center",
-                    }}
+                <tr className="tr_pump">
+                {/* style={{ backgroundColor: "#e6e9f5" }}> */}
+                  <th className="th_pump"
+                    // style={{
+                    //   padding: "10px",
+                    //   border: "1px solid #cbd5e1",
+                    //   textAlign: "center",
+                    // }}
                   >
                     Pump No
                   </th>
-                  <th
-                    style={{
-                      padding: "10px",
-                      border: "1px solid #cbd5e1",
-                      textAlign: "center",
-                    }}
+                  <th className="th_pump"
+                    // style={{
+                    //   padding: "10px",
+                    //   border: "1px solid #cbd5e1",
+                    //   textAlign: "center",
+                    // }}
                   >
                     Pump Name
                   </th>
-                  <th
-                    style={{
-                      padding: "10px",
-                      border: "1px solid #cbd5e1",
-                      textAlign: "center",
-                    }}
+                  <th className="th_pump"
+                    // style={{
+                    //   padding: "10px",
+                    //   border: "1px solid #cbd5e1",
+                    //   textAlign: "center",
+                    // }}
                   >
                     Fuel Types
                   </th>

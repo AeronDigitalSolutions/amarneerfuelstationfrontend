@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 // import DashboardMain from "./pages/DashboardMain";
-import Pos from "./pages/Pos";
+// import Pos from "./pages/Pos";
 import SaleEntry from "./pages/SaleEntry";
 import TankManagement from "./pages/TankManagement";
 import AccountingFinance from "./pages/AccountingFinance";
@@ -20,6 +20,7 @@ import PumpNo from "./pages/PumpNo";
 import DashboardMain from "./pages/DashboardMain";
 import TestFuel from "./pages/TestFuel";
 import ShiftTiming from "./pages/ShiftTiming";
+import Services from "./component/Services";
 
 function App() {
   return (
@@ -29,7 +30,7 @@ function App() {
       {/* <Home/> */}
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/pos" element={<Pos />} />
+        <Route path="/dashboard" element={<DashboardMain/>} />
         <Route path="/saleentry" element={<SaleEntry />} />
         <Route path="/tanks" element={<TankManagement />} />
         <Route path="/finance" element={<AccountingFinance />} />
@@ -41,7 +42,7 @@ function App() {
          <Route path="/sign" element={<SignIn/>}/>
          <Route path="/signup" element={<SignUp/>}/>
         <Route path="/dashboardmain" element={<DashboardMain />} />
-
+<Route path="/services" element={<Services/>}/>
         <Route path="/fuelrate" element={<FuelRates />} />
         <Route path="/pump" element={<PumpNo />} />
         <Route path="/addtank" element={<AddTank />} />

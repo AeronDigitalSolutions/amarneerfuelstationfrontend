@@ -1,7 +1,7 @@
 // import React from 'react'
 import '../style/Insight.css'
 import img1 from '../assets/insight1.jpg'
-import img2 from '../assets/insight2.jpg'
+import img2 from '../assets/Insight2.jpg'
 import img3 from '../assets/insight3.jpg'
 
 
@@ -14,7 +14,6 @@ const Insight = () => {
       </div>
 
       <div className="articles-grid">
-        {/* -------- CARD 1 -------- */}
         <div className="article-card">
           <div className="article-image">
             <img src={img1} alt="Cognitive Biases in User Research" />
@@ -26,7 +25,6 @@ const Insight = () => {
           </div>
         </div>
 
-        {/* -------- CARD 2 -------- */}
         <div className="article-card">
           <div className="article-image">
             <img src={img2} alt="Mobile App Design Trends" />
@@ -38,7 +36,6 @@ const Insight = () => {
           </div>
         </div>
 
-        {/* -------- CARD 3 -------- */}
         <div className="article-card">
           <div className="article-image">
             <img src={img3} alt="Web Design Agencies 2025" />

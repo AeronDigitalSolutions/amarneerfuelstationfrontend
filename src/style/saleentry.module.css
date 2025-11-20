@@ -1,19 +1,17 @@
-/* ===== Base Container ===== */
 .container {
   width: 100%;
   max-width: 95%;
   margin: 2rem auto;
-  background: #fff;
+  /* background: #fff; */
   padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  overflow-x: hidden !important; /* Prevent page horizontal scroll */
+  overflow-x: hidden !important;
 }
 
-/* ===== Header ===== */
 .header {
   display: flex;
   justify-content: space-between;
@@ -23,10 +21,11 @@
 .title {
   font-size: 1.75rem;
   font-weight: 700;
+  /* display: flex;
+  justify-content: center; */
   color: #1e293b;
 }
 
-/* ===== Add Button ===== */
 .addButton {
   background-color: #007bff;
   border: none;
@@ -35,19 +34,16 @@
   border-radius: 6px;
   cursor: pointer;
 }
+
 .addButton:hover {
   background-color: #0056b3;
 }
 
-/* ===============================
-   TABLE SECTION (NO PAGE OVERFLOW)
-   =============================== */
 .tableSection {
   width: 100%;
-  overflow-x: hidden; /* prevents whole page scroll */
+  overflow-x: hidden;
 }
 
-/* SEARCH BOX */
 .search {
   width: 100%;
   padding: 12px;
@@ -57,41 +53,64 @@
   box-sizing: border-box;
 }
 
-/* TABLE WRAPPER — ONLY THIS DIV CAN SCROLL */
 .tableWrapper {
   width: 100%;
-  overflow-x: auto;  /* ONLY place that scrolls */
+  overflow-x: auto;
   overflow-y: hidden;
   border-radius: 8px;
   padding-bottom: 6px;
+
 }
 
-/* TABLE */
 .table {
-  width: max-content; /* makes table scroll instead of page */
-  min-width: 100%;    /* never smaller than screen */
+  width: max-content;
+  /* makes table scroll instead of page */
+  min-width: 100%;
+  /* never smaller than screen */
   border-collapse: collapse;
   background: white;
+}
+.heading{
+  padding: 2rem;
+}
+tr {
+  padding: 2rem;
+}
+tr:hover {
+  background: #f7f5f5;
+  cursor: pointer;
 }
 
 /* TABLE CELL STYLES */
 .table th,
 .table td {
-  padding: 10px 12px;
-  border: 1px solid #ddd;
+  /* padding: 20px 12px; */
+  /* border: 1px solid #ddd; */
   text-align: center;
-  white-space: nowrap; /* prevents cell wrapping */
+  border-bottom: 1px solid rgb(204, 195, 195);
+  white-space: nowrap;
   font-size: 14px;
+  font-weight: 400;
+  border-color: #e6e6e6;
+  padding: .9375rem .625rem;
+  /* color: #969Ba0; */
+  color: rgb(102, 99, 99);
 }
 
 .table th {
-  background-color: #f0f0f0;
-  font-weight: 600;
+  background-color: #fff;
+  font-weight: bolder;
+  text-transform: uppercase;
+  color: #000;
+    padding-top:1.875rem;;
+/* padding-right: 1px;
+padding-left: 0px; */
+  font-size: 1rem;
+  letter-spacing: .0313rem;
+  border-color: #e6e6e6 !important;
+  border-bottom: .0625rem solid #2e2e42;
 }
 
-/* ===============================
-   HIDE Cash / UPI / Card Columns
-   =============================== */
 .table th:nth-child(10),
 .table th:nth-child(11),
 .table th:nth-child(12),
@@ -101,9 +120,7 @@
   display: none !important;
 }
 
-/* ===============================
-   HIDE FOOTER TOTAL ROW
-   =============================== */
+
 .table tfoot {
   display: none !important;
 }
@@ -122,11 +139,19 @@
 }
 
 .editBtn {
-  background: #2563eb;
+  background: #6eb455;
+}
+
+.editBtn:hover {
+  background-color: #5eca36;
 }
 
 .deleteBtn {
-  background: #dc2626;
+  background: #ffD4CB;
+}
+
+.deleteBtn:hover {
+  background: #e68c7a;
 }
 
 /* ===============================
@@ -159,6 +184,7 @@
   font-size: 22px;
   background: none;
   border: none;
+  color: #000;
   cursor: pointer;
 }
 
@@ -190,6 +216,7 @@
   cursor: pointer;
   font-size: 15px;
 }
+
 .saveBtn:hover {
   background: #15803d;
 }

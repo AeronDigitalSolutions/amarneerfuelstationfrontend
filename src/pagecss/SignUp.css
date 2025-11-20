@@ -21,15 +21,19 @@
 
 .title {
   text-align: center;
-  font-size: 18px;
-  color: #525151;
-  font-weight: bold;
+  /* font-size: 18px; */
+  /* color: #525151; */
+  font-size: 0.99rem;
+  color: #1a1919;
+  font-weight: 1rem;
 }
 
 .label {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 12px;
+  /* font-weight: bold; */
+  font-weight: 800;
   margin-top: 15px;
+  font-family: poppins, sans-serif;;
   color: black;
   display: block;
 }
@@ -39,7 +43,10 @@
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
-  font-size: 14px;
+  font-size: 15px;
+  color: #aaa5a5;
+  font-family: poppins;
+  /* font-weight: bold; */
   margin-top: 6px;
   /* margin-bottom: 12px; */
 }
@@ -62,7 +69,7 @@
 }
 
 .footer-text {
-  text-align: center;
+  text-align: left;
   font-size: 13px;
   font-weight: bold;
   margin-top: 18px;

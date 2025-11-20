@@ -1,0 +1,103 @@
+.heading_pump {
+    text-align: center;
+    color: rgb(54, 52, 52);
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.pump_container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    background: #f9fafc;
+    min-height: 100vh;
+    font-family: Inter, sans-serif;
+}
+
+.conatiner_pump {
+    background-color: #fff;
+    width: 100%;
+    max-width: 650px;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.pump_form_conatiner {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    flex-direction: column;
+    /* grid-column-gap: 12px; */
+    /* gap: 12px; */
+}
+
+.pump_form_conatiner label {
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.input-pump {
+    width: 92%;
+    padding: 10px;
+    border: 1px solid #d2d6dc;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 1rem;
+}
+
+.select_fuel_conatiner {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.select_label {
+    font-weight: bold;
+    display: flex;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+    justify-content: center;
+    width: 100%;
+    color: #000;
+}
+
+.option_pump {
+    /* display: flex; */
+    /* gap: 10px; */
+    /* flex-wrap: wrap; */
+}
+
+.pump_button_Save {
+    background-color: #28408f;
+    color: #fff;
+    font-size: 1rem;
+    padding: 12px;
+    border: none;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.table_pump {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.tr_pump {
+    background: #fff;
+}
+
+.tr_pump:hover {
+    background-color: #e2e3e6;
+}
+
+.th_pump {
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    text-align: center;
+}

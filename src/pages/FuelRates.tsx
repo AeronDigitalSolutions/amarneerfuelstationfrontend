@@ -65,7 +65,7 @@ export default function FuelRates() {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2 className={styles.heading}>⛽ Fuel Rates Management</h2>
+        <p className={styles.heading}>⛽ Fuel Rates Management</p>
 
         <div className={styles.formSection}>
           <div className={styles.inputGroup}>
@@ -108,11 +108,13 @@ export default function FuelRates() {
             />
           </div>
 
-          <button onClick={saveRates} className={styles.saveBtn}>
+        
+        </div>
+  <button onClick={saveRates} className={styles.saveBtn}>
             💾 Save Rates
           </button>
-        </div>
 
+          
         {latestRates && (
           <div className={styles.tableSection}>
             <h3>📊 Latest Fuel Rates</h3>

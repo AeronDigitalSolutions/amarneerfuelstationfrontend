@@ -1,12 +1,4 @@
-import Post from '../component/Post'
-import StateSection from '../component/StateSection'
-import Services from '../component/Services'
-import Slider from '../component/Slider'
-import Whychooseus from '../component/Whychooseus'
-import Testimonials from '../component/Testimonials'
-import Insight from '../component/Insight'
-import Question from '../component/Question'
-import ChatProject from '../component/ChatProject'
+
 import Footer from '../component/Footer'
 import { FiMail } from "react-icons/fi";
 import { FiSend } from "react-icons/fi";
@@ -99,15 +91,7 @@ const ContactRoute = () => {
         <button className="submit-btn">LET'S GET STARTED</button>
       </div>
     </div>
-     <Post/>
-       <Services/>
-  <StateSection/>
-  <Slider/>
-  <Whychooseus/>
-  <Testimonials/>
-  <Insight/>
-  <Question/>
-  <ChatProject/>
+   
   <Footer/>
     </>
   )
