@@ -39,6 +39,65 @@
   background-color: #0056b3;
 }
 
+/* ===== FILTER BAR (NEW) ===== */
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 120px;
+}
+
+.filterLabel {
+  font-weight: 700;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.filterInput {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  min-width: 120px;
+  box-sizing: border-box;
+}
+
+/* small buttons used in filter bar */
+.smallBtn {
+      padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #94a3b8;
+    background: white;
+    cursor: pointer;
+    color: black;
+}
+.smallBtn:hover {
+  background: #007bf5;
+  color: white;
+}
+
+.smallBtnPrimary {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+}
+.smallBtnPrimary:hover {
+  background: #1e40af;
+}
+
+/* ===============================
+   TABLE SECTION (NO PAGE OVERFLOW)
+   =============================== */
 .tableSection {
   width: 100%;
   overflow-x: hidden;
@@ -51,6 +110,7 @@
   border: 1px solid #ccc;
   margin-bottom: 1rem;
   box-sizing: border-box;
+  display: none;
 }
 
 .tableWrapper {
@@ -147,11 +207,29 @@ padding-left: 0px; */
 }
 
 .deleteBtn {
-  background: #ffD4CB;
+  background: #dc2626;
 }
 
-.deleteBtn:hover {
-  background: #e68c7a;
+/* ===============================
+   SORT ARROWS & BUTTONS (NEW)
+   =============================== */
+.sortArrows {
+  display: inline-flex;
+  flex-direction: column;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.sortBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  font-size: 12px;
+  line-height: 1;
+}
+.sortBtn:hover {
+  transform: translateY(-1px);
 }
 
 /* ===============================
@@ -283,4 +361,26 @@ padding-left: 0px; */
   .summaryRow input {
     width: 100%;
   }
+
+  .filterBar {
+    gap: 8px;
+  }
+
+  .filterGroup {
+    min-width: 100%;
+  }
+}
+/* Search inside filter row */
+.searchGroup {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+}
+
+.searchInline {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  width: 100%;
+  box-sizing: border-box;
 }

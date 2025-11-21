@@ -100,6 +100,7 @@ a{
 header {
   /* background-color: aliceblue; */
   padding: 1rem 0;
+  width: auto;
    background-color: #01011a;
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
@@ -217,9 +218,9 @@ a {
 
 @media (max-width: 768px) {
 
-  body {
+  /* body {
     overflow-x: hidden;
-  }
+  } */
 
   .logo {
     width: 9rem;

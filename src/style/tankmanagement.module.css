@@ -1,12 +1,12 @@
 /* ====== Container & Layout ====== */
 .container {
-  max-width: 900px;
+  max-width: 1100px; /* a bit wider for full-width table */
   margin: 40px auto;
   background: white;
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  transition: padding 0.3s ease;
+  box-sizing: border-box;
 }
 
 h1 {
@@ -14,15 +14,78 @@ h1 {
   font-size: 1.6rem;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
 }
 
-/* ====== Form Grid ====== */
+/* Add Tank Entry Button */
+.addButton {
+  background: #2563eb;
+  color: white;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.addButton:hover {
+  background: #1e40af;
+}
+
+/* ====== FILTER BAR (between button and table) ====== */
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 140px;
+}
+
+.filterLabel {
+  font-weight: 700;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.filterInput {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  min-width: 140px;
+  box-sizing: border-box;
+}
+
+.filterGroupButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* small buttons used in filter bar */
+.smallBtn {
+ padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #94a3b8;
+    background: #0836eff7;
+    cursor: pointer;
+}
+.smallBtn:hover {
+  background: #f1f5f9;
+}
+
+/* ====== FORM GRID INSIDE MODAL ====== */
 .formGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 input,
@@ -31,92 +94,148 @@ select {
   padding: 8px;
   border-radius: 6px;
   font-size: 0.95rem;
-  transition: border-color 0.2s ease;
+  box-sizing: border-box;
 }
 
 input:focus,
 select:focus {
-  outline: none;
   border-color: #2563eb;
+  outline: none;
 }
 
 /* ====== Summary Box ====== */
 .summaryBox {
   background: #f9fafb;
-  border: 1px solid #ddd;
+  border: 1px solid #e6e6e6;
   padding: 12px;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   font-size: 0.95rem;
+  display: flex;
+  gap: 24px;
 }
 
 /* ====== Save Button ====== */
 .saveButton {
   background: #1d4ed8;
   color: white;
-  padding: 10px 18px;
+  padding: 11px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  display: block;
-  margin: 0 auto 20px;
+  width: 100%;
   font-size: 1rem;
-  transition: background 0.2s ease;
+  margin-bottom: 6px;
 }
-
 .saveButton:hover {
   background: #2563eb;
 }
 
-/* ====== Table ====== */
+/* ====== TABLE (FULL WIDTH) ====== */
 .tableWrapper {
-  overflow-x: auto; /* ✅ enables horizontal scroll on small screens */
+  width: 100%;
+  overflow-x: auto; /* allow horizontal scroll on very small screens */
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px #f3f4f6;
 }
 
 .table {
-  width: 100%;
+  width: 100%;               /* full width of container */
   border-collapse: collapse;
-  margin-top: 10px;
-  min-width: 700px; /* keeps structure on narrow viewports */
+  table-layout: auto;        /* allow columns to size naturally */
+  min-width: 100%;
+  background: white;
 }
 
+/* Table header style (not sticky) */
+.table thead th {
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 700;
+  padding: 12px;
+  border-bottom: 1px solid #e6e6e6;
+  text-align: left;
+}
+
+/* Table cells */
 .table th,
 .table td {
-  padding: 8px;
-  border: 1px solid #ddd;
-  text-align: center;
-  font-size: 0.9rem;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.95rem;
+  color: #0f172a;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
-.table th {
+/* Zebra rows & hover */
+.rowEven {
+  background: #ffffff;
+}
+.rowOdd {
+  background: #fbfbfd;
+}
+
+.table tbody tr:hover {
   background: #f1f5f9;
-  font-weight: 600;
 }
 
-.lowStock {
-  background-color: #fee2e2;
+/* Avoid overly long cell text breaking layout */
+.table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
 }
 
-/* ====== Buttons ====== */
-.editButton {
-  background: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 4px 8px;
-  cursor: pointer;
-  transition: background 0.2s ease;
+/* ====== Responsive adjustments ====== */
+@media (max-width: 1024px) {
+  .container {
+    padding: 20px;
+  }
+
+  .formGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .summaryBox {
+    gap: 12px;
+    flex-direction: column;
+  }
+
+  .filterGroup {
+    min-width: 48%;
+  }
 }
 
-.editButton:hover {
-  background: #0056b3;
+@media (max-width: 600px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .table thead th,
+  .table td {
+    padding: 10px 8px;
+  }
+
+  .table td {
+    max-width: 140px;
+  }
+
+  .summaryBox {
+    font-size: 0.95rem;
+  }
+
+  .filterGroup {
+    min-width: 100%;
+  }
 }
 
-/* ====== Modal ====== */
+/* ====== MODAL OVERLAY & BOX (Large modal) ====== */
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,132 +243,35 @@ select:focus {
   padding: 1rem;
 }
 
-.modalContent {
-  background: #fff;
-  padding: 24px;
+.modal {
+  background: white;
+  padding: 26px;
   border-radius: 12px;
-  width: 380px;
-  max-width: 90%;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  animation: fadeIn 0.3s ease-in-out;
+  width: 750px;        /* Large modal size */
+  max-width: 96%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.18);
 }
 
-.modalButtons {
-  margin-top: 16px;
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.cancelButton {
-  background: #ccc;
-  color: #000;
+/* Close Button */
+.closeBtn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  font-size: 20px;
   border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
-.cancelButton:hover {
-  background: #999;
-}
-
-/* ====== Animation ====== */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* ====== Responsive Design ====== */
-
-/* 📱 Small Phones (max 480px) */
-@media (max-width: 480px) {
-  .container {
-    padding: 16px;
-    margin: 20px;
-  }
-
-  h1 {
-    font-size: 1.3rem;
-    margin-bottom: 16px;
-  }
-
-  .formGrid {
-    grid-template-columns: 1fr; /* stack all inputs vertically */
-    gap: 10px;
-  }
-
-  input,
-  select {
-    font-size: 0.9rem;
-    padding: 10px;
-  }
-
-  .saveButton {
-    width: 100%;
-    padding: 12px;
-  }
-
-  .table {
-    font-size: 0.85rem;
-  }
-
-  .modalContent {
-    width: 100%;
-    padding: 16px;
-  }
-
-  .modalButtons {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .modalButtons button {
-    width: 100%;
-  }
-}
-
-/* 📲 Tablets (max 768px) */
-@media (max-width: 768px) {
-  .container {
-    padding: 20px;
-  }
-
-  .formGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .table {
-    font-size: 0.9rem;
-  }
-
-  .modalContent {
-    width: 80%;
-  }
-}
-
-/* 💻 Medium Screens (max 1024px) */
-@media (max-width: 1024px) {
-  .formGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-/* Remove number input arrows */
+/* Remove number input arrows for consistency */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
 input[type="number"] {
-  -moz-appearance: textfield; /* Firefox */
+  -moz-appearance: textfield;
 }

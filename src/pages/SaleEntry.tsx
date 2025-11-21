@@ -1,4 +1,4 @@
-// SaleEntry.tsx — UPDATED WITH AUTO TEST FUEL FETCH + TABLE WRAPPER + DYNAMIC SHIFTS
+// SaleEntry.tsx — UPDATED WITH FILTERS + SORTING (Option A arrows)
 import { useState, useEffect, type MouseEvent, type JSX } from "react";
 import axios from "axios";
 import styles from "../style/saleentry.module.css";
@@ -103,6 +103,17 @@ export default function SaleEntry(): JSX.Element {
   const [remarks, setRemarks] = useState("");
   const [attendant, setAttendant] = useState("");
 
+  // NEW: Filters state
+  const [filterFrom, setFilterFrom] = useState<string>("");
+  const [filterTo, setFilterTo] = useState<string>("");
+  const [filterFuelType, setFilterFuelType] = useState<string>("All");
+  const [filterPump, setFilterPump] = useState<string>("All");
+
+  // NEW: Sorting state
+  type SortBy = "none" | "litres" | "testFuel" | "total" | "received";
+  const [sortBy, setSortBy] = useState<SortBy>("none");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
   useEffect(() => {
     void fetchSales();
     void fetchPumps();
@@ -149,15 +160,13 @@ export default function SaleEntry(): JSX.Element {
   };
 
   // Rest of your existing code remains **unchanged**
-  // -------------------------------------------------- 
+  // --------------------------------------------------
   // AUTO CALCULATE, AUTO RATE, AUTO PAYMENT, AUTO TEST FUEL
   // --------------------------------------------------
 
   useEffect(() => {
     const litresRaw =
-      Number(closingMeter || 0) -
-      Number(openingMeter || 0) -
-      Number(testFuel || 0);
+      Number(closingMeter || 0) - Number(openingMeter || 0) - Number(testFuel || 0);
 
     const litres = litresRaw > 0 ? litresRaw : 0;
     setLitresSold(litres);
@@ -178,9 +187,7 @@ export default function SaleEntry(): JSX.Element {
 
   useEffect(() => {
     setTotalPayment(
-      Number(
-        ((cashAmount || 0) + (upiAmount || 0) + (cardAmount || 0)).toFixed(2)
-      )
+      Number(((cashAmount || 0) + (upiAmount || 0) + (cardAmount || 0)).toFixed(2))
     );
   }, [cashAmount, upiAmount, cardAmount]);
 
@@ -324,18 +331,84 @@ export default function SaleEntry(): JSX.Element {
 
   // ---------------- FILTER, TABLE, TOTALS ---------------------
 
-  const filteredSales = sales.filter((s) =>
-    [
-      s.productType,
-      s.pumpNumber,
-      s.saleId,
-      s.attendant,
-      s.paymentMode,
-    ]
-      .join(" ")
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+  // Helper to parse sale-date (use createdAt if present, else date)
+  const getSaleDateString = (s: Sale) =>
+    (s.createdAt || s.date || "").split("T")[0];
+
+  // Apply filters: date range, fuel type, pump, search text
+  const afterFilter = sales.filter((s) => {
+    const combined =
+      [
+        s.productType,
+        s.pumpNumber,
+        s.saleId,
+        s.attendant,
+        s.paymentMode,
+      ]
+        .join(" ")
+        .toLowerCase() || "";
+
+    // Text search
+    if (search && !combined.includes(search.toLowerCase())) return false;
+
+    // Fuel type
+    if (filterFuelType !== "All" && s.productType !== filterFuelType) return false;
+
+    // Pump filter
+    if (filterPump !== "All" && s.pumpNumber !== filterPump) return false;
+
+    // Date filter
+    const saleDateStr = getSaleDateString(s);
+    if (filterFrom) {
+      if (!saleDateStr || saleDateStr < filterFrom) return false;
+    }
+    if (filterTo) {
+      if (!saleDateStr || saleDateStr > filterTo) return false;
+    }
+
+    return true;
+  });
+
+  // Sorting: sorts the filtered array copy
+  const sortedSales = [...afterFilter].sort((a, b) => {
+    if (sortBy === "none") return 0;
+
+    const safeNum = (n: any) => (n === null || n === undefined ? 0 : Number(n));
+
+    const aLitres = safeNum(a.litresSold);
+    const bLitres = safeNum(b.litresSold);
+
+    const aTest = safeNum((a as any).testFuel || 0);
+    const bTest = safeNum((b as any).testFuel || 0);
+
+    const aTotal = safeNum(a.totalAmount);
+    const bTotal = safeNum(b.totalAmount);
+
+    const aReceived =
+      safeNum(a.cashAmount) + safeNum(a.upiAmount) + safeNum(a.cardAmount);
+    const bReceived =
+      safeNum(b.cashAmount) + safeNum(b.upiAmount) + safeNum(b.cardAmount);
+
+    let diff = 0;
+    switch (sortBy) {
+      case "litres":
+        diff = aLitres - bLitres;
+        break;
+      case "testFuel":
+        diff = aTest - bTest;
+        break;
+      case "total":
+        diff = aTotal - bTotal;
+        break;
+      case "received":
+        diff = aReceived - bReceived;
+        break;
+      default:
+        diff = 0;
+    }
+
+    return sortDir === "asc" ? diff : -diff;
+  });
 
   const totalCash = sales.reduce((acc, s) => acc + (s.cashAmount || 0), 0);
   const totalUpi = sales.reduce((acc, s) => acc + (s.upiAmount || 0), 0);
@@ -365,6 +438,21 @@ export default function SaleEntry(): JSX.Element {
   const amountsMatch = (a: number, b: number, eps = 0.01) =>
     Math.abs(a - b) <= eps;
 
+  // NEW: set this month filter
+  const applyThisMonth = () => {
+    const now = new Date();
+    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+    const to = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    setFilterFrom(first.toISOString().split("T")[0]);
+    setFilterTo(to.toISOString().split("T")[0]);
+  };
+
+  // NEW: sort helpers
+  const setSort = (col: SortBy, dir: "asc" | "desc") => {
+    setSortBy(col);
+    setSortDir(dir);
+  };
+
   // ---------------- UI RENDER ---------------------
 
   return (
@@ -374,6 +462,93 @@ export default function SaleEntry(): JSX.Element {
         <button className={styles.addButton} onClick={() => setModalOpen(true)}>
           ➕ Add Sale Entry
         </button>
+      </div>
+
+      {/* ===== FILTER BAR (NEW) ===== */}
+      <div className={styles.filterBar}>
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel}>From</label>
+          <input
+            type="date"
+            className={styles.filterInput}
+            value={filterFrom}
+            onChange={(e) => setFilterFrom(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel}>To</label>
+          <input
+            type="date"
+            className={styles.filterInput}
+            value={filterTo}
+            onChange={(e) => setFilterTo(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel}>&nbsp;</label>
+          <button
+            className={styles.smallBtn}
+            onClick={() => {
+              setFilterFrom("");
+              setFilterTo("");
+            }}
+          >
+            Clear
+          </button>
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel}>&nbsp;</label>
+          <button className={styles.smallBtnPrimary} onClick={applyThisMonth}>
+            This Month
+          </button>
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel}>Fuel</label>
+          <select
+            className={styles.filterInput}
+            value={filterFuelType}
+            onChange={(e) => setFilterFuelType(e.target.value)}
+          >
+            <option value="All">All</option>
+            <option value="Petrol">Petrol</option>
+            <option value="Diesel">Diesel</option>
+            <option value="Premium Petrol">Premium Petrol</option>
+            <option value="CNG">CNG</option>
+          </select>
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel}>Pump</label>
+          <select
+            className={styles.filterInput}
+            value={filterPump}
+            onChange={(e) => setFilterPump(e.target.value)}
+          >
+            <option value="All">All</option>
+            {pumps.map((p) => (
+              <option key={p._id} value={p.pumpNo}>
+                {p.pumpNo}
+              </option>
+            ))}
+          </select>
+        </div>
+
+<div className={styles.searchGroup}>
+    <label className={styles.filterLabel}>Search</label>
+    <input
+      type="text"
+      placeholder="Search…"
+      className={styles.searchInline}
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+    />
+  </div>
+
+
       </div>
 
       {/* TABLE SECTION */}
@@ -395,10 +570,87 @@ export default function SaleEntry(): JSX.Element {
                 <th>Pump</th>
                 <th>Product</th>
                 <th>Rate</th>
-                <th>Litres</th>
-                <th>Test Fuel</th>
-                <th>Total ₹</th>
-                <th>Total Received</th>
+
+                <th>
+                  Litres
+                  <span className={styles.sortArrows}>
+                    <button
+                      className={styles.sortBtn}
+                      title="Sort litres asc"
+                      onClick={() => setSort("litres", "asc")}
+                    >
+                      🔼
+                    </button>
+                    <button
+                      className={styles.sortBtn}
+                      title="Sort litres desc"
+                      onClick={() => setSort("litres", "desc")}
+                    >
+                      🔽
+                    </button>
+                  </span>
+                </th>
+
+                <th>
+                  Test Fuel
+                  <span className={styles.sortArrows}>
+                    <button
+                      className={styles.sortBtn}
+                      title="Sort test fuel asc"
+                      onClick={() => setSort("testFuel", "asc")}
+                    >
+                      🔼
+                    </button>
+                    <button
+                      className={styles.sortBtn}
+                      title="Sort test fuel desc"
+                      onClick={() => setSort("testFuel", "desc")}
+                    >
+                      🔽
+                    </button>
+                  </span>
+                </th>
+
+                <th>
+                  Total ₹
+                  <span className={styles.sortArrows}>
+                    <button
+                      className={styles.sortBtn}
+                      title="Sort total asc"
+                      onClick={() => setSort("total", "asc")}
+                    >
+                      🔼
+                    </button>
+                    <button
+                      className={styles.sortBtn}
+                      title="Sort total desc"
+                      onClick={() => setSort("total", "desc")}
+                    >
+                      🔽
+                    </button>
+                  </span>
+                </th>
+
+                <th>
+                  Total Received
+                  <span className={styles.sortArrows}>
+                    <button
+                      className={styles.sortBtn}
+                      title="Sort received asc"
+                      onClick={() => setSort("received", "asc")}
+                    >
+                      🔼
+                    </button>
+                    <button
+                      className={styles.sortBtn}
+                      title="Sort received desc"
+                      onClick={() => setSort("received", "desc")}
+                    >
+                      🔽
+                    </button>
+                  </span>
+                </th>
+
                 <th>Cash</th>
                 <th>UPI</th>
                 <th>Card</th>
@@ -408,8 +660,8 @@ export default function SaleEntry(): JSX.Element {
             </thead>
 
             <tbody>
-              {filteredSales.length > 0 ? (
-                filteredSales.map((s) => (
+              {sortedSales.length > 0 ? (
+                sortedSales.map((s) => (
                   <tr key={s._id}>
                     <td>{new Date(s.createdAt || s.date).toLocaleString("en-IN")}</td>
                     <td>{s.saleId}</td>
@@ -431,10 +683,7 @@ export default function SaleEntry(): JSX.Element {
                     <td>{s.cardAmount || 0}</td>
                     <td>{s.attendant || "-"}</td>
                     <td>
-                      <button
-                        className={styles.editBtn}
-                        onClick={() => handleEdit(s)}
-                      >
+                      <button className={styles.editBtn} onClick={() => handleEdit(s)}>
                         ✏️
                       </button>
                       <button
@@ -487,10 +736,7 @@ export default function SaleEntry(): JSX.Element {
               <input value={saleId} disabled />
 
               <label>Shift</label>
-              <select
-                value={shift}
-                onChange={(e) => setShift(e.target.value)}
-              >
+              <select value={shift} onChange={(e) => setShift(e.target.value)}>
                 <option value="">Select Shift</option>
                 {shiftList.map((s) => (
                   <option key={s._id} value={s.shiftName}>
@@ -500,10 +746,7 @@ export default function SaleEntry(): JSX.Element {
               </select>
 
               <label>Pump</label>
-              <select
-                value={pumpNumber}
-                onChange={(e) => setPumpNumber(e.target.value)}
-              >
+              <select value={pumpNumber} onChange={(e) => setPumpNumber(e.target.value)}>
                 <option value="">Select Pump</option>
                 {pumps.map((p) => (
                   <option key={p._id} value={p.pumpNo}>
@@ -513,10 +756,7 @@ export default function SaleEntry(): JSX.Element {
               </select>
 
               <label>Product</label>
-              <select
-                value={productType}
-                onChange={(e) => setProductType(e.target.value)}
-              >
+              <select value={productType} onChange={(e) => setProductType(e.target.value)}>
                 <option>Petrol</option>
                 <option>Diesel</option>
                 <option>Premium Petrol</option>

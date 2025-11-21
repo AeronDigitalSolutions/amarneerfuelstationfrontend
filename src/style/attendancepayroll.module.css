@@ -1,217 +1,344 @@
-/* ====== Base Styles ====== */
+/* ===========================================================
+   GLOBAL PAGE CONTAINER
+=========================================================== */
 .container {
-  padding: 20px;
+  padding: 30px;
   font-family: "Inter", sans-serif;
-  background: #f8fafc;
+  background: linear-gradient(to bottom right, #f7faff, #eef2f7);
   min-height: 100vh;
 }
 
+/* ===========================================================
+   TITLES
+=========================================================== */
 h1,
 h2 {
-  color: #1d3557;
-  margin-bottom: 10px;
+  color: #1e293b;
   text-align: center;
-  line-height: 1.3;
+  margin-bottom: 18px;
+  font-weight: 700;
 }
 
 h1 {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
+  font-size: 1.9rem;
+  margin-bottom: 25px;
 }
 
 h2 {
-  font-size: 1.2rem;
-  margin-bottom: 15px;
+  font-size: 1.3rem;
 }
 
-/* ====== Sections ====== */
-.section {
-  background: #f1f5f9;
-  padding: 20px;
-  margin-top: 20px;
-  border-radius: 16px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s ease;
-}
-
-.section:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* ====== Form Grid ====== */
-.formGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  margin-top: 10px;
-}
-
-input,
-select {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
-  font-size: 0.95rem;
-  width: 100%;
-  transition: border 0.2s ease, box-shadow 0.2s ease;
-}
-
-input:focus,
-select:focus {
-  border-color: #2a9d8f;
-  box-shadow: 0 0 4px rgba(42, 157, 143, 0.3);
-  outline: none;
-}
-
-/* ====== Buttons ====== */
-.addButton {
-  background-color: #2a9d8f;
+/* ===========================================================
+   PRIMARY ACTION BUTTONS (Add Employee / Add Attendance)
+=========================================================== */
+.primaryButton {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: white;
-  padding: 10px 18px;
+  padding: 11px 22px;
   border: none;
   border-radius: 12px;
-  margin-top: 15px;
-  cursor: pointer;
   font-size: 1rem;
-  font-weight: 500;
-  transition: background 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s ease;
 }
 
-.addButton:hover {
-  background-color: #23867e;
+.primaryButton:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+}
+
+/* ===========================================================
+   ACTION BUTTONS ROW
+=========================================================== */
+.toggleGroup {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 25px;
+}
+
+/* ===========================================================
+   FILTER CARD WRAPPER
+=========================================================== */
+.filterCard {
+  background: #ffffff;
+  padding: 20px;
+  margin: 20px auto;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 1100px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ===========================================================
+   TOGGLE BUTTONS (Single Date / Date Range)
+=========================================================== */
+.toggleButton {
+  padding: 10px 22px;
+  border-radius: 30px;
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: 0.25s ease;
+  color: #475569;
+}
+
+.toggleButton:hover {
+  background: #e2e8f0;
+}
+
+.toggleActive {
+  background: #2563eb !important;
+  color: white !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+}
+
+/* ===========================================================
+   FILTER ROW (Compact Layout)
+=========================================================== */
+.filterRow {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Input styling inside filter bar */
+.filterInput {
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  font-size: 0.95rem;
+  min-width: 160px;
+  transition: 0.25s ease;
+}
+
+.filterInput:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
+}
+
+/* CLEAR BUTTON */
+.clearButton {
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: #fff1f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.clearButton:hover {
+  background: #fee2e2;
   transform: translateY(-2px);
 }
 
-/* ====== Tables ====== */
+/* ===========================================================
+   SECTION CARD (Table wrapper)
+=========================================================== */
+.section {
+  background: #ffffff;
+  padding: 22px;
+  margin-top: 25px;
+  border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ===========================================================
+   TABLE STYLING
+=========================================================== */
 .tableContainer {
-  margin-top: 15px;
-  overflow-x: auto; /* ✅ Scrollable on small screens */
-  border-radius: 12px;
+  overflow-x: auto;
+  margin-top: 10px;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px; /* ensures structure on narrow screens */
-}
-
-.table th,
-.table td {
-  border: 1px solid #cbd5e1;
-  padding: 10px;
-  text-align: center;
-  font-size: 0.95rem;
+  min-width: 800px;
 }
 
 .table th {
-  background: #e2e8f0;
-  font-weight: 600;
-  color: #1d3557;
+  background: #f1f5f9;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  font-weight: 700;
+  color: #1e293b;
 }
 
-.table tr:hover {
-  background: #f9fafb;
-  transition: 0.2s ease;
+.table td {
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
 }
 
-/* ====== Action Buttons ====== */
+.table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.table tbody tr:hover {
+  background: #eaf3ff;
+  transition: 0.25s ease;
+}
+
+/* ===========================================================
+   DELETE BUTTON
+=========================================================== */
 .deleteButton {
-  background-color: #e63946;
+  background: #ef4444;
   color: white;
+  padding: 7px 14px;
   border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: 0.25s ease;
+  font-size: 0.9rem;
 }
 
 .deleteButton:hover {
-  background-color: #c53036;
-  transform: scale(1.05);
+  background: #dc2626;
+  transform: scale(1.07);
 }
 
-/* ====== Responsive Design ====== */
+/* ===========================================================
+   MODAL OVERLAY
+=========================================================== */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.25s ease;
+}
 
-/* 📱 Small screens (up to 480px) */
-@media (max-width: 480px) {
-  .container {
-    padding: 12px;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===========================================================
+   MODAL CONTENT
+=========================================================== */
+.modalContent {
+  background: #ffffff;
+  width: 520px;
+  max-width: 90%;
+  padding: 26px;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  animation: zoomIn 0.25s ease;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modalContent h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* ===========================================================
+   MODAL FORM GRID
+=========================================================== */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.formGrid input,
+.formGrid select {
+  padding: 11px 13px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+}
+
+.formGrid input:focus,
+.formGrid select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.3);
+  background: white;
+}
+
+/* ===========================================================
+   MODAL BUTTONS
+=========================================================== */
+.modalButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.saveButton {
+  background: #2563eb;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.saveButton:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.cancelButton {
+  background: #94a3b8;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.cancelButton:hover {
+  background: #64748b;
+  transform: translateY(-2px);
+}
+
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
+@media (max-width: 550px) {
+  .toggleGroup {
+    flex-direction: column;
   }
 
-  h1 {
-    font-size: 1.4rem;
+  .filterRow {
+    flex-direction: column;
   }
 
-  h2 {
-    font-size: 1.1rem;
-  }
-
-  .section {
-    padding: 15px;
-    border-radius: 12px;
-  }
-
-  .formGrid {
-    grid-template-columns: 1fr; /* Stack inputs */
-  }
-
-  input,
-  select {
-    font-size: 0.9rem;
-    padding: 8px;
-  }
-
-  .addButton {
+  .filterInput {
     width: 100%;
-    font-size: 0.95rem;
-    padding: 10px;
   }
 
-  .tableContainer {
-    margin-top: 10px;
-  }
-
-  .table {
-    min-width: 500px;
-    font-size: 0.85rem;
-  }
-
-  .deleteButton {
-    padding: 5px 10px;
-    font-size: 0.85rem;
-  }
-}
-
-/* 📲 Tablets (481px – 768px) */
-@media (max-width: 768px) {
-  h1 {
-    font-size: 1.6rem;
-  }
-
-  .section {
-    padding: 18px;
-  }
-
-  .formGrid {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  }
-
-  .addButton {
-    width: 100%;
-  }
-
-  .table {
-    font-size: 0.9rem;
-  }
-}
-
-/* 💻 Medium screens (769px – 1024px) */
-@media (max-width: 1024px) {
-  .section {
+  .modalContent {
     padding: 20px;
-  }
-
-  .formGrid {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 }

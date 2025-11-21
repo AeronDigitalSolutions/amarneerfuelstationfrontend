@@ -20,6 +20,8 @@ import PumpNo from "./pages/PumpNo";
 import DashboardMain from "./pages/DashboardMain";
 import TestFuel from "./pages/TestFuel";
 import ShiftTiming from "./pages/ShiftTiming";
+import LivePayment from "./pages/LivePayment";
+import PaymentComparison from "./pages/PaymentComparison";
 import Services from "./component/Services";
 
 function App() {
@@ -48,6 +50,8 @@ function App() {
         <Route path="/addtank" element={<AddTank />} />
         <Route path="/testfuel" element={<TestFuel />} />
                 <Route path="/shift" element={<ShiftTiming/>} />
+                                <Route path="/payment" element={<LivePayment/>} />
+                                                                <Route path="/paymentcomp" element={<PaymentComparison/>} />
       </Routes>
     </BrowserRouter>
   );

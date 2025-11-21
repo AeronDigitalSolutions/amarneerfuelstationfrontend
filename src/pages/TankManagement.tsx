@@ -1,3 +1,4 @@
+// TankManagement.tsx — Modal form + Filters (Date / Tank ID / Fuel) + Full-width table
 import { useState, useEffect } from "react";
 import styles from "../style/tankmanagement.module.css";
 
@@ -17,7 +18,7 @@ type Tank = {
   remarks: string;
   closingStock: number;
   totalAmount: number;
-  dateTime?: string; // stored as ISO string now
+  dateTime?: string;
   createdAt?: string;
 };
 
@@ -45,10 +46,14 @@ const BASE_URL =
 export default function TankManagement() {
   const [tankMasters, setTankMasters] = useState<TankMaster[]>([]);
   const [tanks, setTanks] = useState<Tank[]>([]);
-  const [sales, setSales] = useState<Sale[]>([]); // we fetch sales here for calculation
+  const [sales, setSales] = useState<Sale[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [isUpdating, setIsUpdating] = useState(false); // update mode
-  const [editId, setEditId] = useState<string>("");
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editId, setEditId] = useState("");
 
   const [tank, setTank] = useState<Tank>({
     tankId: "",
@@ -68,9 +73,13 @@ export default function TankManagement() {
     dateTime: "",
   });
 
-  const [loading, setLoading] = useState(true);
+  // ---- Filters state (placed between Add button and table) ----
+  const [filterFrom, setFilterFrom] = useState<string>("");
+  const [filterTo, setFilterTo] = useState<string>("");
+  const [filterTankId, setFilterTankId] = useState<string>("All");
+  const [filterFuel, setFilterFuel] = useState<string>("All");
 
-  // fetch helpers
+  // Fetchers
   const fetchTankMasters = async () => {
     try {
       const res = await fetch(`${BASE_URL}/tank-master`);
@@ -85,8 +94,10 @@ export default function TankManagement() {
     try {
       const res = await fetch(`${BASE_URL}/tanks`);
       const data = await res.json();
-      // ensure sorted newest first (server may already sort, but be safe)
-      data.sort((a: Tank, b: Tank) => (new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()));
+      data.sort(
+        (a: Tank, b: Tank) =>
+          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      );
       setTanks(data);
     } catch (err) {
       console.error("Failed to fetch tanks:", err);
@@ -97,7 +108,6 @@ export default function TankManagement() {
     try {
       const res = await fetch(`${BASE_URL}/sales`);
       const data = await res.json();
-      // ensure sorted by createdAt asc or desc doesn't matter for sum, but keep
       setSales(data);
     } catch (err) {
       console.error("Failed to fetch sales:", err);
@@ -113,35 +123,25 @@ export default function TankManagement() {
 
   const num = (n: any) => (isNaN(parseFloat(n)) ? 0 : parseFloat(n));
 
-  // helpers for robust time parsing: accept createdAt (ISO) or date fields
   const toEpoch = (d?: string) => {
     if (!d) return NaN;
     const parsed = Date.parse(d);
-    if (!isNaN(parsed)) return parsed;
-    // fallback try replacing locale separators -> attempt
-    try {
-      return new Date(d).getTime();
-    } catch {
-      return NaN;
-    }
+    return isNaN(parsed) ? NaN : parsed;
   };
 
-  // calculate sold litres between two ISO timestamps for specific product type
   const calculateSoldLitres = (fromIso: string, toIso: string, product: string) => {
     if (!fromIso || !toIso || !product) return 0;
+
     const fromMs = toEpoch(fromIso);
     const toMs = toEpoch(toIso);
     if (isNaN(fromMs) || isNaN(toMs)) return 0;
 
     const total = sales
       .filter((s) => {
-        const saleProduct = (s.productType || s as any).toString?.() || "";
-        // product match case-insensitive (trim)
-        const sameProduct = saleProduct.trim().toLowerCase() === product.trim().toLowerCase();
-
+        const saleProduct = (s.productType || "").toString();
+        const sameProduct =
+          saleProduct.trim().toLowerCase() === product.trim().toLowerCase();
         const saleTime = toEpoch(s.createdAt || s.date);
-        if (isNaN(saleTime)) return false;
-        // include sales where saleTime is >= fromMs and <= toMs
         return sameProduct && saleTime >= fromMs && saleTime <= toMs;
       })
       .reduce((acc, s) => acc + (Number(s.litresSold || 0)), 0);
@@ -149,69 +149,51 @@ export default function TankManagement() {
     return Number(total);
   };
 
-  // When tankId (select) changes -> auto-fill and compute soldQuantity
+  // Auto-fill when tankId change
   useEffect(() => {
     if (!tank.tankId) return;
 
     const tm = tankMasters.find((t) => t.tankId === tank.tankId);
-    if (!tm) {
-      // clear autofills if master not found
-      setTank(prev => ({ ...prev, productType: "", capacity: 0 }));
-      setIsUpdating(false);
-      setEditId("");
-      return;
-    }
+    if (!tm) return;
 
-    // prepare updated object
     const updated: Tank = { ...tank };
-
-    // autopopulate master fields
     updated.productType = tm.fuelType;
     updated.capacity = tm.capacity;
 
-    // set dateTime as ISO string for robust comparisons
     const nowIso = new Date().toISOString();
     updated.dateTime = nowIso;
 
-    // find previous entries for this tank (ensure sorted newest first)
-    const previousEntries = tanks
+    const prevEntries = tanks
       .filter((t) => t.tankId === tm.tankId)
-      .sort((a, b) => (new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()));
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      );
 
-    if (previousEntries.length === 0) {
-      // first-time entry: openingStock left blank for user
+    if (prevEntries.length === 0) {
       updated.openingStock = "";
       updated.soldQuantity = "";
       setIsUpdating(false);
       setEditId("");
     } else {
-      // take latest previous entry
-      const last = previousEntries[0];
-
-      // openingStock becomes last.closingStock
+      const last = prevEntries[0];
       updated.openingStock = last.closingStock;
 
-      // we're in update mode: capture id to update
       setIsUpdating(true);
       setEditId(last._id || "");
 
-      // determine start timestamp:
-      // prefer last.dateTime (ISO if stored), fallback to last.createdAt
       const startIso = last.dateTime || last.createdAt || "";
-      const endIso = updated.dateTime || nowIso;
+      const endIso = updated.dateTime;
 
-      // compute sold litres from sales between startIso and endIso matching product
       const sold = calculateSoldLitres(startIso, endIso, tm.fuelType);
-
-      // set soldQuantity (number)
       updated.soldQuantity = sold;
     }
 
     setTank(updated);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tank.tankId, tankMasters, tanks, sales]); // re-run when any of these change
+  }, [tank.tankId, tankMasters, tanks, sales]);
 
-  // handle input changes
+  // Input handler
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     const updated: any = { ...tank, [name]: value };
@@ -221,19 +203,16 @@ export default function TankManagement() {
       num(updated.quantityReceived) -
       num(updated.soldQuantity);
 
-    updated.totalAmount =
-      num(updated.quantityReceived) * num(updated.ratePerLitre);
+    updated.totalAmount = num(updated.quantityReceived) * num(updated.ratePerLitre);
 
     setTank(updated);
   };
 
-  // Save OR Update tank entry
   const handleSubmit = async () => {
     if (!tank.tankId) return alert("Select Tank ID");
 
     const payload = {
       ...tank,
-      // ensure we send ISO dateTime (it already is ISO)
       dateTime: tank.dateTime,
       openingStock: num(tank.openingStock),
       quantityReceived: num(tank.quantityReceived),
@@ -262,17 +241,17 @@ export default function TankManagement() {
 
       if (res.ok) {
         alert(isUpdating ? "Tank updated!" : "Tank saved!");
-        // refresh both tanks and sales (sales may not change on tank save but we keep consistent)
         await Promise.all([fetchTanks(), fetchSales()]);
         resetForm();
+        setModalOpen(false);
       } else {
         const txt = await res.text();
         console.error("Save failed:", res.status, txt);
         alert("Error saving tank! See console.");
       }
     } catch (err) {
-      console.error("Error saving tank:", err);
-      alert("Error saving tank! See console.");
+      console.error("Error:", err);
+      alert("Save error!");
     }
   };
 
@@ -299,156 +278,282 @@ export default function TankManagement() {
     setEditId("");
   };
 
-  if (loading) return <p>Loading...</p>;
-
-  // helper to display dateTime in form nicely (localized) while keeping ISO in state
-  const displayDateTime = (iso?: string) => {
-    if (!iso) return "";
-    try {
-      return new Date(iso).toLocaleString("en-IN");
-    } catch {
-      return iso;
-    }
+  // ---- Filter helpers ----
+  const startOfDayMs = (dateStr: string) => {
+    if (!dateStr) return NaN;
+    const d = new Date(dateStr + "T00:00:00");
+    return d.getTime();
   };
+  const endOfDayMs = (dateStr: string) => {
+    if (!dateStr) return NaN;
+    const d = new Date(dateStr + "T23:59:59.999");
+    return d.getTime();
+  };
+
+  const getTankTimestamp = (t: Tank) => {
+    // prefer createdAt then dateTime
+    return toEpoch(t.createdAt || t.dateTime);
+  };
+
+  const filteredTanks = tanks.filter((t) => {
+    // Tank ID filter
+    if (filterTankId !== "All" && t.tankId !== filterTankId) return false;
+
+    // Fuel filter
+    if (filterFuel !== "All" && t.productType !== filterFuel) return false;
+
+    // Date filter
+    if (filterFrom || filterTo) {
+      const ts = getTankTimestamp(t);
+      if (isNaN(ts)) return false;
+      if (filterFrom) {
+        const fromMs = startOfDayMs(filterFrom);
+        if (!isNaN(fromMs) && ts < fromMs) return false;
+      }
+      if (filterTo) {
+        const toMs = endOfDayMs(filterTo);
+        if (!isNaN(toMs) && ts > toMs) return false;
+      }
+    }
+
+    return true;
+  });
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className={styles.container}>
       <h1>🛢️ Fuel Tank Management</h1>
 
-      {/* Form */}
-      <div className={styles.formGrid}>
-        <select name="tankId" value={tank.tankId} onChange={handleChange}>
-          <option value="">Select Tank ID</option>
-          {tankMasters.map((t) => (
-            <option key={t._id} value={t.tankId}>
-              {t.tankId}
-            </option>
-          ))}
-        </select>
-
-        <input placeholder="Fuel Type" value={tank.productType} readOnly />
-        <input placeholder="Capacity" value={tank.capacity} readOnly />
-
-        {/* show localized string but store ISO */}
-        <input
-          placeholder="Date & Time"
-          value={displayDateTime(tank.dateTime)}
-          readOnly
-        />
-
-        <input
-          name="openingStock"
-          type="number"
-          placeholder="Opening Stock"
-          value={tank.openingStock}
-          readOnly
-        />
-
-        <input
-          name="quantityReceived"
-          type="number"
-          placeholder="Received (L)"
-          value={tank.quantityReceived}
-          onChange={handleChange}
-        />
-
-        {/* Sold quantity is auto-filled from sales between timestamps */}
-        <input
-          name="soldQuantity"
-          type="number"
-          placeholder="Sold (L)"
-          value={tank.soldQuantity}
-          readOnly
-        />
-
-        <input
-          name="lowStockAlertLevel"
-          type="number"
-          placeholder="Low Stock Alert"
-          value={tank.lowStockAlertLevel}
-          onChange={handleChange}
-        />
-
-        <input
-          name="ratePerLitre"
-          type="number"
-          placeholder="Rate Per Litre"
-          value={tank.ratePerLitre}
-          onChange={handleChange}
-        />
-
-        <input
-          name="supplierName"
-          placeholder="Supplier Name"
-          value={tank.supplierName}
-          onChange={handleChange}
-        />
-
-        <input
-          name="tankerReceiptNo"
-          placeholder="Tanker Receipt No"
-          value={tank.tankerReceiptNo}
-          onChange={handleChange}
-        />
-
-        <input
-          name="receivedBy"
-          placeholder="Received By"
-          value={tank.receivedBy}
-          onChange={handleChange}
-        />
-
-        <input
-          name="remarks"
-          placeholder="Remarks"
-          value={tank.remarks}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div className={styles.summaryBox}>
-        <p>
-          Closing Stock: <strong>{tank.closingStock} L</strong>
-        </p>
-        <p>
-          Total Amount: <strong>₹{tank.totalAmount}</strong>
-        </p>
-      </div>
-
-      <button className={styles.saveButton} onClick={handleSubmit}>
-        {isUpdating ? "🔄 Update Tank Entry" : "➕ Save Tank Entry"}
+      {/* ADD NEW BUTTON */}
+      <button className={styles.addButton} onClick={() => setModalOpen(true)}>
+        ➕ Add Tank Entry
       </button>
 
-      {/* Table */}
+      {/* ===== FILTER BAR (between Add button and table) ===== */}
+      <div className={styles.filterBar}>
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel}>From</label>
+          <input
+            type="date"
+            className={styles.filterInput}
+            value={filterFrom}
+            onChange={(e) => setFilterFrom(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel}>To</label>
+          <input
+            type="date"
+            className={styles.filterInput}
+            value={filterTo}
+            onChange={(e) => setFilterTo(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel}>Tank ID</label>
+          <select
+            className={styles.filterInput}
+            value={filterTankId}
+            onChange={(e) => setFilterTankId(e.target.value)}
+          >
+            <option value="All">All</option>
+            {tankMasters.map((tm) => (
+              <option key={tm._id} value={tm.tankId}>
+                {tm.tankId}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel}>Fuel</label>
+          <select
+            className={styles.filterInput}
+            value={filterFuel}
+            onChange={(e) => setFilterFuel(e.target.value)}
+          >
+            <option value="All">All</option>
+            {/* derive fuel types from master list to keep list consistent */}
+            {Array.from(new Set(tankMasters.map((m) => m.fuelType))).map((f) => (
+              <option key={f} value={f}>
+                {f}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.filterGroupButtons}>
+          <button
+            className={styles.smallBtn}
+            onClick={() => {
+              setFilterFrom("");
+              setFilterTo("");
+              setFilterTankId("All");
+              setFilterFuel("All");
+            }}
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+
+      {/* ===== MODAL (closes when clicking outside) ===== */}
+      {modalOpen && (
+        <div
+          className={styles.modalOverlay}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setModalOpen(false);
+          }}
+        >
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h2>{isUpdating ? "🔄 Update Tank Entry" : "➕ Add Tank Entry"}</h2>
+
+            <button className={styles.closeBtn} onClick={() => setModalOpen(false)}>
+              ✖
+            </button>
+
+            <div className={styles.formGrid}>
+              <select name="tankId" value={tank.tankId} onChange={handleChange}>
+                <option value="">Select Tank ID</option>
+                {tankMasters.map((t) => (
+                  <option key={t._id} value={t.tankId}>
+                    {t.tankId}
+                  </option>
+                ))}
+              </select>
+
+              <input placeholder="Fuel Type" value={tank.productType} readOnly />
+              <input placeholder="Capacity" value={tank.capacity} readOnly />
+              <input placeholder="Date & Time" value={tank.dateTime} readOnly />
+
+              <input
+                name="openingStock"
+                type="number"
+                placeholder="Opening Stock"
+                value={tank.openingStock}
+                readOnly
+              />
+
+              <input
+                name="quantityReceived"
+                type="number"
+                placeholder="Received (L)"
+                value={tank.quantityReceived}
+                onChange={handleChange}
+              />
+
+              <input
+                name="soldQuantity"
+                type="number"
+                placeholder="Sold (L)"
+                value={tank.soldQuantity}
+                readOnly
+              />
+
+              <input
+                name="lowStockAlertLevel"
+                type="number"
+                placeholder="Low Stock Alert"
+                value={tank.lowStockAlertLevel}
+                onChange={handleChange}
+              />
+
+              <input
+                name="ratePerLitre"
+                type="number"
+                placeholder="Rate Per Litre"
+                value={tank.ratePerLitre}
+                onChange={handleChange}
+              />
+
+              <input
+                name="supplierName"
+                placeholder="Supplier Name"
+                value={tank.supplierName}
+                onChange={handleChange}
+              />
+
+              <input
+                name="tankerReceiptNo"
+                placeholder="Tanker Receipt No"
+                value={tank.tankerReceiptNo}
+                onChange={handleChange}
+              />
+
+              <input
+                name="receivedBy"
+                placeholder="Received By"
+                value={tank.receivedBy}
+                onChange={handleChange}
+              />
+
+              <input
+                name="remarks"
+                placeholder="Remarks"
+                value={tank.remarks}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className={styles.summaryBox}>
+              <p>
+                Closing Stock: <strong>{tank.closingStock} L</strong>
+              </p>
+              <p>
+                Total Amount: <strong>₹{tank.totalAmount}</strong>
+              </p>
+            </div>
+
+            <button className={styles.saveButton} onClick={handleSubmit}>
+              {isUpdating ? "🔄 Update Tank Entry" : "💾 Save Tank Entry"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* TABLE */}
       <h2>📊 Tank Records</h2>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Tank ID</th>
-            <th>Fuel</th>
-            <th>Capacity</th>
-            <th>Closing Stock</th>
-            <th>Low Alert</th>
-            <th>Supplier</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tanks.map((t) => (
-            <tr key={t._id}>
-              <td>{t.createdAt ? new Date(t.createdAt).toLocaleString("en-IN") : "-"}</td>
-              <td>{t.tankId}</td>
-              <td>{t.productType}</td>
-              <td>{t.capacity}</td>
-              <td>{t.closingStock}</td>
-              <td>{t.lowStockAlertLevel}</td>
-              <td>{t.supplierName}</td>
-              <td>{t.totalAmount}</td>
+      <div className={styles.tableWrapper}>
+        <table className={styles.table} role="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Tank ID</th>
+              <th>Fuel</th>
+              <th>Capacity</th>
+              <th>Closing Stock</th>
+              <th>Low Alert</th>
+              <th>Supplier</th>
+              <th>Amount</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredTanks.length === 0 ? (
+              <tr>
+                <td colSpan={8} style={{ textAlign: "center", padding: "18px" }}>
+                  No records found
+                </td>
+              </tr>
+            ) : (
+              filteredTanks.map((t, idx) => (
+                <tr key={t._id ?? idx} className={idx % 2 === 0 ? styles.rowEven : styles.rowOdd}>
+                  <td>{t.createdAt ? new Date(t.createdAt).toLocaleString("en-IN") : "-"}</td>
+                  <td>{t.tankId}</td>
+                  <td>{t.productType}</td>
+                  <td>{t.capacity}</td>
+                  <td>{t.closingStock}</td>
+                  <td>{t.lowStockAlertLevel}</td>
+                  <td>{t.supplierName}</td>
+                  <td>₹{t.totalAmount}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

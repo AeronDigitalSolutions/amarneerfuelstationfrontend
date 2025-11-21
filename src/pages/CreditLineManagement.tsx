@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import styles from "../style/creditline.module.css";
 import autoTable from "jspdf-autotable";
+import styles from "../style/creditline.module.css";
 
 const BASE_URL =
   import.meta.env.VITE_API_URL ||
@@ -19,21 +19,16 @@ type Account = {
   _id?: string;
   accountId: string;
   accountName: string;
-
   phoneNo: string;
   email: string;
   companyName: string;
-
   aadhaarNo: string;
   panNo: string;
-  document?: string; // Base64
-
+  document?: string;
   fuelType: "Petrol" | "Diesel";
   vehicles: Vehicle[];
-
   creditLimit: number;
   contactPerson: string;
-
   totalSales?: number;
   totalPayments?: number;
   outstanding?: number;
@@ -41,18 +36,16 @@ type Account = {
 
 export default function CreditLineManagement() {
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [search, setSearch] = useState("");
 
-  // Modal visibility
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [showSaleModal, setShowSaleModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showVehicleModal, setShowVehicleModal] = useState(false);
 
-  // View Account
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedAcc, setSelectedAcc] = useState<Account | null>(null);
 
-  // NEW: Bill Modal
   const [showBillModal, setShowBillModal] = useState(false);
 
   const openViewModal = (acc: Account) => {
@@ -60,7 +53,6 @@ export default function CreditLineManagement() {
     setShowViewModal(true);
   };
 
-  // Credit form state
   const [newAccount, setNewAccount] = useState<Account>({
     accountId: "",
     accountName: "",
@@ -76,7 +68,6 @@ export default function CreditLineManagement() {
     document: "",
   });
 
-  // Sale form state
   const [saleData, setSaleData] = useState({
     accountId: "",
     vehicleNo: "",
@@ -86,7 +77,6 @@ export default function CreditLineManagement() {
     amount: 0,
   });
 
-  // Payment form state
   const [paymentData, setPaymentData] = useState({
     accountId: "",
     creditLimit: 0,
@@ -95,7 +85,6 @@ export default function CreditLineManagement() {
     paymentMode: "Cash",
   });
 
-  // Add-vehicle modal state
   const [vehicleForm, setVehicleForm] = useState<Vehicle>({
     vehicleNo: "",
     fuelType: "Petrol",
@@ -114,127 +103,88 @@ export default function CreditLineManagement() {
     }
   };
 
-  /* ✅ GENERATE PDF BILL */
+  /* ---------- PDF GENERATION ---------- */
 
-const generatePDF = () => {
-  if (!selectedAcc) return;
+  const generatePDF = () => {
+    if (!selectedAcc) return;
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const today = new Date();
+    const dateStr = today.toLocaleDateString();
 
-  const doc = new jsPDF({ unit: "mm", format: "a4" });
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const today = new Date();
-  const dateStr = today.toLocaleDateString();
+    const clean = (n: any) => {
+      try {
+        return Number(String(n).replace(/[^0-9.]/g, ""));
+      } catch {
+        return 0;
+      }
+    };
 
-  // ✅ clean numbers to avoid superscript characters
-  const clean = (n: any) => {
-    try {
-      return Number(String(n).replace(/[^0-9.]/g, ""));
-    } catch {
-      return 0;
-    }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("CREDIT ACCOUNT INVOICE", pageWidth / 2, 15, { align: "center" });
+
+    doc.setFontSize(11);
+    doc.text(`Date: ${dateStr}`, 14, 25);
+
+    autoTable(doc, {
+      startY: 35,
+      head: [["Field", "Details"]],
+      body: [
+        ["Account ID", selectedAcc.accountId],
+        ["Name", selectedAcc.accountName],
+        ["Company", selectedAcc.companyName],
+        ["Phone", selectedAcc.phoneNo],
+        ["Email", selectedAcc.email],
+        ["Aadhaar", selectedAcc.aadhaarNo],
+        ["PAN", selectedAcc.panNo],
+      ],
+      theme: "grid",
+      headStyles: { fillColor: [40, 64, 143], textColor: 255 }
+    });
+
+    const summaryStart = (doc as any).lastAutoTable.finalY + 10;
+    autoTable(doc, {
+      startY: summaryStart,
+      head: [["Description", "Amount"]],
+      body: [
+        ["Credit Limit", `₹${clean(selectedAcc.creditLimit)}`],
+        ["Outstanding", `₹${clean(selectedAcc.outstanding)}`]
+      ],
+      theme: "grid"
+    });
+
+    const gstStart = (doc as any).lastAutoTable.finalY + 10;
+    const subTotal = clean(selectedAcc.outstanding);
+    const gstRate = 18;
+    const gstAmount = (subTotal * gstRate) / 100;
+    const total = subTotal + gstAmount;
+
+    autoTable(doc, {
+      startY: gstStart,
+      head: [["Type", "Amount"]],
+      body: [
+        ["Subtotal", `₹${subTotal}`],
+        [`GST (${gstRate}%)`, `₹${gstAmount.toFixed(2)}`],
+        ["Total Payable", `₹${total.toFixed(2)}`]
+      ],
+      theme: "grid",
+    });
+
+    const vehiclesStart = (doc as any).lastAutoTable.finalY + 10;
+    autoTable(doc, {
+      startY: vehiclesStart,
+      head: [["Vehicle Number", "Fuel Type"]],
+      body: selectedAcc.vehicles.map(v => [v.vehicleNo, v.fuelType]),
+      theme: "grid",
+    });
+
+    return doc.output("blob");
   };
 
-  /* ---------- HEADER ---------- */
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text("CREDIT ACCOUNT INVOICE", pageWidth / 2, 15, { align: "center" });
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-  doc.text(`Date: ${dateStr}`, 14, 25);
-
-  /* ---------- ACCOUNT INFO ---------- */
-  autoTable(doc, {
-    startY: 35,
-    head: [["Field", "Details"]],
-    body: [
-      ["Account ID", selectedAcc.accountId],
-      ["Name", selectedAcc.accountName],
-      ["Company", selectedAcc.companyName],
-      ["Phone", selectedAcc.phoneNo],
-      ["Email", selectedAcc.email],
-      ["Aadhaar", selectedAcc.aadhaarNo],
-      ["PAN", selectedAcc.panNo],
-    ],
-    theme: "grid",
-    headStyles: { fillColor: [40, 64, 143], textColor: 255 },
-    bodyStyles: { textColor: 20 },
-  });
-
-  /* ---------- CREDIT SUMMARY ---------- */
-  const summaryStart = (doc as any).lastAutoTable.finalY + 10;
-
-  autoTable(doc, {
-    startY: summaryStart,
-    head: [["Description", "Amount"]],
-    body: [
-      ["Credit Limit", `₹${clean(selectedAcc.creditLimit)}`],
-      ["Outstanding", `₹${clean(selectedAcc.outstanding)}`],
-    ],
-    theme: "grid",
-    headStyles: { fillColor: [40, 64, 143], textColor: 255 },
-    bodyStyles: {
-      textColor:
-        clean(selectedAcc.outstanding) > clean(selectedAcc.creditLimit)
-          ? [200, 0, 0] // red
-          : [0, 150, 0], // green
-    },
-  });
-
-  /* ---------- GST + TOTAL ---------- */
-  const gstStart = (doc as any).lastAutoTable.finalY + 10;
-
-  const subTotal = clean(selectedAcc.outstanding);
-  const gstRate = 18;
-  const gstAmount = (subTotal * gstRate) / 100;
-  const total = subTotal + gstAmount;
-
-  autoTable(doc, {
-    startY: gstStart,
-    head: [["Type", "Amount"]],
-    body: [
-      ["Subtotal", `₹${subTotal.toFixed(2)}`],
-      [`GST (${gstRate}%)`, `₹${gstAmount.toFixed(2)}`],
-      ["Total Payable", `₹${total.toFixed(2)}`],
-    ],
-    theme: "grid",
-    headStyles: { fillColor: [40, 64, 143], textColor: 255 },
-    bodyStyles: { textColor: 20 },
-  });
-
-  /* ---------- VEHICLE LIST ---------- */
-  const vehiclesStart = (doc as any).lastAutoTable.finalY + 10;
-
-  autoTable(doc, {
-    startY: vehiclesStart,
-    head: [["Vehicle Number", "Fuel Type"]],
-    body:
-      selectedAcc?.vehicles?.map((v) => [v.vehicleNo, v.fuelType]) ?? [
-        ["N/A", "N/A"],
-      ],
-    theme: "grid",
-    headStyles: { fillColor: [40, 64, 143], textColor: 255 },
-    bodyStyles: { textColor: 20 },
-  });
-
-  /* ---------- FOOTER ---------- */
-  const footerY = (doc as any).lastAutoTable.finalY + 20;
-
-  doc.setFontSize(10);
-  doc.setTextColor(100);
-  doc.text(
-    "Thank you for your business.\nPlease clear dues at the earliest.",
-    pageWidth / 2,
-    footerY,
-    { align: "center" }
-  );
-
-  return doc.output("blob");
-};
-  /* ✅ DOWNLOAD PDF */
   const downloadPDF = () => {
     const pdf = generatePDF();
     if (!pdf) return;
-
     const url = URL.createObjectURL(pdf);
     const link = document.createElement("a");
     link.href = url;
@@ -243,12 +193,13 @@ const generatePDF = () => {
     URL.revokeObjectURL(url);
   };
 
-  /* CREDIT: change handlers */
+  /* ---------- HANDLERS ---------- */
+
   const handleAccountChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setNewAccount((prev) => ({ ...prev, [name]: value }));
+    setNewAccount(prev => ({ ...prev, [name]: value }));
   };
 
   const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -257,14 +208,9 @@ const generatePDF = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setNewAccount((prev) => ({ ...prev, document: reader.result as string }));
+      setNewAccount(prev => ({ ...prev, document: reader.result as string }));
     };
     reader.readAsDataURL(file);
-  };
-
-  const openVehicleModal = () => {
-    setVehicleForm({ vehicleNo: "", fuelType: "Petrol" });
-    setShowVehicleModal(true);
   };
 
   const addVehicle = () => {
@@ -272,7 +218,7 @@ const generatePDF = () => {
       alert("Enter vehicle number");
       return;
     }
-    setNewAccount((prev) => ({
+    setNewAccount(prev => ({
       ...prev,
       vehicles: [...prev.vehicles, vehicleForm],
     }));
@@ -280,9 +226,9 @@ const generatePDF = () => {
   };
 
   const removeVehicle = (vehicleNo: string) => {
-    setNewAccount((prev) => ({
+    setNewAccount(prev => ({
       ...prev,
-      vehicles: prev.vehicles.filter((v) => v.vehicleNo !== vehicleNo),
+      vehicles: prev.vehicles.filter(v => v.vehicleNo !== vehicleNo),
     }));
   };
 
@@ -293,18 +239,10 @@ const generatePDF = () => {
     }
 
     try {
-      const payload = {
-        ...newAccount,
-        vehicles: newAccount.vehicles,
-        document: newAccount.document ?? "",
-      };
-
-      const res = await axios.post(`${BASE_URL}/credit`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      setAccounts((prev) => [res.data, ...prev]);
-      alert("✅ Credit account created!");
+      const payload = { ...newAccount };
+      const res = await axios.post(`${BASE_URL}/credit`, payload);
+      setAccounts(prev => [res.data, ...prev]);
+      setShowCreditModal(false);
 
       setNewAccount({
         accountId: "",
@@ -320,8 +258,6 @@ const generatePDF = () => {
         contactPerson: "",
         document: "",
       });
-
-      setShowCreditModal(false);
     } catch (err) {
       console.error(err);
       alert("Failed to add account.");
@@ -332,10 +268,8 @@ const generatePDF = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-
-    setSaleData((prev) => {
+    setSaleData(prev => {
       const updated: any = { ...prev, [name]: value };
-
       const rate = Number(updated.rate);
       const volume = Number(updated.volume);
       const amount = Number(updated.amount);
@@ -354,28 +288,11 @@ const generatePDF = () => {
       return;
     }
 
-    const payload = {
-      accountId: saleData.accountId,
-      type: "Sale",
-      amount: saleData.amount,
-      vehicleNo: saleData.vehicleNo,
-      fuelType: saleData.fuelType,
-      rate: saleData.rate,
-      volume: saleData.volume,
-    };
+    const payload = { ...saleData, type: "Sale" };
 
     try {
       await axios.post(`${BASE_URL}/credit/transaction`, payload);
-      alert("✅ Sale updated!");
       fetchAccounts();
-      setSaleData({
-        accountId: "",
-        vehicleNo: "",
-        fuelType: "Petrol",
-        rate: 0,
-        volume: 0,
-        amount: 0,
-      });
       setShowSaleModal(false);
     } catch (err) {
       console.error(err);
@@ -398,35 +315,29 @@ const generatePDF = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setPaymentData((prev) => ({
+    setPaymentData(prev => ({
       ...prev,
       [name]: name === "amountPaid" ? Number(value) : value,
     }));
   };
 
   const selectedPaymentAccount = accounts.find(
-    (a) => a.accountId === paymentData.accountId
+    a => a.accountId === paymentData.accountId
   );
 
   useEffect(() => {
     if (selectedPaymentAccount) {
-      setPaymentData((prev) => ({
+      setPaymentData(prev => ({
         ...prev,
         creditLimit: selectedPaymentAccount.creditLimit,
         outstanding: selectedPaymentAccount.outstanding ?? 0,
-      }));
-    } else {
-      setPaymentData((prev) => ({
-        ...prev,
-        creditLimit: 0,
-        outstanding: 0,
       }));
     }
   }, [paymentData.accountId]);
 
   const savePayment = async () => {
     if (!paymentData.accountId || paymentData.amountPaid <= 0) {
-      alert("Select account & enter valid amount");
+      alert("Select account & valid amount");
       return;
     }
 
@@ -439,34 +350,54 @@ const generatePDF = () => {
 
     try {
       await axios.post(`${BASE_URL}/credit/transaction`, payload);
-      alert("✅ Payment updated!");
       fetchAccounts();
       setShowPaymentModal(false);
     } catch (err) {
-      console.error(err);
       alert("Payment failed");
     }
   };
 
-  const newOutstandingPreview =
-    (selectedPaymentAccount?.outstanding ?? 0) - (paymentData.amountPaid || 0);
-  const previewClass =
-    paymentData.amountPaid >= (selectedPaymentAccount?.outstanding ?? 0)
-      ? styles.green
-      : styles.red;
+  const filteredAccounts = accounts.filter(acc => {
+    const query = search.toLowerCase();
+    return (
+      acc.accountId.toLowerCase().includes(query) ||
+      acc.accountName.toLowerCase().includes(query) ||
+      acc.phoneNo.toLowerCase().includes(query) ||
+      acc.email.toLowerCase().includes(query) ||
+      acc.companyName.toLowerCase().includes(query) ||
+      acc.aadhaarNo.toLowerCase().includes(query) ||
+      acc.panNo.toLowerCase().includes(query) ||
+      acc.vehicles.some(v => v.vehicleNo.toLowerCase().includes(query))
+    );
+  });
 
   return (
     <div className={styles.container}>
       <h1>Credit Line System</h1>
 
-      {/* ACTION BUTTONS ABOVE LIST */}
-      <div className={styles.topButtons}>
-        <button onClick={() => setShowCreditModal(true)}>Add Credit Account</button>
-        <button onClick={() => setShowSaleModal(true)}>Update Sale</button>
-        <button onClick={openPaymentModal}>Update Payment</button>
-      </div>
+      {/* SEARCH + TOP BUTTONS */}
+      <div className={styles.topBar}>
+        
 
-      {/* LIST BELOW BUTTONS */}
+
+  <div className={styles.topButtons}>
+
+<input
+          type="text"
+          className={styles.searchBar}
+          placeholder="Search accounts (ID, Name, Phone, Aadhaar, PAN, Vehicle...)"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+    
+    <button onClick={() => setShowCreditModal(true)}>Add Credit Account</button>
+    <button onClick={() => setShowSaleModal(true)}>Update Sale</button>
+    <button onClick={openPaymentModal}>Update Payment</button>
+  </div>
+</div>
+
+
+      {/* TABLE */}
       <h2>Accounts List</h2>
       <div className={styles.tableContainer}>
         <table className={styles.table}>
@@ -483,8 +414,9 @@ const generatePDF = () => {
               <th>View</th>
             </tr>
           </thead>
+
           <tbody>
-            {accounts.map((acc) => (
+            {filteredAccounts.map(acc => (
               <tr key={acc._id}>
                 <td>{acc.accountId}</td>
                 <td>{acc.accountName}</td>
@@ -504,7 +436,6 @@ const generatePDF = () => {
                   {acc.outstanding}
                 </td>
 
-                {/* VIEW BUTTON */}
                 <td>
                   <button
                     className={styles.viewBtn}
@@ -519,7 +450,7 @@ const generatePDF = () => {
         </table>
       </div>
 
-      {/* VIEW ACCOUNT MODAL */}
+      {/* ====================== VIEW MODAL ====================== */}
       {showViewModal && selectedAcc && (
         <div
           className={styles.modalBackdrop}
@@ -564,13 +495,12 @@ const generatePDF = () => {
             </p>
 
             <h3>Vehicles</h3>
-            {selectedAcc.vehicles?.map((v) => (
+            {selectedAcc.vehicles?.map(v => (
               <p key={v.vehicleNo}>
                 {v.vehicleNo} ({v.fuelType})
               </p>
             ))}
 
-            {/* When over limit, show only "Generate Bill" */}
             {(selectedAcc.outstanding ?? 0) > (selectedAcc.creditLimit ?? 0) && (
               <>
                 <hr />
@@ -585,119 +515,113 @@ const generatePDF = () => {
           </div>
         </div>
       )}
-      {/* ✅ BILL MODAL */}
-     {showBillModal && selectedAcc && (
-  <div
-    className={styles.modalBackdrop}
-    onClick={() => setShowBillModal(false)}
-  >
-    <div
-      className={`${styles.modalForm} ${styles.modalScrollable}`}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        className={styles.closeBtn}
-        onClick={() => setShowBillModal(false)}
-      >
-        ✖
-      </button>
 
-      <h2>Bill Summary</h2>
-
-      <p><b>Bill Date:</b> {new Date().toLocaleDateString()}</p>
-
-      <p><b>Account ID:</b> {selectedAcc.accountId}</p>
-      <p><b>Name:</b> {selectedAcc.accountName}</p>
-      <p><b>Company:</b> {selectedAcc.companyName}</p>
-      <p><b>Phone:</b> {selectedAcc.phoneNo}</p>
-      <p><b>Email:</b> {selectedAcc.email}</p>
-
-      {/* ✅ BILL DETAILS TABLE */}
-      <table className={styles.billTable}>
-        <thead>
-          <tr>
-            <th>Description</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>Credit Limit</td>
-            <td>₹{selectedAcc.creditLimit}</td>
-          </tr>
-
-          <tr
-            style={{
-              color:
-                (selectedAcc.outstanding ?? 0) >
-                (selectedAcc.creditLimit ?? 0)
-                  ? "red"
-                  : "green",
-            }}
+      {/* ====================== BILL MODAL ====================== */}
+      {showBillModal && selectedAcc && (
+        <div
+          className={styles.modalBackdrop}
+          onClick={() => setShowBillModal(false)}
+        >
+          <div
+            className={`${styles.modalForm} ${styles.modalScrollable}`}
+            onClick={(e) => e.stopPropagation()}
           >
-            <td>Outstanding</td>
-            <td>₹{selectedAcc.outstanding}</td>
-          </tr>
+            <button
+              className={styles.closeBtn}
+              onClick={() => setShowBillModal(false)}
+            >
+              ✖
+            </button>
 
-          {/* ✅ GST + TOTAL */}
-          {(() => {
-            const subTotal = Number(selectedAcc.outstanding ?? 0);
-            const gstRate = 18;
-            const gstAmount = (subTotal * gstRate) / 100;
-            const total = subTotal + gstAmount;
+            <h2>Bill Summary</h2>
 
-            return (
-              <>
+            <p><b>Bill Date:</b> {new Date().toLocaleDateString()}</p>
+            <p><b>Account ID:</b> {selectedAcc.accountId}</p>
+            <p><b>Name:</b> {selectedAcc.accountName}</p>
+            <p><b>Company:</b> {selectedAcc.companyName}</p>
+            <p><b>Phone:</b> {selectedAcc.phoneNo}</p>
+            <p><b>Email:</b> {selectedAcc.email}</p>
+
+            <table className={styles.billTable}>
+              <thead>
                 <tr>
-                  <td>GST (18%)</td>
-                  <td>₹{gstAmount.toFixed(2)}</td>
+                  <th>Description</th>
+                  <th>Amount</th>
                 </tr>
+              </thead>
+
+              <tbody>
                 <tr>
-                  <td><b>Total Payable</b></td>
-                  <td><b>₹{total.toFixed(2)}</b></td>
+                  <td>Credit Limit</td>
+                  <td>₹{selectedAcc.creditLimit}</td>
                 </tr>
-              </>
-            );
-          })()}
-        </tbody>
-      </table>
 
-      {/* ✅ VEHICLE TABLE */}
-      <h3>Vehicles Used</h3>
-      <table className={styles.billTable}>
-        <thead>
-          <tr>
-            <th>Vehicle Number</th>
-            <th>Fuel Type</th>
-          </tr>
-        </thead>
+                <tr
+                  style={{
+                    color:
+                      (selectedAcc.outstanding ?? 0) >
+                      (selectedAcc.creditLimit ?? 0)
+                        ? "red"
+                        : "green",
+                  }}
+                >
+                  <td>Outstanding</td>
+                  <td>₹{selectedAcc.outstanding}</td>
+                </tr>
 
-        <tbody>
-          {selectedAcc.vehicles?.map((v) => (
-            <tr key={v.vehicleNo}>
-              <td>{v.vehicleNo}</td>
-              <td>{v.fuelType}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                {(() => {
+                  const subTotal = Number(selectedAcc.outstanding ?? 0);
+                  const gstAmount = subTotal * 0.18;
+                  const total = subTotal + gstAmount;
+                  return (
+                    <>
+                      <tr>
+                        <td>GST (18%)</td>
+                        <td>₹{gstAmount.toFixed(2)}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Total Payable</b></td>
+                        <td><b>₹{total.toFixed(2)}</b></td>
+                      </tr>
+                    </>
+                  );
+                })()}
+              </tbody>
+            </table>
 
-      <hr />
+            <h3>Vehicles Used</h3>
+            <table className={styles.billTable}>
+              <thead>
+                <tr>
+                  <th>Vehicle Number</th>
+                  <th>Fuel Type</th>
+                </tr>
+              </thead>
 
-      <button className={styles.billBtn} onClick={downloadPDF}>
-        ⬇ Download PDF
-      </button>
+              <tbody>
+                {selectedAcc.vehicles.map(v => (
+                  <tr key={v.vehicleNo}>
+                    <td>{v.vehicleNo}</td>
+                    <td>{v.fuelType}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-      <button className={styles.billBtn} disabled>
-        📧 Send Email (Coming Soon)
-      </button>
-    </div>
-  </div>
-)}
+            <hr />
 
+            <button className={styles.billBtn} onClick={downloadPDF}>
+              ⬇ Download PDF
+            </button>
 
-      {/* CREDIT MODAL */}
+            <button className={styles.billBtn} disabled>
+              📧 Send Email (Coming Soon)
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ====================== ADD ACCOUNT MODAL ====================== */}
       {showCreditModal && (
         <div
           className={styles.modalBackdrop}
@@ -710,7 +634,6 @@ const generatePDF = () => {
             <button
               className={styles.closeBtn}
               onClick={() => setShowCreditModal(false)}
-              aria-label="Close"
             >
               ✖
             </button>
@@ -718,63 +641,31 @@ const generatePDF = () => {
             <h2>Add Credit Account</h2>
 
             <label>Account ID</label>
-            <input
-              name="accountId"
-              value={newAccount.accountId}
-              onChange={handleAccountChange}
-            />
+            <input name="accountId" value={newAccount.accountId} onChange={handleAccountChange} />
 
             <label>Account Name</label>
-            <input
-              name="accountName"
-              value={newAccount.accountName}
-              onChange={handleAccountChange}
-            />
+            <input name="accountName" value={newAccount.accountName} onChange={handleAccountChange} />
 
             <label>Phone</label>
-            <input
-              name="phoneNo"
-              value={newAccount.phoneNo}
-              onChange={handleAccountChange}
-            />
+            <input name="phoneNo" value={newAccount.phoneNo} onChange={handleAccountChange} />
 
             <label>Email</label>
-            <input
-              name="email"
-              value={newAccount.email}
-              onChange={handleAccountChange}
-            />
+            <input name="email" value={newAccount.email} onChange={handleAccountChange} />
 
             <label>Company Name</label>
-            <input
-              name="companyName"
-              value={newAccount.companyName}
-              onChange={handleAccountChange}
-            />
+            <input name="companyName" value={newAccount.companyName} onChange={handleAccountChange} />
 
             <label>Aadhaar No</label>
-            <input
-              name="aadhaarNo"
-              value={newAccount.aadhaarNo}
-              onChange={handleAccountChange}
-            />
+            <input name="aadhaarNo" value={newAccount.aadhaarNo} onChange={handleAccountChange} />
 
             <label>PAN No</label>
-            <input
-              name="panNo"
-              value={newAccount.panNo}
-              onChange={handleAccountChange}
-            />
+            <input name="panNo" value={newAccount.panNo} onChange={handleAccountChange} />
 
             <label>Upload Document</label>
             <input type="file" onChange={handleDocumentUpload} className={styles.fullRow} />
 
             <label>Fuel Type</label>
-            <select
-              name="fuelType"
-              value={newAccount.fuelType}
-              onChange={handleAccountChange}
-            >
+            <select name="fuelType" value={newAccount.fuelType} onChange={handleAccountChange}>
               <option>Petrol</option>
               <option>Diesel</option>
             </select>
@@ -788,18 +679,14 @@ const generatePDF = () => {
             />
 
             <label>Contact Person</label>
-            <input
-              name="contactPerson"
-              value={newAccount.contactPerson}
-              onChange={handleAccountChange}
-            />
+            <input name="contactPerson" value={newAccount.contactPerson} onChange={handleAccountChange} />
 
-            <button className={styles.addVehicleBtn} onClick={openVehicleModal}>
+            <button className={styles.addVehicleBtn} onClick={() => setShowVehicleModal(true)}>
               + Add Vehicle
             </button>
 
             <div className={styles.vehicleList}>
-              {newAccount.vehicles.map((v) => (
+              {newAccount.vehicles.map(v => (
                 <p key={v.vehicleNo}>
                   {v.vehicleNo} ({v.fuelType})
                   <button
@@ -819,7 +706,7 @@ const generatePDF = () => {
         </div>
       )}
 
-      {/* SALE MODAL */}
+      {/* ====================== SALE MODAL ====================== */}
       {showSaleModal && (
         <div
           className={styles.modalBackdrop}
@@ -832,7 +719,6 @@ const generatePDF = () => {
             <button
               className={styles.closeBtn}
               onClick={() => setShowSaleModal(false)}
-              aria-label="Close"
             >
               ✖
             </button>
@@ -846,7 +732,7 @@ const generatePDF = () => {
               onChange={handleSaleChange}
             >
               <option value="">Select Account</option>
-              {accounts.map((acc) => (
+              {accounts.map(acc => (
                 <option key={acc._id} value={acc.accountId}>
                   {acc.accountId} — {acc.accountName}
                 </option>
@@ -861,35 +747,26 @@ const generatePDF = () => {
             >
               <option value="">Select Vehicle</option>
               {accounts
-                .find((a) => a.accountId === saleData.accountId)
-                ?.vehicles.map((v) => (
+                .find(a => a.accountId === saleData.accountId)
+                ?.vehicles.map(v => (
                   <option key={v.vehicleNo} value={v.vehicleNo}>
                     {v.vehicleNo}
                   </option>
                 ))}
             </select>
 
-            <button className={styles.addVehicleBtn} onClick={openVehicleModal}>
+            <button className={styles.addVehicleBtn} onClick={() => setShowVehicleModal(true)}>
               + Add Vehicle
             </button>
 
             <label>Fuel Type</label>
-            <select
-              name="fuelType"
-              value={saleData.fuelType}
-              onChange={handleSaleChange}
-            >
+            <select name="fuelType" value={saleData.fuelType} onChange={handleSaleChange}>
               <option>Petrol</option>
               <option>Diesel</option>
             </select>
 
-            <label>Current Rate</label>
-            <input
-              name="rate"
-              type="number"
-              value={saleData.rate}
-              onChange={handleSaleChange}
-            />
+            <label>Rate</label>
+            <input name="rate" type="number" value={saleData.rate} onChange={handleSaleChange} />
 
             <label>Volume (L)</label>
             <input
@@ -914,7 +791,7 @@ const generatePDF = () => {
         </div>
       )}
 
-      {/* PAYMENT MODAL */}
+      {/* ====================== PAYMENT MODAL ====================== */}
       {showPaymentModal && (
         <div
           className={styles.modalBackdrop}
@@ -927,7 +804,6 @@ const generatePDF = () => {
             <button
               className={styles.closeBtn}
               onClick={() => setShowPaymentModal(false)}
-              aria-label="Close"
             >
               ✖
             </button>
@@ -941,7 +817,7 @@ const generatePDF = () => {
               onChange={handlePaymentChange}
             >
               <option value="">Select Account</option>
-              {accounts.map((acc) => (
+              {accounts.map(acc => (
                 <option key={acc._id} value={acc.accountId}>
                   {acc.accountId} — {acc.accountName}
                 </option>
@@ -951,7 +827,7 @@ const generatePDF = () => {
             <label>Credit Limit</label>
             <input value={paymentData.creditLimit} disabled />
 
-            <label>Current Outstanding</label>
+            <label>Outstanding</label>
             <input value={paymentData.outstanding} disabled />
 
             <label>Paying Amount</label>
@@ -973,13 +849,17 @@ const generatePDF = () => {
               <option>UPI</option>
             </select>
 
-            <label>New Outstanding (after payment)</label>
+            <label>New Outstanding</label>
             <input
               value={
-                Number.isFinite(newOutstandingPreview) ? newOutstandingPreview : ""
+                (paymentData.outstanding ?? 0) - (paymentData.amountPaid ?? 0)
               }
               disabled
-              className={previewClass}
+              className={
+                paymentData.amountPaid >= (paymentData.outstanding ?? 0)
+                  ? styles.green
+                  : styles.red
+              }
             />
 
             <button className={styles.submitBtn} onClick={savePayment}>
@@ -989,7 +869,7 @@ const generatePDF = () => {
         </div>
       )}
 
-      {/* ADD VEHICLE MODAL */}
+      {/* ====================== ADD VEHICLE MODAL ====================== */}
       {showVehicleModal && (
         <div
           className={styles.modalBackdrop}
@@ -1002,7 +882,6 @@ const generatePDF = () => {
             <button
               className={styles.closeBtn}
               onClick={() => setShowVehicleModal(false)}
-              aria-label="Close"
             >
               ✖
             </button>

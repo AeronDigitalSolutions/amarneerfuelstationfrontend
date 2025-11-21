@@ -14,24 +14,23 @@ type Finance = {
   supplierName?: string;
   invoiceNo?: string;
   createdAt?: string;
-  // NEW fields for daily expense support
-  autoTimestamp?: string; // server generated (ISO)
-  userTimestamp?: string; // chosen by user (ISO)
+  autoTimestamp?: string;
+  userTimestamp?: string;
   name?: string;
   attendantName?: string;
 };
 
-// Backend auto-select logic
 const BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  (window.location.hostname === "localhost"
-    ? "http://localhost:5000/api"
-    : "https://amarneerfuelstationbackend.onrender.com/api");
+  (typeof import.meta !== "undefined" && import.meta.env.VITE_API_URL)
+    ? import.meta.env.VITE_API_URL
+    : (typeof window !== "undefined" && window.location.hostname === "localhost"
+        ? "http://localhost:5000/api"
+        : "https://amarneerfuelstationbackend.onrender.com/api");
 
 export default function AccountingFinance() {
   const [entries, setEntries] = useState<Finance[]>([]);
+  const [activeTable, setActiveTable] = useState<"ledger" | "daily">("ledger");
 
-  /* existing finance entry state */
   const [entry, setEntry] = useState<Finance>({
     entryType: "Journal",
     category: "",
@@ -41,17 +40,18 @@ export default function AccountingFinance() {
     amount: 0,
   });
 
-  /* new daily expense state */
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDailyModal, setShowDailyModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editEntry, setEditEntry] = useState<Finance | null>(null);
 
   const [dailyExpense, setDailyExpense] = useState({
-    userTimestamp: "", // ISO string (datetime-local value)
+    userTimestamp: "",
     amount: 0,
     description: "",
     name: "",
     attendantName: "",
-    autoTimestamp: "", // readonly display
+    autoTimestamp: "",
   });
 
   const [summary, setSummary] = useState({
@@ -62,11 +62,8 @@ export default function AccountingFinance() {
     cashbookBalance: 0,
   });
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [editEntry, setEditEntry] = useState<Finance | null>(null);
-
-  /* which table to show: 'ledger' or 'daily' */
-  const [activeTable, setActiveTable] = useState<"ledger" | "daily">("ledger");
+  // DATE FILTER — SINGLE DATE ONLY
+  const [filterDate, setFilterDate] = useState("");
 
   useEffect(() => {
     fetchEntries();
@@ -77,8 +74,8 @@ export default function AccountingFinance() {
     try {
       const res = await axios.get<Finance[]>(`${BASE_URL}/finance`);
       setEntries(res.data || []);
-    } catch (err: any) {
-      console.error("Error fetching entries:", err.message || err);
+    } catch (err) {
+      console.error("Error fetching entries:", err);
     }
   };
 
@@ -86,40 +83,34 @@ export default function AccountingFinance() {
     try {
       const res = await axios.get(`${BASE_URL}/finance/summary`);
       setSummary(res.data);
-    } catch (err: any) {
-      console.error("Error fetching summary:", err.message || err);
+    } catch (err) {
+      console.error("Error fetching summary:", err);
     }
   };
 
-  /* --- Handlers for generic finance entry (existing) --- */
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
     setEntry((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAddEntry = async () => {
-    if (!entry.category || !entry.description) {
-      alert("Please fill all required details");
-      return;
-    }
+    if (!entry.category || !entry.description)
+      return alert("Fill all required fields");
 
     try {
-      const payload = {
+      await axios.post(`${BASE_URL}/finance`, {
         ...entry,
         debit: Number(entry.debit),
         credit: Number(entry.credit),
         amount: Number(entry.amount),
-      };
+      });
 
-      await axios.post(`${BASE_URL}/finance`, payload);
-      await fetchEntries();
-      await fetchSummary();
+      fetchEntries();
+      fetchSummary();
       resetForm();
       setShowAddModal(false);
-    } catch (err: any) {
-      alert("Error saving entry: " + (err.message || err));
+    } catch (err) {
+      alert("Error saving entry");
     }
   };
 
@@ -134,63 +125,54 @@ export default function AccountingFinance() {
     });
   };
 
-  /* --- Edit handlers (existing) --- */
   const handleEdit = (e: Finance) => {
     setEditEntry({ ...e });
     setIsEditing(true);
   };
 
-  const handleEditChange = (
-    ev: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleEditChange = (ev: any) => {
     if (!editEntry) return;
     const { name, value } = ev.target;
-    setEditEntry((prev) => (prev ? { ...prev, [name]: value } : null));
+    setEditEntry((prev) => prev ? { ...prev, [name]: value } : null);
   };
 
   const handleSaveEdit = async () => {
-    if (!editEntry || !editEntry._id) {
-      alert("Missing entry ID");
-      return;
-    }
+    if (!editEntry?._id) return;
 
     try {
       await axios.put(`${BASE_URL}/finance/${editEntry._id}`, editEntry);
-      await fetchEntries();
-      await fetchSummary();
+      fetchEntries();
+      fetchSummary();
       setIsEditing(false);
-      setEditEntry(null);
-    } catch (err: any) {
-      alert("Error updating entry: " + (err.message || err));
+    } catch {
+      alert("Error updating");
     }
   };
 
   const handleDelete = async (id?: string) => {
     if (!id) return;
-    if (!window.confirm("Are you sure you want to delete this entry?")) return;
+    if (!window.confirm("Delete entry?")) return;
 
     try {
       await axios.delete(`${BASE_URL}/finance/${id}`);
-      setEntries((prev) => prev.filter((e) => e._id !== id));
-      await fetchSummary();
-    } catch (err: any) {
-      alert("Error deleting entry: " + (err.message || err));
+      fetchEntries();
+      fetchSummary();
+    } catch {
+      alert("Error deleting");
     }
   };
 
-  /* -------------------------
-     DAILY EXPENSE specific
-     ------------------------- */
+  // OPEN DAILY EXPENSE MODAL
   const openDailyModal = () => {
     const now = new Date();
-    // for datetime-local input we need format "YYYY-MM-DDTHH:mm"
     const pad = (n: number) => String(n).padStart(2, "0");
-    const localDatetime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(
+
+    const localDt = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(
       now.getDate()
     )}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
     setDailyExpense({
-      userTimestamp: localDatetime,
+      userTimestamp: localDt,
       amount: 0,
       description: "",
       name: "",
@@ -201,56 +183,68 @@ export default function AccountingFinance() {
     setShowDailyModal(true);
   };
 
-  const handleDailyChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleDailyChange = (e: any) => {
     const { name, value } = e.target;
-    setDailyExpense((prev) => ({ ...prev, [name]: name === "amount" ? Number(value) : value }));
+    setDailyExpense((prev) => ({
+      ...prev,
+      [name]: name === "amount" ? Number(value) : value,
+    }));
   };
 
   const handleAddDailyExpense = async () => {
-    // validation
-    if (!dailyExpense.amount || !dailyExpense.description) {
-      alert("Please fill required fields: amount & description");
-      return;
-    }
+    if (!dailyExpense.amount || !dailyExpense.description)
+      return alert("Fill required fields");
 
     try {
-      // payload uses the existing Finance model fields
-      const payload = {
+      await axios.post(`${BASE_URL}/finance`, {
         entryType: "Expense",
         category: "Daily Expense",
         description: dailyExpense.description,
-        amount: Number(dailyExpense.amount),
-        debit: Number(dailyExpense.amount), // store as debit for expenses
+        amount: dailyExpense.amount,
+        debit: dailyExpense.amount,
         credit: 0,
         name: dailyExpense.name,
         attendantName: dailyExpense.attendantName,
-        userTimestamp: dailyExpense.userTimestamp ? new Date(dailyExpense.userTimestamp).toISOString() : undefined,
-        autoTimestamp: dailyExpense.autoTimestamp || new Date().toISOString(),
-      };
+        userTimestamp: new Date(dailyExpense.userTimestamp).toISOString(),
+        autoTimestamp: dailyExpense.autoTimestamp,
+      });
 
-      await axios.post(`${BASE_URL}/finance`, payload);
-      await fetchEntries();
-      await fetchSummary();
+      fetchEntries();
+      fetchSummary();
       setShowDailyModal(false);
-    } catch (err: any) {
-      alert("Error saving daily expense: " + (err.message || err));
+    } catch {
+      alert("Error saving expense");
     }
   };
 
-  /* helpers to split ledger vs daily */
-  const isDailyExpense = (f: Finance) =>
-    f.entryType === "Expense" && (f.category || "").toLowerCase().includes("daily");
+  // FILTERING LOGIC — SINGLE DATE MATCH
+  const matchesDate = (entry: Finance) => {
+    if (!filterDate) return true;
 
-  const ledgerEntries = entries.filter((e) => !isDailyExpense(e));
-  const dailyEntries = entries.filter((e) => isDailyExpense(e));
+    const day = filterDate;
+
+    const datesToCheck = [
+      entry.createdAt,
+      entry.autoTimestamp,
+      entry.userTimestamp,
+    ];
+
+    return datesToCheck.some((d) =>
+      d ? d.substring(0, 10) === day : false
+    );
+  };
+
+  const isDaily = (e: Finance) =>
+    e.entryType === "Expense" &&
+    (e.category || "").toLowerCase().includes("daily");
+
+  const ledgerEntries = entries.filter((e) => !isDaily(e) && matchesDate(e));
+  const dailyEntries = entries.filter((e) => isDaily(e) && matchesDate(e));
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>💰 Accounting & Finance</h1>
 
-      {/* Buttons row: Add New Entry + Add Daily Expenses + table switch */}
       <div className={styles.buttonRow}>
         <div className={styles.leftButtons}>
           <button className={styles.openButton} onClick={() => setShowAddModal(true)}>
@@ -262,15 +256,21 @@ export default function AccountingFinance() {
           </button>
         </div>
 
+        {/* Table Tabs */}
         <div className={styles.tableSwitch}>
           <button
-            className={`${styles.tabButton} ${activeTable === "ledger" ? styles.activeTab : ""}`}
+            className={`${styles.tabButton} ${
+              activeTable === "ledger" ? styles.activeTab : ""
+            }`}
             onClick={() => setActiveTable("ledger")}
           >
             Ledger Entries
           </button>
+
           <button
-            className={`${styles.tabButton} ${activeTable === "daily" ? styles.activeTab : ""}`}
+            className={`${styles.tabButton} ${
+              activeTable === "daily" ? styles.activeTab : ""
+            }`}
             onClick={() => setActiveTable("daily")}
           >
             Daily Expenses
@@ -278,7 +278,16 @@ export default function AccountingFinance() {
         </div>
       </div>
 
-      {/* === Table Container (switch based) === */}
+      {/* DATE FILTER */}
+      <div className={styles.filterRow}>
+        <input
+          type="date"
+          className={styles.dateFilter}
+          value={filterDate}
+          onChange={(e) => setFilterDate(e.target.value)}
+        />
+      </div>
+
       <div className={styles.tableContainer}>
         {activeTable === "ledger" ? (
           <>
@@ -290,9 +299,9 @@ export default function AccountingFinance() {
                   <th>Type</th>
                   <th>Category</th>
                   <th>Description</th>
-                  <th>Debit (₹)</th>
-                  <th>Credit (₹)</th>
-                  <th>Amount (₹)</th>
+                  <th>Debit</th>
+                  <th>Credit</th>
+                  <th>Amount</th>
                   <th>Supplier</th>
                   <th>Actions</th>
                 </tr>
@@ -300,7 +309,7 @@ export default function AccountingFinance() {
               <tbody>
                 {ledgerEntries.map((e) => (
                   <tr key={e._id}>
-                    <td>{e.createdAt ? new Date(e.createdAt).toLocaleString() : "-"}</td>
+                    <td>{new Date(e.createdAt || "").toLocaleString()}</td>
                     <td>{e.entryType}</td>
                     <td>{e.category}</td>
                     <td>{e.description}</td>
@@ -309,8 +318,8 @@ export default function AccountingFinance() {
                     <td>{e.amount}</td>
                     <td>{e.supplierName || "-"}</td>
                     <td>
-                      <button className={styles.editButton} onClick={() => handleEdit(e)}>✏️</button>
-                      <button className={styles.deleteButton} onClick={() => handleDelete(e._id)}>🗑️</button>
+                      <button onClick={() => handleEdit(e)} className={styles.editButton}>✏️</button>
+                      <button onClick={() => handleDelete(e._id)} className={styles.deleteButton}>🗑️</button>
                     </td>
                   </tr>
                 ))}
@@ -325,7 +334,7 @@ export default function AccountingFinance() {
                 <tr>
                   <th>Auto Timestamp</th>
                   <th>User Timestamp</th>
-                  <th>Amount (₹)</th>
+                  <th>Amount</th>
                   <th>Description</th>
                   <th>Name</th>
                   <th>Attendant</th>
@@ -335,15 +344,15 @@ export default function AccountingFinance() {
               <tbody>
                 {dailyEntries.map((d) => (
                   <tr key={d._id}>
-                    <td>{d.autoTimestamp ? new Date(d.autoTimestamp).toLocaleString() : (d.createdAt ? new Date(d.createdAt).toLocaleString() : "-")}</td>
+                    <td>{d.autoTimestamp ? new Date(d.autoTimestamp).toLocaleString() : "-"}</td>
                     <td>{d.userTimestamp ? new Date(d.userTimestamp).toLocaleString() : "-"}</td>
                     <td>{d.amount}</td>
                     <td>{d.description}</td>
                     <td>{d.name || "-"}</td>
                     <td>{d.attendantName || "-"}</td>
                     <td>
-                      <button className={styles.editButton} onClick={() => handleEdit(d)}>✏️</button>
-                      <button className={styles.deleteButton} onClick={() => handleDelete(d._id)}>🗑️</button>
+                      <button onClick={() => handleEdit(d)} className={styles.editButton}>✏️</button>
+                      <button onClick={() => handleDelete(d._id)} className={styles.deleteButton}>🗑️</button>
                     </td>
                   </tr>
                 ))}
@@ -353,22 +362,18 @@ export default function AccountingFinance() {
         )}
       </div>
 
-      {/* === Financial Summary (below table) === */}
-      <div className={styles.summaryCard}>
-        <h2 className={styles.sectionTitle}>Financial Summary</h2>
-        <div className={styles.summaryGrid}>
-          <p><strong>Total Sales:</strong> ₹{summary.totalSales.toFixed(2)}</p>
-          <p><strong>Total Purchase:</strong> ₹{summary.totalPurchase.toFixed(2)}</p>
-          <p><strong>Total Expense:</strong> ₹{summary.totalExpense.toFixed(2)}</p>
-          <p className={styles.profit}><strong>Profit:</strong> ₹{summary.profit.toFixed(2)}</p>
-          <p className={styles.balance}><strong>Cashbook Balance:</strong> ₹{summary.cashbookBalance.toFixed(2)}</p>
-        </div>
+      {/* FIXED SUMMARY BAR */}
+      <div className={styles.fixedSummary}>
+        <span><strong>Purchase:</strong> ₹{summary.totalPurchase.toFixed(2)}</span>
+        <span><strong>Expense:</strong> ₹{summary.totalExpense.toFixed(2)}</span>
+        <span><strong>Profit:</strong> ₹{summary.profit.toFixed(2)}</span>
+        <span><strong>Balance:</strong> ₹{summary.cashbookBalance.toFixed(2)}</span>
       </div>
 
-      {/* === Add Entry Modal === */}
+      {/* Add Entry Modal */}
       {showAddModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
+        <div className={styles.modalOverlay} onClick={() => setShowAddModal(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <h3>Add New Entry</h3>
             <div className={styles.formGrid}>
               <select name="entryType" value={entry.entryType} onChange={handleChange}>
@@ -396,22 +401,18 @@ export default function AccountingFinance() {
         </div>
       )}
 
-      {/* === Daily Expense Modal === */}
+      {/* Daily Expense Modal */}
       {showDailyModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
+        <div className={styles.modalOverlay} onClick={() => setShowDailyModal(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <h3>Add Daily Expense</h3>
 
             <div className={styles.formGrid}>
-              {/* Auto timestamp (readonly display) */}
               <input
-                name="autoTimestamp"
-                value={new Date(dailyExpense.autoTimestamp || new Date()).toLocaleString()}
                 readOnly
-                title="Auto timestamp (server will record in ISO when saved)"
+                value={new Date(dailyExpense.autoTimestamp).toLocaleString()}
               />
 
-              {/* User-selectable date/time */}
               <input
                 name="userTimestamp"
                 type="datetime-local"
@@ -422,7 +423,7 @@ export default function AccountingFinance() {
               <input
                 name="amount"
                 type="number"
-                placeholder="Amount (₹)"
+                placeholder="Amount"
                 value={dailyExpense.amount}
                 onChange={handleDailyChange}
               />
@@ -457,11 +458,11 @@ export default function AccountingFinance() {
         </div>
       )}
 
-      {/* === Edit Modal (existing) === */}
+      {/* Edit Modal */}
       {isEditing && editEntry && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
-            <h3>Edit Entry – {editEntry.category}</h3>
+        <div className={styles.modalOverlay} onClick={() => setIsEditing(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h3>Edit Entry</h3>
 
             <input
               name="description"
@@ -472,22 +473,19 @@ export default function AccountingFinance() {
             <input
               name="amount"
               type="number"
-              placeholder="Amount"
-              value={String(editEntry.amount)}
+              value={editEntry.amount}
               onChange={handleEditChange}
             />
             <input
               name="debit"
               type="number"
-              placeholder="Debit"
-              value={String(editEntry.debit)}
+              value={editEntry.debit}
               onChange={handleEditChange}
             />
             <input
               name="credit"
               type="number"
-              placeholder="Credit"
-              value={String(editEntry.credit)}
+              value={editEntry.credit}
               onChange={handleEditChange}
             />
             <input
@@ -498,8 +496,8 @@ export default function AccountingFinance() {
             />
 
             <div className={styles.modalButtons}>
-              <button onClick={handleSaveEdit} className={styles.saveButton}>💾 Save</button>
-              <button onClick={() => setIsEditing(false)} className={styles.cancelButton}>❌ Cancel</button>
+              <button onClick={handleSaveEdit} className={styles.saveButton}>Save</button>
+              <button onClick={() => setIsEditing(false)} className={styles.cancelButton}>Cancel</button>
             </div>
           </div>
         </div>

@@ -180,3 +180,8 @@
   color: #fff;
   opacity: 0.9;
 }
+@media (max-width:1080px){
+  .test_text{
+    font-size: 12px;
+  }
+}

@@ -13,15 +13,12 @@ const Custom = () => {
 
 
           <div className='display_custom_bottom'>
+            <div className='custom_resposive'>
             <div className='star'>✦</div>
             <p className='para_custom'>10Y experience in digital marketing services</p>
-            
-            {/* <button className='custom_button'>
-              Contact US <span className='arrow_icon_custom'> <LuArrowUpRight size={16} /></span>
-            </button> */}
+            </div>
              <button className="discover-custom">
                         Contact Us
-                         {/* <LuArrowUpRight className="arrow-icon_custom" /> */}
                       </button>
           </div>
         </div>

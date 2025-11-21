@@ -1,197 +1,22 @@
-.custom{
-    width: 100%;
-    height: auto;
-    margin: 0%;
-    padding: 0%;
-}
-.custom_container{
-    width: 100%;
-    display: flex;
-    padding: 40px;
-    gap: 2rem;
-    align-items: center;
-    justify-content: space-around;
-}
-.left_custom{
-    /* width: 100%; */
-    max-width: 70%;
-    /* margin-top: -90px; */
-    background:#4A31FE;
-    padding: 30px;
-    border-radius: 20px;
-}
-.heading_custom{
-    font-weight: bold;
-    font-size: 4rem;
-    color: white;
-    margin-bottom: 30px;
-}
-.span_custom{
-    color: #FDC448;
-    font-size: 4rem;
-    font-weight: bold;
-    margin-top: 20px;
-}
-/* .custom_hr{
-    margin-top: 50px;
-} */
-.star{
-    font-size: 3rem;
-}
-.display_custom_bottom{
-    width: 100%;
-    height: auto;
-    display: flex;
-    align-items: center;
-    gap: 3rem;
-    justify-content: space-around;
-}
-.para_custom{
-    font-size: 20px;
-    color: white;
-}
-
-/* .discover-custom {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #ffc64d;
-  color: black;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 50px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.discover-custom:hover {
-  background-color: #a06bf2;
-  color: black;
-} */
-/* From Uiverse.io by gharsh11032000 */ 
-.discover-custom {
-  cursor: pointer;
-  position: relative;
-  padding: 10px 24px;
-  font-size: 18px;
-  color: #fff;
-  border: 2px solid rgb(193, 163, 98);
-  border-radius: 34px;
-  background-color: #FDC448;
-  font-weight: 600;
-  transition: all 3s cubic-bezier(0.23, 1, 0.320, 1);
-  overflow: hidden;
-}
-
-.discover-custom::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 50px;
-  height: 50px;
-  border-radius: inherit;
-  scale: 0;
-  z-index: -1;
-  background-color: #A06BF2;
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
-}
-
-.discover-custom:hover::before {
-  scale: 3;
-}
-
-.discover-custom:hover {
-  color: #212121;
-  scale: 1.1;
-  box-shadow: 0 0px 20px rgba(193, 163, 98,0.4);
-}
-
-.discover-custom:active {
-  scale: 1;
-}
-
-
-
-.arrow-icon_custom {
-  background-color: white;
-  border-radius: 50%;
-  padding: 4px;
-}
-
-/* .custom_button{
-   display: flex;
-   align-items: center;
-   gap: 8px;
-   background-color: #ffc64d;
-   color: black;
-   border: none;
-   padding: 10px 22px;
-   border-radius: 999px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.3s;
-} */
-/* .custom_button:hover{
-     background-color:#A06BF2;
-    color: #fff;
-} */
-/* .arrow_icon_custom{
-    background-color: white;
-  border-radius: 50%;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-} */
-.arrow_icon_custom:hover{
-    background-color: blue;
-}
-.image_custom{
-    width: 100%;
-}
-.image_custom img{
-    /* width: 100%; */
-    width: 24%;
-/* aspect-ratio: 16/9; */
-/* height: ; */
-object-fit: contain;
-}
-.right_custom{
-    width: 30%;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* ---------------------- */
+/*      BASE STYLES       */
+/* ---------------------- */
 .custom {
   width: 100%;
   height: auto;
   margin: 0;
   padding: 0;
 }
-
+.custom_resposive {
+    display: flex;
+    align-self: center;
+    gap: 2rem;
+  }
 .custom_container {
   width: 94%;
   display: flex;
   padding: 40px;
-  gap: 1rem;
+  gap: 2rem;
   align-items: center;
   justify-content: space-between;
 }
@@ -207,14 +32,13 @@ object-fit: contain;
   font-weight: bold;
   font-size: 4rem;
   color: white;
-  margin-bottom: 0px;
+  margin-bottom: 10px;
 }
 
 .span_custom {
-  color: yellow;
+  color: #FDC448;
   font-size: 4rem;
   font-weight: bold;
-  margin-top: 20px;
 }
 
 .display_custom_bottom {
@@ -222,11 +46,13 @@ object-fit: contain;
   display: flex;
   align-items: center;
   gap: 3rem;
-  justify-content: space-around;
+  justify-content: flex-start;
+  margin-top: 25px;
 }
 
 .star {
   font-size: 3rem;
+  color: white;
 }
 
 .para_custom {
@@ -234,50 +60,38 @@ object-fit: contain;
   color: white;
 }
 
-.custom_button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #ffc64d;
-  color: black;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 500;
+/* Contact Button */
+.discover-custom {
   cursor: pointer;
-  transition: background 0.3s;
+  position: relative;
+  padding: 10px 24px;
+  font-size: 18px;
+  color: #212121;
+  border: 2px solid rgb(193, 163, 98);
+  border-radius: 34px;
+  background-color: #FDC448;
+  font-weight: 600;
+  overflow: hidden;
+  transition: 0.3s ease;
 }
 
-.custom_button:hover {
+.discover-custom:hover {
   background-color: #A06BF2;
-  color: #fff;
+  color: white;
 }
 
-.arrow_icon_custom {
+.arrow-icon_custom {
   background-color: white;
   border-radius: 50%;
   padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.arrow_icon_custom:hover {
-  background-color: blue;
-}
-
+/* Right Image */
 .right_custom {
   width: 30%;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.image_custom {
-  width: 100%;
-  display: flex;
-  justify-content: center;
 }
 
 .image_custom img {
@@ -287,24 +101,26 @@ object-fit: contain;
   border-radius: 15px;
 }
 
+/* ---------------------- */
+/*     TABLET 1024px      */
+/* ---------------------- */
 @media (max-width: 1024px) {
   .custom_container {
     flex-direction: column;
     padding: 30px;
     gap: 2rem;
   }
-.image_custom img {
-    width: 100%;
-    /* max-width: 24%; */
-    aspect-ratio: 16 / 9;
-    object-fit: contain;
-}
-  .left_custom {
-    width: 100%;
+
+  .custom_resposive {
+    display: flex;
+    align-self: center;
+    gap: 2rem;
   }
 
+  .left_custom,
   .right_custom {
-    width: 80%;
+    width: 92%;
+    padding-right: 0px;
   }
 
   .heading_custom,
@@ -313,16 +129,9 @@ object-fit: contain;
   }
 
   .display_custom_bottom {
-    gap: 2rem;
-    justify-content: flex-start;
-  }
-
-  .para_custom {
-    font-size: 18px;
+    gap: 1.5rem;
   }
 }
-
-
 
 @media (max-width: 768px) {
 
@@ -334,26 +143,21 @@ object-fit: contain;
   .display_custom_bottom {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
   }
 
   .star {
-    font-size: 2.4rem;
+    font-size: 2.2rem;
   }
 
   .para_custom {
-    font-size: 16px;
-  }
-
-  .right_custom {
-    width: 90%;
+    font-size: 17px;
   }
 }
 
-
-
+/* ---------------------- */
+/*     MOBILE 480px       */
+/* ---------------------- */
 @media (max-width: 480px) {
-
   .custom_container {
     padding: 20px;
     gap: 1.5rem;
@@ -365,27 +169,29 @@ object-fit: contain;
 
   .heading_custom,
   .span_custom {
-    font-size: 1.8rem;
-    line-height: 2.2rem;
+    font-size: 2rem;
+    line-height: 2.3rem;
   }
 
   .display_custom_bottom {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    gap: 0.8rem;
   }
 
   .star {
-    font-size: 2rem;
+    font-size: 2.7rem;
   }
 
   .para_custom {
-    font-size: 15px;
+    font-size: 18px;
   }
 
-  .discover-btn {
+  .discover-custom {
     padding: 8px 18px;
-    font-size: 13px;
+    font-size: 15px;
+    display: flex;
+    width: 100%;
+    justify-content: center;
   }
 
   .right_custom {
@@ -394,5 +200,65 @@ object-fit: contain;
 
   .image_custom img {
     width: 100%;
+  }
+}
+
+/* ---------------------- */
+/*      MOBILE 420px      */
+/* ---------------------- */
+@media (max-width: 420px) {
+
+  .heading_custom,
+  .span_custom {
+    font-size: 1.7rem;
+  }
+
+  .display_custom_bottom {
+    gap: 0.6rem;
+  }
+
+  .para_custom {
+    font-size: 14px;
+  }
+
+  .discover-custom {
+    font-size: 14px;
+    padding: 7px 16px;
+  }
+
+  .star {
+    font-size: 1.6rem;
+  }
+}
+
+/* ---------------------- */
+/*      SMALL 370px       */
+/* ---------------------- */
+@media (max-width: 370px) {
+  .custom_container {
+    padding: 15px;
+  }
+
+  .left_custom {
+    padding: 15px;
+  }
+
+  .heading_custom,
+  .span_custom {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .para_custom {
+    font-size: 13px;
+  }
+
+  .discover-custom {
+    font-size: 13px;
+    padding: 6px 14px;
+  }
+
+  .star {
+    font-size: 1.5rem;
   }
 }

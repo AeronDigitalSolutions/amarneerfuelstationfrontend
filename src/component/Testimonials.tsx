@@ -45,7 +45,7 @@ const Testimonials: React.FC = () => {
   return (
     <section className="testimonial">
       <div className="testimonial_text">
-        <p className="test_text">Testimonials</p>
+        <p className=""test_text>Testimonials</p>
         <p className="text_para">REAL FEEDBACK FROM REAL CLIENTS.</p>
       </div>
 

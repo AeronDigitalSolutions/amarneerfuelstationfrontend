@@ -1,6 +1,5 @@
 .services {
-  /* background-color: #01011a; */
-  padding: 15px 20px;
+  padding: 80px 20px;
   font-family: "Poppins", sans-serif;
 }
 
@@ -10,7 +9,6 @@
 
 .services_para {
   font-size: 1rem;
-  /* color: white; */
   text-transform: uppercase;
   font-weight: bold;
   margin-bottom: 5px;
@@ -31,16 +29,16 @@
   margin-top: 50px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2.5rem;
+  gap: 2.2rem;
   margin-bottom: 33px;
 }
 
+/* BOX */
 .service-box {
   text-decoration: none;
   color: white;
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
 .top-tab img {
@@ -65,10 +63,6 @@
               0 4px 10px rgba(255, 179, 0, 0.4);
 }
 
-.box_grid_services:hover .services_para {
-  color: #ffb300;
-}
-
 .icon {
   background: rgba(255, 255, 255, 0.15);
   width: 80px;
@@ -91,11 +85,9 @@
   margin-top: 10px;
 }
 
-
-
 @media (max-width: 1100px) {
   .grid_services {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .services_tittle {
@@ -104,22 +96,22 @@
 }
 
 @media (max-width: 768px) {
-  /* .grid_services {
-    grid-template-columns: 2fr;
-  } */
+  .grid_services {
+    grid-template-columns: repeat(2,1fr);
+    padding: 0px 6px;
+  }
+  .services_para{
+    font-size: 16px;
+  }
 
   .services_tittle {
     font-size: 2.2rem;
   }
-}
-
-@media (max-width: 480px) {
-  .services {
-    padding: 60px 15px;
-  }
 
   .box_grid_services {
-    padding: 20px;
+    padding: 25px;
+            width: 155px;
+        height: 192px;
   }
 
   .icon {
@@ -130,12 +122,79 @@
   .icon img {
     width: 45px;
   }
+}
+
+@media (max-width: 480px) {
+  .services {
+    padding: 50px 15px;
+  }
+  .services_para{
+    font-size: 16px;
+            line-height: 19px;
+  }
 
   .services_tittle {
-    font-size: 1.8rem;
+    font-size: 1.9rem;
+  }
+
+  .grid_services {
+    gap: 1.8rem;
+  }
+
+  .box_grid_services {
+    padding: 20px;
   }
 
   .services_desc {
-    font-size: 16px;
+    font-size: 15px;
+  }
+
+  .top-tab img {
+    width: 130px;
+  }
+}
+
+@media (max-width: 420px) {
+  .services_tittle {
+    font-size: 1.7rem;
+  }
+
+  .icon {
+    width: 60px;
+    height: 50px;
+  }
+
+  .icon img {
+    width: 40px;
+  }
+
+  .box_grid_services {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 370px) {
+  .services {
+    padding: 40px 10px;
+  }
+
+  .services_tittle {
+    font-size: 1.5rem;
+  }
+
+  .grid_services {
+    gap: 1.5rem;
+  }
+
+  .box_grid_services {
+    padding: 15px;
+  }
+
+  .services_desc {
+    font-size: 14px;
+  }
+
+  .top-tab img {
+    width: 110px;
   }
 }
