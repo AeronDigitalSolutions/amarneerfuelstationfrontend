@@ -1,6 +1,6 @@
 .services {
   background-color: #01011a;
-  padding: 80px 20px;
+  padding: 15px 20px;
   font-family: "Poppins", sans-serif;
 }
 
@@ -32,6 +32,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2.5rem;
+  margin-bottom: 33px;
 }
 
 .service-box {

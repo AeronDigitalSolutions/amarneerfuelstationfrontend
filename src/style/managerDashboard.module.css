@@ -1,0 +1,140 @@
+.page{display:flex;min-height:100vh;background:#f8fafc}
+.sidebar{width:220px;padding:20px;background:#fff;border-right:1px solid #eef2f7}
+.brand{font-weight:700;color:#0f766e;margin-bottom:12px}
+.link{display:block;padding:8px 6px;color:#344054;text-decoration:none;border-radius:6px}
+.link:hover{background:#f1f5f9}
+.main{flex:1;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;padding:18px;border-bottom:1px solid #eef2f7;background:#fff}
+.subtitle{color:#6b7280;margin:0}
+.user{font-weight:600}
+.content{padding:20px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.metricCard{background:#fff;padding:14px;border-radius:8px}
+.metricValue{font-weight:700;font-size:18px;margin-top:6px}
+.panel{background:#fff;padding:12px;border-radius:8px}
+.list{margin:0;padding-left:18px}
+
+
+
+.page {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  background: #f5f7fb;
+}
+
+.sidebar {
+  width: 250px;
+  background: #111827;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 25px;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.link {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: #d1d5db;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.link:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.active {
+  background: #2563eb;
+  color: white !important;
+}
+
+.logout {
+  margin-top: auto;
+  padding: 12px;
+  background: #dc2626;
+  color: white;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.logout:hover {
+  background: #b91c1c;
+}
+
+/* MAIN SECTION */
+.main {
+  flex: 1;
+  padding: 25px;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.user {
+  font-weight: bold;
+  background: #e5e7eb;
+  padding: 10px 16px;
+  border-radius: 20px;
+}
+
+/* METRICS GRID */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 25px;
+}
+
+.metricCard {
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.metricValue {
+  font-size: 26px;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+/* PANEL */
+.panel {
+  background: white;
+  padding: 20px;
+  margin-top: 25px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+}

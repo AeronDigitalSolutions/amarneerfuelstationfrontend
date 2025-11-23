@@ -1,0 +1,106 @@
+.page{display:flex;min-height:100vh;background:#f8fafc}
+.sidebar{width:220px;padding:20px;background:#fff;border-right:1px solid #eef2f7}
+.brand{font-weight:700;color:#0f766e;margin-bottom:12px}
+.link{display:block;padding:8px 6px;color:#344054;text-decoration:none;border-radius:6px}
+.main{flex:1;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;padding:18px;border-bottom:1px solid #eef2f7;background:#fff}
+.subtitle{color:#6b7280;margin:0}
+.content{padding:20px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.metricCard{background:#fff;padding:14px;border-radius:8px}
+.metricValue{font-weight:700;font-size:18px;margin-top:6px}
+.panel{background:#fff;padding:12px;border-radius:8px}
+.list{margin:0;padding-left:18px}
+
+
+.page {
+  display: flex;
+  height: 100vh;
+  background: #f6f7fb;
+  font-family: "Inter", sans-serif;
+}
+
+.sidebar {
+  width: 260px;
+  background: #111827;
+  color: white;
+  padding: 25px;
+}
+
+.brand {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 28px;
+}
+
+.link {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  color: #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 6px;
+  transition: 0.2s;
+}
+
+.link:hover {
+  background: #1f2937;
+  color: #fff;
+}
+
+.active {
+  background: #2563eb;
+  color: #fff !important;
+}
+
+.main {
+  flex: 1;
+  padding: 25px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subtitle {
+  color: #6b7280;
+}
+
+.user {
+  background: #2563eb;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.summaryGrid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.summaryCard {
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+  text-align: center;
+}
+
+.summaryCard p {
+  font-size: 20px;
+  margin-top: 8px;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.content {
+  margin-top: 25px;
+}

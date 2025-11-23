@@ -11,8 +11,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// 🌐 Hardcoded backend base URL
-const BASE_URL = "https://amarneerfuelstationbackend.onrender.com/api";
+// 🔥 Auto Switch Backend (Local + Live)
+const BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000/api"
+    : "https://amarneerfuelstationbackend.onrender.com/api";
 
 type DashboardData = {
   totalSales: number;
@@ -32,7 +35,7 @@ export default function Dashboard() {
   useEffect(() => {
     console.log("🌐 Using API Base URL:", BASE_URL);
     fetchData();
-    const interval = setInterval(fetchData, 10000); // Auto-refresh every 10s
+    const interval = setInterval(fetchData, 10000); // Auto-refresh every 10 sec
     return () => clearInterval(interval);
   }, []);
 

@@ -25,10 +25,11 @@ const Header = () => {
           </div>
 
           <ul className={isOpen ? "nav_link active" : "nav_link"}>
-            <li><a href='#'>Home</a></li>
-            <li><a href='#'>Services</a></li>
+            <li><a href='/'>Home</a></li>
+            <li><Link to='/services'>Services</Link></li>
+            <li><a href='#'>Blog</a></li>
             <li><a href='#'>Projects</a></li>
-            <li><Link  to="/sign">Sign</Link></li>
+            {/* <li><Link  to="/sign">Blog</Link></li> */}
             <li><Link  to="/contact">CONTACT</Link></li>
 
             <button className="discover-btn_header">

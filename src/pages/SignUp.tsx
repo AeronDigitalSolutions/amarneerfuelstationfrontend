@@ -1,8 +1,12 @@
 // import React from 'react'
+import Footer from '../component/Footer'
+import Header from '../component/Header'
 import '../pagecss/SignUp.css'
 import { Link } from 'react-router-dom'
 const SignUp = () => {
   return (
+    <>
+   <Header/>
       <div className="signup-wrapper">
 
       <div className="signup-card">
@@ -17,7 +21,7 @@ const SignUp = () => {
         />
 
         <label className="label">Email <span className='label_ex'>*</span></label>
-        <input
+        <input style={{color:"#6e6e6e"}}
           type="email"
           className="input-field"
           placeholder="hello@example.com"
@@ -40,6 +44,8 @@ const SignUp = () => {
       </div>
 
     </div>
+    <Footer/>
+    </>
   )
 }
 

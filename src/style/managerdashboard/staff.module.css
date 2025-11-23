@@ -1,0 +1,21 @@
+.container { padding:18px; background:#fff; border-radius:12px; box-shadow:0 6px 18px rgba(12,12,12,0.05); }
+.header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; }
+.header h2 { margin:0; font-size:20px; }
+.sub { color:#6b7280; font-size:13px; }
+.error { color:#b91c1c; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:14px; }
+.card { padding:14px; border-radius:10px; background:linear-gradient(#fff,#fbfdff); border:1px solid #eef2f7; min-height:92px; display:flex; flex-direction:column; justify-content:space-between; }
+.cardHead { display:flex; gap:12px; align-items:center; }
+.icon { font-size:26px; color:#0ea5a3; }
+.iconBadge { font-size:18px; background:#f3f4f6; padding:6px; border-radius:8px; }
+.cardTitle { font-size:13px; color:#374151; }
+.cardValue { font-size:18px; font-weight:700; color:#111827; }
+.cardValueSmall { font-size:13px; font-weight:600; }
+.cardFoot { font-size:12px; color:#6b7280; margin-top:8px; }
+.recent { margin-top:12px; }
+.loading, .empty { color:#6b7280; }
+.list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+.listItem { display:flex; justify-content:space-between; align-items:center; padding:10px; border-radius:8px; background:#fbfdff; border:1px solid #f0f6ff; }
+.name { font-size:14px; }
+.meta { font-size:12px; color:#6b7280; }
+.time { font-size:13px; color:#374151; }

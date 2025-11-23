@@ -1,0 +1,21 @@
+.container { padding: 18px; background:#fff; border-radius:12px; box-shadow:0 6px 18px rgba(10,10,10,0.04); }
+.header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; }
+.header h2 { margin:0; font-size:20px; }
+.sub { color:#6b7280; font-size:13px; }
+.error { color:#b91c1c; margin:10px 0; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:14px; }
+.card { padding:14px; border-radius:10px; border:1px solid #eef2f7; background:linear-gradient(#fff,#fbfbff); display:flex; flex-direction:column; justify-content:space-between; min-height:92px; }
+.cardHead { display:flex; gap:12px; align-items:center; }
+.icon { font-size:26px; color:#2563eb; }
+.warnIcon { font-size:22px; color:#f97316; }
+.iconBadge { font-size:20px; background:#f3f4f6; padding:6px; border-radius:8px; }
+.cardTitle { font-size:13px; color:#374151; }
+.cardValue { font-size:18px; font-weight:700; color:#111827; }
+.cardFoot { font-size:12px; color:#6b7280; margin-top:8px; }
+.recent { margin-top:12px; }
+.loading { color:#6b7280; }
+.empty { color:#6b7280; }
+.list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+.listItem { display:flex; justify-content:space-between; padding:10px; border-radius:8px; background:#fbfdff; border:1px solid #f0f6ff; align-items:center; }
+.tankTitle { font-size:14px; }
+.tankMeta { font-size:12px; color:#6b7280; }

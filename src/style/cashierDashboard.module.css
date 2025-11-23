@@ -1,0 +1,135 @@
+.page{display:flex;min-height:100vh;background:#f7fafc}
+.sidebar{width:200px;padding:18px;background:#fff;border-right:1px solid #eef2f7}
+.brand{font-weight:700;color:#0f766e;margin-bottom:12px}
+.link{display:block;padding:8px 6px;color:#344054;text-decoration:none;border-radius:6px}
+.main{flex:1;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid #eef2f7;background:#fff}
+.content{padding:20px}
+.posBox{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.formPlaceholder{background:#fff;border-radius:8px;padding:20px;min-height:220px}
+.receipts{margin:0;padding-left:18px}
+
+
+.page {
+  display: flex;
+  height: 100vh;
+  background: #f3f4f6;
+  font-family: "Inter", sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 250px;
+  background: #111827;
+  padding: 22px;
+  color: #d1d5db;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  font-size: 21px;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 25px;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.link {
+  padding: 12px;
+  text-align: left;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #d1d5db;
+}
+
+.link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+.active {
+  background: #2563eb;
+  color: white;
+}
+
+.logout {
+  margin-top: auto;
+  padding: 12px;
+  background: #dc2626;
+  color: white;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.logout:hover {
+  background: #b91c1c;
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.user {
+  background: white;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+/* METRICS */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 25px;
+}
+
+.metricCard {
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.metricValue {
+  font-size: 26px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.panel {
+  margin-top: 25px;
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
