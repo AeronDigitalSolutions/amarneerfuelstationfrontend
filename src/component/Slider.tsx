@@ -16,6 +16,11 @@ const Slider = () => {
   const nextSlide = () => setSlide(slide === 4 ? 1 : slide + 1);
   const prevSlide = () => setSlide(slide === 1 ? 4 : slide - 1);
   return (
+  <>
+     <div className='slider_top_container'>
+        <p className='slider_top_para' data-aos="fade-in"  data-aos-anchor-placement="bottom-center">ourproject</p>
+        <p className='slider_top_tittle'>latest project powerfull results.</p>
+      </div>
     <div className="slider-container">
       {slide === 1 && (
         <div className="slider-card">
@@ -124,6 +129,7 @@ const Slider = () => {
         </button>
       </div>
     </div>
+    </>
   )
 }
 

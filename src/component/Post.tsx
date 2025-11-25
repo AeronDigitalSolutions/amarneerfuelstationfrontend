@@ -16,7 +16,7 @@ const Post = () => {
         </div>
 
         <div className="about-right">
-          <p className="about-subtitle">ABOUT US</p>
+          <p className="about-subtitle" data-aos="fade-in"  data-aos-anchor-placement="bottom-center">ABOUT US</p>
           <p className="about-title">
             OUR ELEVATED DIGITAL <br /> EXPERIENCES.
           </p>

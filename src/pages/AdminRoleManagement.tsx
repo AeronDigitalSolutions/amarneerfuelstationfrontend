@@ -295,9 +295,17 @@ export default function AdminRoleManagement() {
      -------------------- */
   return (
     <div className={styles.container}>
-      <h1>🛠️ Admin & Role Management</h1>
+      <h1>Admin & Role Management</h1>
 
       <div className={styles.topRow}>
+         <div>
+          <input
+            className={styles.searchInput}
+            placeholder="Search users..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+        </div>
         <div className={styles.leftControls}>
           <button className={styles.primaryBtn} onClick={openCreateModal}>
             ➕ Create User
@@ -318,14 +326,14 @@ export default function AdminRoleManagement() {
           </select>
         </div>
 
-        <div>
+        {/* <div>
           <input
             className={styles.searchInput}
             placeholder="Search users..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-        </div>
+        </div> */}
       </div>
 
       {/* === User Table === */}

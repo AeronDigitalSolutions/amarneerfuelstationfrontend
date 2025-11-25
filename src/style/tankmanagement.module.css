@@ -18,6 +18,11 @@ h1 {
 }
 
 /* Add Tank Entry Button */
+.btn_tank{
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
 .addButton {
   background: #2563eb;
   color: white;
@@ -36,6 +41,7 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  justify-content: center;
   align-items: flex-end;
   margin-bottom: 16px;
   width: 100%;
@@ -70,7 +76,8 @@ h1 {
 
 /* small buttons used in filter bar */
 .smallBtn {
- padding: 8px 10px;
+ /* padding: 8px 10px; */
+ padding: 10px 20px;
     border-radius: 6px;
     border: 1px solid #94a3b8;
     background: #0836eff7;
@@ -78,6 +85,7 @@ h1 {
 }
 .smallBtn:hover {
   background: #f1f5f9;
+  color: #000;
 }
 
 /* ====== FORM GRID INSIDE MODAL ====== */
@@ -132,6 +140,10 @@ select:focus {
 }
 
 /* ====== TABLE (FULL WIDTH) ====== */
+.tank_records{
+  margin-top: 27px;
+  margin-bottom: 28px;
+}
 .tableWrapper {
   width: 100%;
   overflow-x: auto; /* allow horizontal scroll on very small screens */
@@ -170,12 +182,12 @@ select:focus {
 }
 
 /* Zebra rows & hover */
-.rowEven {
+/* .rowEven {
   background: #ffffff;
 }
 .rowOdd {
   background: #fbfbfd;
-}
+} */
 
 .table tbody tr:hover {
   background: #f1f5f9;

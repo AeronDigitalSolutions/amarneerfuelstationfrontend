@@ -67,6 +67,7 @@
   border-radius: 34px;
   background-color: #FDC448;
   font-weight: 400;
+  margin-top: 20px;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
   overflow: hidden;
 }
@@ -182,7 +183,7 @@
   }
 
   .right-panel {
-    flex: 1 1 500px;
+    flex: 1 1 319px;
   }
 
   .text_question {
@@ -240,4 +241,33 @@
   .accordion-body {
     font-size: 14px;
   }
+}
+
+
+@media (max-width:420px){
+      .display_img_question img {
+        width: 93px;
+        height: auto;
+    }
+        .name_question {
+        font-size: 19px;
+    }
+    .desc_question {
+    font-size: 16px;
+  }
+  .text_question {
+        font-size: 19px;
+    }
+    .contact-btn{
+      margin-top: 30px;
+      /* color: black; */
+    }
+        .right-panel {
+        flex: 1 1 300px;
+        margin-top: 27px;
+    }
+    .contact-btn{
+      /* font-size: 1.3rem; */
+      font-size: 0.8rem;
+    }
 }

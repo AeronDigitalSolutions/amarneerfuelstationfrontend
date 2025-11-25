@@ -106,7 +106,7 @@ export default function SignIn() {
 
         <div className="login-box">
           <p className="title_login">
-            <span className="green">E</span>rratum<span className="dot">.</span>
+            <span className="green">P</span>ETROL PUMP<span className="dot">.</span>
           </p>
 
           <input

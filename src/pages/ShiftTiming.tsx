@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "../style/shifttiming.module.css";
-
+import { MdDelete } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
 type Shift = {
   _id?: string;
   shiftName: string;
@@ -87,7 +88,9 @@ export default function ShiftTiming() {
         <div className={styles.header}>
           <h2>Shift Timing Management</h2>
           <div>
+            <div className={styles.btn_shift}>
             <button className={styles.primaryBtn} onClick={() => setShowAddModal(true)}>➕ Add Shift</button>
+          </div>
           </div>
         </div>
 
@@ -107,8 +110,8 @@ export default function ShiftTiming() {
                 <td>{s.startTime}</td>
                 <td>{s.endTime}</td>
                 <td>
-                  <button className={styles.editBtn} onClick={() => openEdit(s)}>Edit</button>
-                  <button className={styles.deleteBtn} onClick={() => deleteShift(s._id)}>Delete</button>
+                  <button className={styles.editBtn} onClick={() => openEdit(s)}><MdEdit /></button>
+                  <button className={styles.deleteBtn} onClick={() => deleteShift(s._id)}><MdDelete /></button>
                 </td>
               </tr>
             ))}

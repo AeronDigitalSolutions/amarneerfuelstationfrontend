@@ -213,7 +213,7 @@ export default function AttendancePayroll() {
 
   return (
     <div className={styles.container}>
-      <h1>👷 Attendance & Payroll Management</h1>
+      <h1>Attendance & Payroll Management</h1>
 
       {/* ======================================================
            TOP ACTION BUTTONS
@@ -295,10 +295,13 @@ export default function AttendancePayroll() {
             <option value="Leave">Leave</option>
           </select>
 
+        
+        </div>
+        <div className={styles.btn_attendance}>
           <button className={styles.clearButton} onClick={clearFilters}>
             Clear
           </button>
-        </div>
+          </div>
       </div>
 
       {/* ======================================================

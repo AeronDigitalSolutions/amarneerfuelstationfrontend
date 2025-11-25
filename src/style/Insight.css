@@ -19,7 +19,7 @@
 .heading {
   font-size: 3rem;
   font-weight: 700;
-  background: linear-gradient(to right, #b397ff, #7e68ff);
+  background: linear-gradient(to right, #e4e3e7, #7e68ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-top: 10px;
@@ -73,7 +73,6 @@
   opacity: 0.9;
 }
 
-/* 🌐 Responsive */
 @media (max-width: 1024px) {
   .articles-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -94,4 +93,29 @@
   .heading {
     font-size: 2rem;
   }
+}
+
+@media(max-width:420px){
+  .subtext{
+    color: rgb(175, 169, 169);
+    font-weight: 500;
+    font-size: 10px;
+  }
+  .articles{
+    padding-bottom: 0px;
+    padding-top: 20px;
+  }
+  .article-card {
+  background: none;
+  box-shadow: none;
+}
+.meta{
+  font-size: 19px;
+}
+.article-info h3{
+  font-size: 19px;
+}
+.author{
+  font-size: 17px;
+}
 }

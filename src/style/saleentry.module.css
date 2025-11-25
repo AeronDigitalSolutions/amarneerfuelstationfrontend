@@ -8,13 +8,13 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.2rem;
   overflow-x: hidden !important;
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
 }
 
@@ -42,8 +42,9 @@
 /* ===== FILTER BAR (NEW) ===== */
 .filterBar {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   gap: 10px;
+  justify-content: center;
   align-items: flex-end;
   width: 100%;
 }
@@ -68,16 +69,27 @@
   min-width: 120px;
   box-sizing: border-box;
 }
+.title{
+  display: flex;
+  justify-content: center;
+}
+.btnWrapper {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
 
 /* small buttons used in filter bar */
 .smallBtn {
-      padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid #94a3b8;
-    background: white;
-    cursor: pointer;
-    color: black;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #94a3b8;
+  background: white;
+  cursor: pointer;
+  color: black;
 }
+
 .smallBtn:hover {
   background: #007bf5;
   color: white;
@@ -91,6 +103,7 @@
   color: #fff;
   cursor: pointer;
 }
+
 .smallBtnPrimary:hover {
   background: #1e40af;
 }
@@ -130,12 +143,16 @@
   border-collapse: collapse;
   background: white;
 }
-.heading{
+z
+.heading {
   padding: 2rem;
 }
+
 tr {
   padding: 2rem;
 }
+
+
 tr:hover {
   background: #f7f5f5;
   cursor: pointer;
@@ -152,18 +169,20 @@ tr:hover {
   font-size: 14px;
   font-weight: 400;
   border-color: #e6e6e6;
-  padding: .9375rem .625rem;
+  padding: 0.9375rem .270rem;
+  /* padding: .9375rem .625rem; */
   /* color: #969Ba0; */
   color: rgb(102, 99, 99);
 }
 
 .table th {
   background-color: #fff;
-  font-weight: bolder;
+  font-weight: bold;
   text-transform: uppercase;
   color: #000;
-    padding-top:1.875rem;;
-/* padding-right: 1px;
+  padding-top: 1.875rem;
+  ;
+  /* padding-right: 1px;
 padding-left: 0px; */
   font-size: 1rem;
   letter-spacing: .0313rem;
@@ -207,11 +226,7 @@ padding-left: 0px; */
 }
 
 .deleteBtn {
-  background: #ffD4CB;
-}
-
-.deleteBtn:hover {
-  background: #e68c7a;
+  background: #dc2626;
 }
 
 /* ===============================
@@ -232,6 +247,7 @@ padding-left: 0px; */
   font-size: 12px;
   line-height: 1;
 }
+
 .sortBtn:hover {
   transform: translateY(-1px);
 }
@@ -271,6 +287,16 @@ padding-left: 0px; */
 }
 
 /* MODAL FORM ELEMENTS */
+/* .grid_form_sale{
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  width: 100%;
+} */
+ form{
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  width: 100%;
+ }
 .form label {
   display: block;
   font-weight: 600;
@@ -374,6 +400,7 @@ padding-left: 0px; */
     min-width: 100%;
   }
 }
+
 /* Search inside filter row */
 .searchGroup {
   display: flex;
@@ -388,4 +415,3 @@ padding-left: 0px; */
   width: 100%;
   box-sizing: border-box;
 }
-

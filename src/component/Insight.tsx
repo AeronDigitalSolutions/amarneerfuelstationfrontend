@@ -9,7 +9,7 @@ const Insight = () => {
   return (
   <section className="articles">
       <div className="articles-header">
-        <p className="subtext">INSIGHTS & RESOURCES</p>
+        <p className="subtext" data-aos="fade-in">INSIGHTS & RESOURCES</p>
         <h1 className="heading">EXPLORE OUR ARTICLES.</h1>
       </div>
 
