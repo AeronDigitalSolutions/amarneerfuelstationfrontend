@@ -12,7 +12,7 @@ export default function DashboardMain() {
   return (
     <>
     <Header/>
-    <h1 style={{fontSize:'2rem',color:'Black', display:'flex', justifyContent:'center' ,marginBottom:'0px'}}>Petro Pump DashBoard</h1>
+    <h1 style={{fontSize:'2rem',color:'Black', display:'flex', justifyContent:'center' ,marginBottom:'0px', marginTop:'30px'}}>Petro Pump DashBoard</h1>
     <p style={{fontSize:'1.3rem',color:'grey', display:'flex', justifyContent:'center' , marginTop:'10px'}}>Welcome! Choose a Section a section to begin</p>
    
 <div className="dash">

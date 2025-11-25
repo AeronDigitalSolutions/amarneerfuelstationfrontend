@@ -328,7 +328,7 @@ export default function TankManagement() {
       {/* ADD NEW BUTTON */}
       <div className={styles.btn_tank}>
       <button className={styles.addButton} onClick={() => setModalOpen(true)}>
-        ➕ Add Tank Entry
+        Add Tank Entry ➕ 
       </button>
 </div>
       {/* ===== FILTER BAR (between Add button and table) ===== */}
@@ -410,7 +410,7 @@ export default function TankManagement() {
           }}
         >
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <h2>{isUpdating ? "🔄 Update Tank Entry" : "➕ Add Tank Entry"}</h2>
+            <h2>{isUpdating ? "🔄 Update Tank Entry" : "Add Tank Entry"}</h2>
 
             <button className={styles.closeBtn} onClick={() => setModalOpen(false)}>
               ✖

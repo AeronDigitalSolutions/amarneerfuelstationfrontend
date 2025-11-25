@@ -89,10 +89,10 @@ export default function PumpNo() {
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h2>🛢 Pump Management</h2>
+          <h2> Pump Management</h2>
           <div>
             <button className={styles.primaryBtn} onClick={() => setShowModal(true)}>
-              ➕ Add Pump
+              Add Pump ➕ 
             </button>
           </div>
         </div>
@@ -129,13 +129,16 @@ export default function PumpNo() {
             <button className={styles.closeBtn} onClick={() => setShowModal(false)}>✖</button>
 
             <h2>Add Pump</h2>
-
+<div className={styles.pump_grid}>
+  <div className={styles.number}>
             <label>Pump Number</label>
             <input name="pumpNo" value={newPump.pumpNo} onChange={handleChange} />
-
+</div>
+<div className={styles.number}>
             <label>Pump Name</label>
             <input name="pumpName" value={newPump.pumpName} onChange={handleChange} />
-
+            </div>
+</div>
             <label>Select Fuel Types</label>
             <div className={styles.fuelChips}>
               {["Petrol", "Diesel", "Premium Petrol", "CNG"].map((fuel) => (
@@ -152,7 +155,7 @@ export default function PumpNo() {
 
             <div className={styles.modalButtons}>
               <button className={styles.saveBtn} onClick={savePump} disabled={loading}>
-                {loading ? "Saving..." : "💾 Save Pump"}
+                {loading ? "Saving..." : " Save Pump 💾"}
               </button>
 
               <button className={styles.cancelBtn} onClick={() => setShowModal(false)}>Cancel</button>

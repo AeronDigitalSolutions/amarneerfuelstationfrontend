@@ -88,14 +88,14 @@ export default function FuelRates() {
               className={styles.primaryBtn}
               onClick={() => setShowModal(true)}
             >
-              ✏️ Edit Rates
+               Edit Rates ✏️
             </button>
           </div>
         </div>
 
         {latestRates ? (
           <div className={styles.tableSection}>
-            <h3>📊 Latest Fuel Rates</h3>
+            <h3 className={styles.latest}> Latest Fuel Rates</h3>
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -167,7 +167,7 @@ export default function FuelRates() {
 
               <div className={styles.modalButtons}>
                 <button className={styles.saveBtn} onClick={saveRates} disabled={loading}>
-                  {loading ? "Saving..." : "💾 Save Rates"}
+                  {loading ? "Saving..." : "Save Rates"}
                 </button>
 
                 <button className={styles.cancelBtn} onClick={() => setShowModal(false)}>

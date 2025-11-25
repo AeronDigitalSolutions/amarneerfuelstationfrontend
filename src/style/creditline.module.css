@@ -34,18 +34,20 @@ h2 {
   width: 100%;
   max-width: 1000px;
   display: flex;
-  gap: 1rem;
+  gap: 13px;
   justify-content: flex-end;
-  margin-bottom: 0.8rem; /* buttons above the list */
+  margin-bottom: 0.8rem;
+  /* buttons above the list */
 }
 
 .topButtons button {
   background: #2563eb;
   color: #fff;
+  width: 360px;
   border: none;
-  padding: 0.85rem 1.4rem;
+  padding: 0.8rem 1rem;
   border-radius: 8px;
-  font-size: 0.98rem;
+  font-size: 0.90rem;
   font-weight: 600;
   cursor: pointer;
   transition: 0.25s ease;
@@ -53,6 +55,14 @@ h2 {
 
 .topButtons button:hover {
   background: #1d4ed8;
+}
+
+.searchBar {
+  width: 100%;
+  padding: 11px 7px;
+  border: 1px solid #e6e9ef;
+  border-radius: 8px;
+  margin-top: 6px;
 }
 
 /***********************************
@@ -71,12 +81,12 @@ h2 {
   border-radius: 12px;
   overflow: hidden;
   font-size: 0.95rem;
-  box-shadow: 0px 3px 10px rgba(0,0,0,0.06);
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.06);
 }
 
 .table th,
 .table td {
-  border: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
   padding: 0.75rem;
   text-align: center;
 }
@@ -103,26 +113,47 @@ h2 {
   background: #ffffff;
   padding: 2rem;
   border-radius: 14px;
-  box-shadow: 0px 6px 18px rgba(0,0,0,0.1);
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem 1.4rem;
   animation: fadeIn 0.3s ease-out;
   margin-bottom: 2rem;
 }
+
 .formBox h2 {
   grid-column: span 2;
   margin-bottom: 0.6rem;
 }
-.formBox label { font-weight: 600; font-size: 0.95rem; color: #374151; }
-.formBox input, .formBox select {
-  width: 100%; padding: 0.65rem; border: 1.8px solid #cbd5e1; border-radius: 8px;
-  font-size: 0.95rem; background: #f9fafb; transition: 0.25s ease;
+
+.formBox label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #374151;
 }
-.formBox input:focus, .formBox select:focus {
-  border-color: #2563eb; background: #fff; box-shadow: 0 0 6px rgba(37,99,235,.35); outline: none;
+
+.formBox input,
+.formBox select {
+  width: 100%;
+  padding: 0.65rem;
+  border: 1.8px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #f9fafb;
+  transition: 0.25s ease;
 }
-.fullRow { grid-column: span 2; }
+
+.formBox input:focus,
+.formBox select:focus {
+  border-color: #2563eb;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(37, 99, 235, .35);
+  outline: none;
+}
+
+.fullRow {
+  grid-column: span 2;
+}
 
 /***********************************
    VEHICLE LIST + BUTTONS
@@ -140,7 +171,10 @@ h2 {
   transition: 0.25s ease;
   margin-top: 8px;
 }
-.addVehicleBtn:hover { background: #15803d; }
+
+.addVehicleBtn:hover {
+  background: #15803d;
+}
 
 .vehicleList {
   grid-column: span 2;
@@ -149,23 +183,53 @@ h2 {
   background: #eef2ff;
   border: 1.5px dashed #cbd5e1;
   border-radius: 8px;
-  display: flex; flex-direction: column; gap: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
+
 .vehicleList p {
-  background: #e0e7ff; padding: 0.5rem 0.7rem; border-radius: 6px; font-size: 0.93rem;
-  font-weight: 500; display: flex; justify-content: space-between;
+  background: #e0e7ff;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.93rem;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
 }
+
 .deleteBtnSmall {
-  background: #dc2626; border: none; color: white; padding: 2px 6px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;
+  background: #dc2626;
+  border: none;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
 }
-.deleteBtnSmall:hover { background: #b91c1c; }
+
+.deleteBtnSmall:hover {
+  background: #b91c1c;
+}
 
 .submitBtn {
   grid-column: span 2;
-  background: #2563eb; color: white; border: none; padding: 0.85rem; border-radius: 10px; cursor: pointer; transition: 0.25s;
-  font-size: 1.05rem; font-weight: 600; margin-top: 0.6rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.85rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.25s;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-top: 0.6rem;
 }
-.submitBtn:hover { background: #1d4ed8; transform: translateY(-2px); }
+
+.submitBtn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
 
 /***********************************
    MODALS (scrollable)
@@ -173,11 +237,12 @@ h2 {
 .modalBackdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 16px; /* prevent edges from touching */
+  padding: 16px;
+  /* prevent edges from touching */
   z-index: 9999;
 }
 
@@ -187,10 +252,10 @@ h2 {
   width: 95%;
   max-width: 560px;
   border-radius: 12px;
-  box-shadow: 0px 8px 25px rgba(0,0,0,0.3);
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.3);
   animation: fadeIn 0.2s ease-out;
   position: relative;
-  display: grid;
+  /* display: grid; */
   grid-template-columns: 1fr;
   gap: 0.9rem;
   padding: 1.4rem;
@@ -198,13 +263,16 @@ h2 {
 
 /* make modal content scrollable within viewport */
 .modalScrollable {
-  max-height: 90vh;         /* <= key */
-  overflow-y: auto;         /* <= key */
+  max-height: 90vh;
+  /* <= key */
+  overflow-y: auto;
+  /* <= key */
 }
 
 /* close button */
 .closeBtn {
-  position: sticky;         /* stays visible while scrolling */
+  position: sticky;
+  /* stays visible while scrolling */
   top: 0;
   margin-left: auto;
   background: #ef4444;
@@ -215,12 +283,18 @@ h2 {
   height: 28px;
   font-size: 16px;
   cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.closeBtn:hover { background: #dc2626; }
+
+.closeBtn:hover {
+  background: #dc2626;
+}
 
 /* modal headings */
-.modalForm h2, .modal h3 {
+.modalForm h2,
+.modal h3 {
   text-align: center;
   margin: 0.2rem 0 0.6rem 0;
   font-size: 1.35rem;
@@ -229,12 +303,17 @@ h2 {
 }
 
 /* modal inputs */
-.modalForm label, .modal label {
+.modalForm label,
+.modal label {
   font-weight: 600;
   font-size: 0.95rem;
   color: #374151;
 }
-.modalForm input, .modalForm select, .modal input, .modal select {
+
+.modalForm input,
+.modalForm select,
+.modal input,
+.modal select {
   width: 100%;
   padding: 0.7rem;
   border: 1.7px solid #d1d5db;
@@ -243,7 +322,11 @@ h2 {
   background: #f9fafb;
   transition: 0.25s ease;
 }
-.modalForm input:focus, .modalForm select:focus, .modal input:focus, .modal select:focus {
+
+.modalForm input:focus,
+.modalForm select:focus,
+.modal input:focus,
+.modal select:focus {
   border-color: #2563eb;
   background: #fff;
   box-shadow: 0 0 6px rgba(37, 99, 235, 0.35);
@@ -254,27 +337,53 @@ h2 {
    RESPONSIVE
 ************************************/
 @media (max-width: 700px) {
-  .topButtons { justify-content: center; flex-wrap: wrap; }
-  .topButtons button { width: 100%; max-width: 320px; }
+  .topButtons {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 
-  .formBox { grid-template-columns: 1fr; }
-  .addVehicleBtn, .submitBtn, .formBox h2 { grid-column: span 1; }
+  .topButtons button {
+    width: 100%;
+    max-width: 320px;
+  }
 
-  .modalForm, .modal { max-width: 95%; }
+  .formBox {
+    grid-template-columns: 1fr;
+  }
+
+  .addVehicleBtn,
+  .submitBtn,
+  .formBox h2 {
+    grid-column: span 1;
+  }
+
+  .modalForm,
+  .modal {
+    max-width: 95%;
+  }
 }
 
 /***********************************
    ANIMATION
 ************************************/
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 /* Color helpers for preview */
 .green {
   color: #16a34a;
   font-weight: 700;
 }
+
 .red {
   color: #dc2626;
   font-weight: 700;
@@ -303,9 +412,11 @@ h2 {
   align-items: center;
   justify-content: center;
 }
+
 .closeBtn:hover {
   background: #dc2626;
 }
+
 .viewBtn {
   background: #0ea5e9;
   color: white;
@@ -317,6 +428,7 @@ h2 {
   font-size: 0.85rem;
   font-weight: 600;
 }
+
 .viewBtn:hover {
   background: #0284c7;
 }
@@ -333,9 +445,11 @@ h2 {
   cursor: pointer;
   border: none;
 }
+
 .billBtn:hover {
   background: #1d4ed8;
 }
+
 .billBtn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
@@ -432,4 +546,3 @@ h2 {
 .billTable tr:nth-child(even) {
   background: #f9fafc;
 }
-
