@@ -323,13 +323,14 @@ export default function TankManagement() {
 
   return (
     <div className={styles.container}>
-      <h1>🛢️ Fuel Tank Management</h1>
+      <h1>Fuel Tank Management</h1>
 
       {/* ADD NEW BUTTON */}
+      <div className={styles.btn_tank}>
       <button className={styles.addButton} onClick={() => setModalOpen(true)}>
         ➕ Add Tank Entry
       </button>
-
+</div>
       {/* ===== FILTER BAR (between Add button and table) ===== */}
       <div className={styles.filterBar}>
         <div className={styles.filterGroup}>
@@ -515,7 +516,7 @@ export default function TankManagement() {
       )}
 
       {/* TABLE */}
-      <h2>📊 Tank Records</h2>
+      <h2 className={styles.tank_records}>Tank Records</h2>
       <div className={styles.tableWrapper}>
         <table className={styles.table} role="table">
           <thead>

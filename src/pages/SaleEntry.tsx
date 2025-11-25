@@ -1,7 +1,9 @@
 // SaleEntry.tsx — UPDATED WITH FILTERS + SORTING (Option A arrows)
 import { useState, useEffect, type MouseEvent, type JSX } from "react";
 import axios from "axios";
+import { FaChevronUp } from "react-icons/fa6";
 import styles from "../style/saleentry.module.css";
+import { IoIosArrowDown } from "react-icons/io";
 
 type PaymentMode = "Cash" | "UPI" | "Card" | "Credit";
 type Shift = string;
@@ -458,11 +460,16 @@ export default function SaleEntry(): JSX.Element {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>⛽ Fuel Sale Records</h1>
-        <button className={styles.addButton} onClick={() => setModalOpen(true)}>
-          ➕ Add Sale Entry
-        </button>
+        <h1 className={styles.title}>Fuel Sale Records</h1>
       </div>
+      {/* <button className={styles.addButton} onClick={() => setModalOpen(true)}>
+          ➕ Add Sale Entry
+        </button> */}
+<div className={styles.btnWrapper}>
+  <button className={styles.addButton} onClick={() => setModalOpen(true)}>
+    ➕ Add Sale Entry
+  </button>
+</div>
 
       {/* ===== FILTER BAR (NEW) ===== */}
       <div className={styles.filterBar}>
@@ -579,14 +586,17 @@ export default function SaleEntry(): JSX.Element {
                       title="Sort litres asc"
                       onClick={() => setSort("litres", "asc")}
                     >
-                      🔼
+                      {/* 🔼 */}
+                      <FaChevronUp style={{color:'black', fontSize:'9px'
+                      }} />
                     </button>
                     <button
                       className={styles.sortBtn}
                       title="Sort litres desc"
                       onClick={() => setSort("litres", "desc")}
                     >
-                      🔽
+                      {/* 🔽 */}
+                      <IoIosArrowDown style={{color:'black'}} />
                     </button>
                   </span>
                 </th>
@@ -599,34 +609,40 @@ export default function SaleEntry(): JSX.Element {
                       title="Sort test fuel asc"
                       onClick={() => setSort("testFuel", "asc")}
                     >
-                      🔼
+                      {/* 🔼 */}
+                       <FaChevronUp style={{color:'black', fontSize:'9px'
+                      }} />
                     </button>
                     <button
                       className={styles.sortBtn}
                       title="Sort test fuel desc"
                       onClick={() => setSort("testFuel", "desc")}
                     >
-                      🔽
+                      {/* 🔽 */}
+                       <IoIosArrowDown style={{color:'black'}} />
                     </button>
                   </span>
                 </th>
 
                 <th>
-                  Total ₹
+                  Total
                   <span className={styles.sortArrows}>
                     <button
                       className={styles.sortBtn}
                       title="Sort total asc"
                       onClick={() => setSort("total", "asc")}
                     >
-                      🔼
+                      {/* 🔼 */}
+                      <FaChevronUp style={{color:'black', fontSize:'9px'
+                      }} />
                     </button>
                     <button
                       className={styles.sortBtn}
                       title="Sort total desc"
                       onClick={() => setSort("total", "desc")}
                     >
-                      🔽
+                      {/* 🔽 */}
+                          <IoIosArrowDown style={{color:'black'}} />
                     </button>
                   </span>
                 </th>
@@ -639,14 +655,17 @@ export default function SaleEntry(): JSX.Element {
                       title="Sort received asc"
                       onClick={() => setSort("received", "asc")}
                     >
-                      🔼
+                      {/* 🔼 */}
+                        <FaChevronUp style={{color:'black', fontSize:'9px'
+                      }} />
                     </button>
                     <button
                       className={styles.sortBtn}
                       title="Sort received desc"
                       onClick={() => setSort("received", "desc")}
                     >
-                      🔽
+                      {/* 🔽 */}
+                          <IoIosArrowDown style={{color:'black'}} />
                     </button>
                   </span>
                 </th>
@@ -726,11 +745,10 @@ export default function SaleEntry(): JSX.Element {
       {modalOpen && (
         <div className={styles.modalBackdrop} onClick={handleBackdropClick}>
           <div className={styles.modal}>
-            <h2>{editSale ? "✏️ Edit Sale Entry" : "➕ Add Sale Entry"}</h2>
+            <h2>{editSale ? "✏️ Edit Sale Entry" : "Add Sale Entry"}</h2>
             <button className={styles.closeBtn} onClick={() => setModalOpen(false)}>
               ✖
             </button>
-
             <div className={styles.form}>
               <label>Sale ID</label>
               <input value={saleId} disabled />

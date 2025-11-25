@@ -98,8 +98,8 @@
   }
 
   .stats-container {
-    grid-template-columns: repeat(1, 1fr);
-    gap: 18px;
+    /* grid-template-columns: repeat(1, 1fr); */
+    /* gap: 18px; */
     padding: 0 20px;
   }
 
@@ -119,3 +119,29 @@
     font-size: 14px;
   }
 }
+
+
+@media (max-width:420px){
+  .stats-card{
+    grid-template-columns: repeat(2,1fr);
+    min-width: 20px;
+        padding-left: 10px;
+    padding-right: 10px;
+  }
+    .stats-number{
+      padding-left: 20px;
+    }
+     
+    .stats-text{
+      padding-left: 20px;
+      color: #FDC448;
+      font-size: 12px;
+      margin-top: 8px;
+      line-height: 2rem;
+    }
+    .stats-card {
+    border-radius: 15px;
+    clip-path: polygon(0 0, 78% 0, 100% 15%, 100% 100%, 0 100%);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.03);
+}
+  }

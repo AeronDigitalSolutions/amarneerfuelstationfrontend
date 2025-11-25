@@ -14,28 +14,28 @@ const StateSection = () => {
     <section className="stats-section">
       <div className="stats-container">
 
-        <div className="stats-card" data-aos="fade-up">
+        <div className="stats-card" data-aos="fade-up"  data-aos-anchor-placement="bottom-center" >
           <p className="stats-number">
             20 <span>+</span>
           </p>
           <p className="stats-text">Years of Excellence</p>
         </div>
 
-        <div className="stats-card" data-aos="fade-up" data-aos-delay="200">
+        <div className="stats-card" data-aos="fade-up" data-aos-delay="200" data-aos-anchor-placement="bottom-center">
           <p className="stats-number">
             98%<span> +</span>
           </p>
           <p className="stats-text">Client Repeat Business</p>
         </div>
 
-        <div className="stats-card" data-aos="fade-up" data-aos-delay="400">
+        <div className="stats-card" data-aos="fade-up" data-aos-delay="400" data-aos-anchor-placement="bottom-center">
           <p className="stats-number">
             50% <span> +</span>
           </p>
           <p className="stats-text">boost in conversions after redesign</p>
         </div>
 
-        <div className="stats-card" data-aos="fade-up" data-aos-delay="600">
+        <div className="stats-card" data-aos="fade-up" data-aos-delay="600" data-aos-anchor-placement="bottom-center">
           <p className="stats-number">
             100 <span>+</span>
           </p>

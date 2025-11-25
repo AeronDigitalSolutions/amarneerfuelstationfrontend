@@ -15,7 +15,11 @@
   font-size: 14px;
   letter-spacing: 1px;
 }
-
+.why-card-para{
+  display: flex;
+  align-items: center;font-weight: bold;
+  font-size: 20px;
+}
 .why-title {
   font-size: 44px;
   font-weight: 600;
@@ -194,7 +198,7 @@
   }
 
   .why-card {
-    flex-direction: column;
+    /* flex-direction: column; */
     text-align: center;
     align-items: center;
   }
@@ -239,4 +243,25 @@
   .person-img {
     width: 100%;
   }
+}
+
+@media(max-width:420px){
+      .why-card {
+        /* text-align: center; */
+        /* flex-direction: row; */
+        align-items: center;
+    }
+    .why-container{
+      padding: 47px 8%;
+    }
+    /* .why-sub{
+      margin-top: 30px;
+    } */
+    .why-card-para{
+     text-align: justify;
+     font-weight: 500;
+    }
+    .why-title2{
+      color: #000;
+    }
 }

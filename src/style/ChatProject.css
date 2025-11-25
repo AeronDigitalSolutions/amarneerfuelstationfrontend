@@ -165,3 +165,13 @@
     padding: 3px 5px;
   }
 }
+
+
+@media(max-width:420px){
+      .contact-title {
+        font-size: 38px;
+    }
+        .contact-subtitle {
+        font-size: 2rem;
+    }
+}

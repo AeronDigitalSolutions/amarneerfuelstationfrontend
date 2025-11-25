@@ -1,4 +1,23 @@
 
+/* GLOBAL FIX */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Fix section extra spacing */
+.custom {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff; /* or your page background */
+}
+
+/* Remove extra top & bottom gap of custom_container */
+.custom_container {
+  padding: 20px 0 !important;
+  margin: 0 auto;
+}
 
 :root {
   /* 🌞 Light mode colors */
@@ -15,6 +34,7 @@
   --bg-color: #0f172a;
   --card-color: #1e293b;
   --text-color: #f1f5f9;
+  /* --text-color: #000; */
   --border-color: #334155;
   --accent-color: #3b82f6;
   --accent-hover: #60a5fa;
@@ -39,6 +59,9 @@ body {
   color: var(--text-color);
   border: 1px solid var(--border-color);
   transition: background 0.3s, color 0.3s, border 0.3s;
+}
+.logo{
+  color: var(--text-color);
 }
 
 input,
