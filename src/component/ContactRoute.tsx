@@ -4,7 +4,7 @@ import { FiMail } from "react-icons/fi";
 import { FiSend } from "react-icons/fi";
 import test from '../assets/Testimonials-1.jpg'
 import { FiMessageCircle } from "react-icons/fi";
-import top from '../assets/white_top.png'
+// import top from '../assets/white_top.png'
 import '../style/ContactRoute.css'
 import Header from './Header';
 const ContactRoute = () => {
@@ -59,7 +59,7 @@ const ContactRoute = () => {
 
 
        <div className="form-wrapper">
-        <img className='top_white' src={top} alt='top'/>
+        {/* <img className='top_white' src={top} alt='top'/> */}
       <div className="form-container">
 
         <div className="form-grid">

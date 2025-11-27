@@ -23,6 +23,7 @@ import ShiftTiming from "./pages/ShiftTiming";
 import LivePayment from "./pages/LivePayment";
 import PaymentComparison from "./pages/PaymentComparison";
 import Services from "./component/Services";
+import About1 from "./component/AboutPage/About1";
 
 function App() {
   return (
@@ -32,7 +33,7 @@ function App() {
       {/* <Home/> */}
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<DashboardMain/>} />
+        <Route path="/dashboard" element={<DashboardMain />} />
         <Route path="/saleentry" element={<SaleEntry />} />
         <Route path="/tanks" element={<TankManagement />} />
         <Route path="/finance" element={<AccountingFinance />} />
@@ -40,18 +41,19 @@ function App() {
         <Route path="/creditline" element={<CreditLineManagement />} />
         <Route path="/admin" element={<AdminRoleManagement />} />
         <Route path="/dash" element={<Dashboard />} />
-         <Route path="/contact" element={<ContactRoute/>} />
-         <Route path="/sign" element={<SignIn/>}/>
-         <Route path="/signup" element={<SignUp/>}/>
+        <Route path="/contact" element={<ContactRoute />} />
+        <Route path="/sign" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboardmain" element={<DashboardMain />} />
-<Route path="/services" element={<Services/>}/>
+        <Route path="/services" element={<Services />} />
         <Route path="/fuelrate" element={<FuelRates />} />
         <Route path="/pump" element={<PumpNo />} />
         <Route path="/addtank" element={<AddTank />} />
         <Route path="/testfuel" element={<TestFuel />} />
-                <Route path="/shift" element={<ShiftTiming/>} />
-                                <Route path="/payment" element={<LivePayment/>} />
-                                                                <Route path="/paymentcomp" element={<PaymentComparison/>} />
+        <Route path="/shift" element={<ShiftTiming />} />
+        <Route path="/payment" element={<LivePayment />} />
+        <Route path="/paymentcomp" element={<PaymentComparison />} />
+        <Route path="/about" element={<About1 />} />
       </Routes>
     </BrowserRouter>
   );

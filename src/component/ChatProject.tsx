@@ -5,7 +5,7 @@ const ChatProject = () => {
     <div className='chat'>
      <div className="contact-container">
       <div className="contact-box">
-        <h1 className="contact-title">
+        <h1 className="contact-title" style={{color:'black'}}>
           HAVE A PROJECT IN MIND? LET’S <br /> CHAT!
         </h1>
         <p className="contact-subtitle">

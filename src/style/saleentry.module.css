@@ -415,3 +415,10 @@ padding-left: 0px; */
   width: 100%;
   box-sizing: border-box;
 }
+
+@media(max-width:420px){
+.btnWrapper{
+  display: flex;
+    justify-content: center;
+}
+}

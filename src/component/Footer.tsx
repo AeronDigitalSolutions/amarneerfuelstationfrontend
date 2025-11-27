@@ -10,7 +10,7 @@ const Footer = () => {
 
         <div className='logo'>
           <img src={logo} alt='logo' />
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Id.</p>
+          <p style={{color:'white',marginTop:'20px'}}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Id.</p>
           <button className="discover-btn" style={{ marginTop: '40px' }}>
             Company Desk
           </button>

@@ -20,12 +20,12 @@ const Services = () => {
     <>
       <section className='services'>
         <div className='services_container'>
-          <p className='services_para' data-aos="fade-in"  data-aos-anchor-placement="bottom-center">Services</p>
+          <p className='services_para' data-aos="fade-in"  data-aos-anchor-placement="center-bottom">Services</p>
           <p className='services_tittle'>DIGITAL SOLUTIONS THAT DRIVE REAL RESULTS.</p>
         </div>
 
         <main className='grid_services'>
-          <Link to='/saleentry' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-center">
+          <Link to='/saleentry' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
             <div className="top-tab">
               <img src={top} alt='top' />
             </div>
@@ -39,7 +39,7 @@ const Services = () => {
           </Link>
 
 
-          <Link to='/tanks' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-center" >
+          <Link to='/tanks' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom" >
             <div className="top-tab">
               <img src={top} alt='top' />
             </div>
@@ -53,7 +53,7 @@ const Services = () => {
           </Link>
 
 
-          <Link to='/attendance' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-center" >
+          <Link to='/attendance' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom" >
             <div className="top-tab">
               <img src={top} alt='top' />
             </div>
@@ -68,7 +68,7 @@ const Services = () => {
 
 
           <Link to='/tanks' className="service-box" data-aos="fade-up"
-            data-aos-anchor-placement="bottom-center" >
+            data-aos-anchor-placement="bottom-bottom" >
             <div className="top-tab">
               <img src={top} alt='top' />
             </div>
@@ -82,7 +82,7 @@ const Services = () => {
           </Link>
 
 
-          <Link to='/saleentry' className="service-box" data-aos="fade-up"  data-aos-anchor-placement="bottom-center">
+          <Link to='/saleentry' className="service-box" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
             <div className="top-tab">
               <img src={top} alt='top' />
             </div>
@@ -96,7 +96,7 @@ const Services = () => {
           </Link>
 
 
-          <Link to='/dashboard' className="service-box" data-aos="fade-up"  data-aos-anchor-placement="bottom-center">
+          <Link to='/dashboard' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
             <div className="top-tab">
               <img src={top} alt='top' />
             </div>

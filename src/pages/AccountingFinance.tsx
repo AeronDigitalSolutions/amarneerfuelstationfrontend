@@ -62,7 +62,6 @@ export default function AccountingFinance() {
     cashbookBalance: 0,
   });
 
-  // DATE FILTER — SINGLE DATE ONLY
   const [filterDate, setFilterDate] = useState("");
 
   useEffect(() => {
@@ -317,7 +316,7 @@ export default function AccountingFinance() {
                     <td>{e.credit}</td>
                     <td>{e.amount}</td>
                     <td>{e.supplierName || "-"}</td>
-                    <td>
+                    <td className="act">
                       <button onClick={() => handleEdit(e)} className={styles.editButton}>✏️</button>
                       <button onClick={() => handleDelete(e._id)} className={styles.deleteButton}>🗑️</button>
                     </td>

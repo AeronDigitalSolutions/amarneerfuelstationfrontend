@@ -1,0 +1,139 @@
+.values-wrapper {
+  width: 100%;
+  padding: 80px 0;
+  background: linear-gradient(135deg, #0b0420, #180f6b, #3d28b0);
+  color: white;
+  font-family: "Poppins", sans-serif;
+}
+
+.values-container {
+    width: 90%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;  
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.tag {
+  font-size: 12px;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.dot, .dot2 {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+.dot2 {
+  opacity: 0.4;
+}
+
+.main-heading {
+  font-size: 70px;
+  font-weight: 700;
+  line-height: 1.1;
+  background: linear-gradient(to bottom, #ffffff, #b7b7ff);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.values-right {
+  width: 60%;
+}
+
+.grid-box {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  cursor: pointer;
+  /* border-left: 1px solid rgba(255,255,255,0.15);
+  border-top: 1px solid rgba(255,255,255,0.15); */
+}
+
+.value-card {
+  text-align: center;
+  /* padding: 40px 25px; */
+  padding-bottom: 30px;
+    padding-top: 10px;
+    padding-right: 0px;
+    padding-left: 0px;
+  border-right: 1px solid rgba(255,255,255,0.15);
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.icon {
+  font-size: 35px;
+  background: rgba(90, 60, 255, 0.4);
+  padding: 20px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  /* box-shadow: 0px 0px 20px rgba(120, 90, 255, 0.7); */
+}
+
+.value-card h3 {
+  margin-top: 20px;
+  font-size: 23px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.value-card h3:hover{
+color: #FDc448;
+}
+
+.value-card p {
+  margin-top: 10px;
+  font-size: 15.5px;
+  color: grey;
+  line-height: 1.9rem;
+  opacity: 0.8;
+}
+.values-left {
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.values-right {
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .values-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  .values-right {
+    width: 100%;
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-box {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .main-heading {
+    font-size: 50px;
+  }
+}
+
+@media (max-width: 500px) {
+  .grid-box {
+    grid-template-columns: 1fr;
+  }
+  .main-heading {
+    font-size: 40px;
+  }
+}
