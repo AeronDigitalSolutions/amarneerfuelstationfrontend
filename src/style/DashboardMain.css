@@ -16,7 +16,7 @@
 .dashbord_sub_tittle{
   font-size: 1.3rem;
   /* color: grey; */
-  color: white;
+  color: rgb(5, 5, 5);
   /* background: linear-gradient(to top,#333a3d, #1a1f11); */
     -webkit-background-clip: text;
     /* -webkit-text-fill-color: transparent; */

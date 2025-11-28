@@ -6,34 +6,31 @@
 }
 
 .about-box {
-  max-width: 1200px;     
+  max-width: 1200px;
   width: 100%;
-  text-align: center;    
+  text-align: center;
 }
+
 .top-img {
   width: 300px;
-  transform: translate(-449px ,12px);
+  transform: translate(-430px, 12px);
   display: block;
-  margin: 0 auto;  
+  margin: 0 auto;
 }
-.arrow{
-  font-size: 16px;
-}
-.about_para_p{
-  font-size: 20px;
-}
+
 .about-content {
   width: 100%;
-  /* background: #ffffff; */
-background: linear-gradient(to bottom, #4a31fe, #163769);
+  background: linear-gradient(to bottom, #4a31fe, #163769);
   padding: 60px 70px;
   border-radius: 20px;
   margin: 0 auto;
   box-shadow: 0px 10px 40px rgba(0,0,0,0.15);
   font-family: "Poppins", sans-serif;
-  /* margin-top: 20px; */
+   margin-left: auto;
+  margin-right: auto;
+  border-top-left-radius: 0px;
+  width: calc(100% - 40px); 
 }
-
 
 .breadcrumb {
   display: flex;
@@ -41,12 +38,13 @@ background: linear-gradient(to bottom, #4a31fe, #163769);
   font-size: 14px;
   justify-content: flex-start;
 }
-.link_about{
+
+.link_about {
   color: #fff;
   font-weight: 500;
 }
+
 .top-section {
-  /* margin-top: 40px; */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -89,6 +87,10 @@ background: linear-gradient(to bottom, #4a31fe, #163769);
   gap: 15px;
 }
 
+.about_para_p {
+  font-size: 20px;
+}
+
 .icon-star {
   width: 55px;
   height: 55px;
@@ -115,10 +117,12 @@ background: linear-gradient(to bottom, #4a31fe, #163769);
   gap: 10px;
   align-items: center;
 }
-.book-btn:hover{
+
+.book-btn:hover {
   color: #fff;
   background-color: #A06BF2;
 }
+
 @media (max-width: 900px) {
   .top-section {
     flex-direction: column;
@@ -134,24 +138,30 @@ background: linear-gradient(to bottom, #4a31fe, #163769);
     gap: 20px;
     text-align: center;
   }
+
+  .about-content {
+    padding: 50px 40px;
+  }
 }
 
 @media (max-width: 480px) {
   .about-content {
-    padding: 35px 25px;
-  }
-  .about-content{
-    margin: 0px 10px;
+    padding: 35px 20px !important;
+    margin: 0px 15px !important; 
   }
 
   .left h1 {
-    font-size: 36px;
+    font-size: 34px;
     line-height: 1.2;
   }
 
   .team-image {
     width: 100%;
     border-radius: 15px;
+  }
+
+  .about_para_p {
+    font-size: 16px;
   }
 
   .icon-star {
@@ -164,15 +174,61 @@ background: linear-gradient(to bottom, #4a31fe, #163769);
     padding: 12px 25px;
     font-size: 15px;
   }
+
+  .top-img {
+    width: 180px;
+    transform: translate(-104px, 11px);
+  }
+  .breadcrumb {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 0px 11px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    /* justify-content: flex-start; */
+}
+}
+@media (max-width: 420px) {
+  .left h1 {
+    font-size: 42px;
+    line-height: 3.3rem;
+  }
+.top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0px;
+}
+.bottom-section {
+    padding-top: 0px;
+}
+.line{
+  margin: 30px 0px;
+}
+  .about-content {
+    padding: 28px 18px !important;
+    margin: 0px 12px !important;
+  }
+
+  .about_para_p {
+    font-size: 15px;
+  }
+
+  .team-image {
+    border-radius: 12px;
+  }
 }
 
 @media (max-width: 380px) {
   .left h1 {
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .about-content {
-    padding: 25px 18px;
+    padding: 22px 15px !important;
+    margin: 0px 10px !important;
   }
 
   .trusted p {
@@ -187,5 +243,38 @@ background: linear-gradient(to bottom, #4a31fe, #163769);
   .book-btn {
     padding: 10px 20px;
     font-size: 13px;
+  }
+
+  .top-img {
+    width: 150px;
+  } 
+}
+/* .about-content {
+  margin-left: auto;
+  margin-right: auto;
+  width: calc(100% - 40px);  
+} */
+
+@media (max-width: 900px) {
+  .about-content {
+    width: calc(100% - 60px);  
+  }
+}
+
+@media (max-width: 480px) {
+  .about-content {
+    width: calc(100% - 36px);  
+  }
+}
+
+@media (max-width: 420px) {
+  .about-content {
+    width: calc(100% - 30px);  
+  }
+}
+
+@media (max-width: 380px) {
+  .about-content {
+    width: calc(100% - 24px);  
   }
 }

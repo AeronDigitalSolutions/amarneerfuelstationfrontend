@@ -41,7 +41,7 @@ const Question = () => {
 
       <div className="right-panel">
         <details className="accordion-item">
-          <summary className="accordion-header" data-aos="fade-in" data-aos-anchor-placement="bottom-center" >
+          <summary className="accordion-header" data-aos="fade-in" data-aos-anchor-placement="bottom-bottom" >
             <span className="accordion-number">01.</span>
             <span className="accordion-question">What Services Do You Offer?</span>
             <span className="accordion-icon"><IoIosArrowDown /></span>
@@ -52,7 +52,7 @@ const Question = () => {
         </details>
 
         <details className="accordion-item">
-          <summary className="accordion-header" data-aos="fade-in" data-aos-delay="200" data-aos-anchor-placement="bottom-center" >
+          <summary className="accordion-header" data-aos="fade-in"  data-aos-anchor-placement="bottom-bottom" >
             <span className="accordion-number">02.</span>
             <span className="accordion-question">How Do You Measure Campaign Success?</span>
             <span className="accordion-icon"><IoIosArrowDown /></span>
@@ -63,7 +63,7 @@ const Question = () => {
         </details>
 
         <details className="accordion-item">
-          <summary className="accordion-header" data-aos="fade-in" data-aos-delay="400" data-aos-anchor-placement="bottom-center" >
+          <summary className="accordion-header" data-aos="fade-in"  data-aos-anchor-placement="bottom-bottom" >
             <span className="accordion-number">03.</span>
             <span className="accordion-question">How Long Does It Take to See Results?</span>
             <span className="accordion-icon"><IoIosArrowDown /></span>
@@ -74,7 +74,7 @@ const Question = () => {
         </details>
 
         <details className="accordion-item">
-          <summary className="accordion-header" data-aos="fade-in" data-aos-delay="600" data-aos-anchor-placement="bottom-center" >
+          <summary className="accordion-header" data-aos="fade-in"  data-aos-anchor-placement="bottom-bottom" >
             <span className="accordion-number">04.</span>
             <span className="accordion-question">How Much Do Your Services Cost?</span>
             <span className="accordion-icon"><IoIosArrowDown /></span>
@@ -85,7 +85,7 @@ const Question = () => {
         </details>
 
         <details className="accordion-item">
-          <summary className="accordion-header" data-aos="fade-in" data-aos-delay="800" data-aos-anchor-placement="bottom-center" >
+          <summary className="accordion-header" data-aos="fade-in"  data-aos-anchor-placement="bottom-bottom" >
             <span className="accordion-number">05.</span>
             <span className="accordion-question">What Makes Your Agency Different?</span>
             <span className="accordion-icon"><IoIosArrowDown /></span>
