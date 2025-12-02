@@ -24,10 +24,19 @@
   font-size: 44px;
   font-weight: 600;
   margin-top: 10px;
-  background: linear-gradient(to left, #939ea3, #8a681e);
+  background: linear-gradient(to left,#0f172a, #4d6797);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+
+/* 🌙 Dark Mode — Light Gradient */
+[data-theme="dark"] .why-title{
+  background: linear-gradient(to left, #dce4ff, #8fa8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 
 .why-grid {
   display: grid;

@@ -1,8 +1,8 @@
 .values-wrapper {
   width: 100%;
   padding: 80px 0;
-  background: linear-gradient(135deg, #0b0420, #180f6b, #3d28b0);
-  color: white;
+  /* background: linear-gradient(135deg, #0b0420, #180f6b, #3d28b0); */
+  /* color: white; */
   font-family: "Poppins", sans-serif;
 }
 
@@ -43,9 +43,14 @@
   font-size: 70px;
   font-weight: 700;
   line-height: 1.1;
-  background: linear-gradient(to bottom, #ffffff, #b7b7ff);
+  background: linear-gradient(to top, #0f172a , #4d6797);
   -webkit-background-clip: text;
   color: transparent;
+}
+[data-theme="dark"] .main-heading {
+  background: linear-gradient(to top, #fff, #4d6797);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .values-right {
@@ -82,7 +87,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  /* color: white; */
   /* box-shadow: 0px 0px 20px rgba(120, 90, 255, 0.7); */
 }
 

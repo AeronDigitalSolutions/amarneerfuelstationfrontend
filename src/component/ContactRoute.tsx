@@ -83,7 +83,7 @@ const ContactRoute = () => {
         </div>
 
         <div className="form-textarea">
-          <label>About Your Projects</label>
+          <label style={{color:'black'}}>About Your Projects</label>
           <textarea></textarea>
         </div>
 

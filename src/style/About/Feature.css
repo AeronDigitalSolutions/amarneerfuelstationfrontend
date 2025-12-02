@@ -2,7 +2,7 @@
   width: 100%;
   padding: 50px 0;
   background: linear-gradient(180deg, #06071b 0%, #2b2c80 100%);
-  color: #fff;
+  /* color: #fff; */
   font-family: "Poppins", sans-serif;
   text-align: center;
 }
@@ -12,10 +12,29 @@
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: 20px;
-  background: linear-gradient(to bottom, #292108, #fff);
+  background: linear-gradient(to top, #0f172a , #4d6797);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+/* 🌞 Light Mode — Dark Gradient */
+.contact-title {
+  font-size: 52px;
+  font-weight: 500;
+  background: linear-gradient(to top, #0f0f0f, #4d6797);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+  margin-bottom: 40px;
+}
+
+
+[data-theme="dark"] .contact-title {
+  background: linear-gradient(to top, #ffffff, #8fa8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
 
 .subtitle {
   font-size: 15px;

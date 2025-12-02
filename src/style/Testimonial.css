@@ -1,7 +1,7 @@
 .testimonials-section {
-  background: #070729;
+  /* background: #070729; */
   padding: 40px 20px;
-  color: white;
+  /* color: white; */
 }
 .testimoinal_para{
   display: flex;
@@ -18,6 +18,20 @@
   font-weight: 700;
   color: white;
   margin-bottom: 40px;
+}
+
+/* 🌞 Light Mode — Dark Gradient */
+.testimonials-title{
+  background: linear-gradient(to left,#0f172a , #4d6797); 
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 🌙 Dark Mode — Light Gradient */
+[data-theme="dark"] .testimonials-title {
+  background: linear-gradient(to left, #dce4ff, #8fa8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Desktop visible, mobile hidden */

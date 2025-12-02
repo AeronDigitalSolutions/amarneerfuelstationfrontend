@@ -15,11 +15,25 @@
   font-size: 3rem;
   max-width: 900px;
   margin: auto;
-  background: linear-gradient(to left, #bbc5ca, #1e838a);
+  background: linear-gradient(to left, #bbc5ca, #4d6797);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 700;
 }
+/* 🌞 Light Mode — Dark Gradient */
+.slider_top_tittle {
+  background: linear-gradient(to left, #0f172a , #4d6797); 
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 🌙 Dark Mode — Light Gradient */
+[data-theme="dark"] .slider_top_tittle {
+  background: linear-gradient(to left, #dce4ff, #8fa8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .slider-container {
   color: white;
   border-radius: 20px;
