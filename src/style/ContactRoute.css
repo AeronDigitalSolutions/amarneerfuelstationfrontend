@@ -1,6 +1,6 @@
 .contact-container {
-  background: #02031a;
-  color: white;
+  /* background: #02031a; */
+  /* color: white; */
   padding: 50px 20px;
   text-align: center;
   flex-direction: column;
@@ -11,9 +11,17 @@
 .contact-title {
   font-size: 52px;
   font-weight: 500;
-  color: #fff;
+   background: linear-gradient(to top, #0f0f0f, #4d6797);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   letter-spacing: 1px;
   margin-bottom: 40px;
+}
+[dark-theme='dark'] .contact-title{
+  background: linear-gradient(to top, #fff, #4d6797);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* color: #fff; */
 }
 
 .contact-title span {
@@ -23,7 +31,7 @@
 .contact-points {
   font-size: 20px;
   line-height: 2.2;
-  color: rgb(221, 195, 195);
+  color:rgb(96 73 51);
 }
 
 .profile-section {
@@ -95,11 +103,9 @@
   color: blue;
 }
 
-/* ===========================
-   FORM SECTION
-   =========================== */
+
 .form-wrapper {
-  background-color: #01011a;
+  /* background-color: #01011a; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -276,4 +282,20 @@
   .form-container {
     padding: 18px;
   }
+}
+
+
+
+
+
+[data-theme="dark"] .contact-point {
+  background: #12121e;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(255,255,255,0.1);
+}
+
+[data-theme="dark"] .contact-point .icon-phone,
+[data-theme="dark"] .contact-point .icon-email,
+[data-theme="dark"] .contact-point .icon-location {
+  color: #9db5ff;
 }

@@ -10,6 +10,12 @@
     margin-top: 30px;
 }
 
+[data-theme="dark"] .dashbord_heading {
+  background: linear-gradient(to top, #fff, #4d6797);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .dash{
     padding: 15px 20px;
 }
@@ -24,6 +30,11 @@
   display: flex;
   justify-content: center;
   margin-top: 10px;
+}
+[data-theme="dark"] .dashbord_sub_tittle {
+  background: linear-gradient(to top, #fff, #4d6797);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .services_para_dash{
     margin-top: 25px;

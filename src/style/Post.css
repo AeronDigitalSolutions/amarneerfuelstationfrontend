@@ -55,7 +55,26 @@
   line-height: 1.2;
   /* color: #fff; */
   margin-bottom: 20px;
-  background: linear-gradient(to left, #91c7e0, #8a681e);
+  /* background: linear-gradient(to left, #91c7e0, #4d6797);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; */
+   /* background: linear-gradient(to top, #3a4969 , #4d6797);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; */
+   background: linear-gradient(to top,  #274483, #fff); /* light gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* Light Mode — Dark Gradient Title */
+.about-title {
+  background: linear-gradient(to top, #0f172a , #4d6797);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Dark Mode — Light Gradient Title */
+[data-theme="dark"] .about-title {
+  background: linear-gradient(to top, #fff, #4d6797);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

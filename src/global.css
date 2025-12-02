@@ -31,6 +31,22 @@
   --accent-hover: #1e40af;
 }
 
+
+
+/* Dark Mode — LIGHT TEXT LOOK */
+[data-theme="dark"] .services_tittle {
+  background: linear-gradient(to top,  #0f172a, #fff); /* light gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[dark-theme='dark'].about-title {
+  background: linear-gradient(to top, #3a4969 , #4d6797);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
 /* 🌙 Dark mode */
 [data-theme="dark"] {
   --bg-color: #0f172a;

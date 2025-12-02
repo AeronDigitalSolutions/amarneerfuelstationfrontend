@@ -13,17 +13,29 @@
 .subtext {
   font-size: 14px;
   letter-spacing: 1.5px;
-  color: #c1bdf8;
+  color: #1e1e24;
+}
+[data-theme="dark"] .subtext {
+  background: linear-gradient(to left, #fff, #8fa8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .heading {
   font-size: 3rem;
   font-weight: 700;
-  background: linear-gradient(to right, #e4e3e7, #7e68ff);
+  background: linear-gradient(to left, #0f172a , #4d6797);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-top: 10px;
 }
+
+[data-theme="dark"] .heading {
+  background: linear-gradient(to left, #dce4ff, #8fa8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 
 .articles-grid {
   display: grid;
