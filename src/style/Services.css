@@ -1,12 +1,8 @@
-/* ================================
-   SERVICES MAIN SECTION
-================================ */
 .services {
   padding: 80px 20px;
   font-family: "Poppins", sans-serif;
 }
 
-/* TITLE SECTION */
 .services_container {
   text-align: center;
 }
@@ -29,7 +25,6 @@
   font-weight: 700;
 }
 
-/* GRID */
 .grid_services {
   width: 100%;
   margin-top: 50px;
@@ -39,7 +34,7 @@
   margin-bottom: 40px;
 }
 
-/* SERVICE BOX */
+
 .service-box {
   text-decoration: none;
   color: white;
@@ -67,10 +62,9 @@
     0 4px 10px rgba(255, 179, 0, 0.4);
 }
 
-/* ICON */
 .icon {
   width: 80px;
-  height: 60px;
+  height: 80px;
   border-radius: 12px;
   background: #1919be;
   display: flex;
@@ -90,18 +84,13 @@
   margin-top: 10px;
 }
 
-/* =======================================
-   RESPONSIVE BREAKPOINTS  
-======================================= */
 
-/* ---------- 1100px ---------- */
 @media (max-width: 1100px) {
   .services_tittle {
     font-size: 2.5rem;
   }
 }
 
-/* ---------- 768px (Tablet) ---------- */
 @media (max-width: 768px) {
   .grid_services {
     grid-template-columns: repeat(2, 1fr);
@@ -126,7 +115,6 @@
   }
 }
 
-/* ---------- 480px (Mobile) ---------- */
 @media (max-width: 480px) {
   .services {
     padding: 50px 15px;
@@ -155,7 +143,6 @@
   }
 }
 
-/* ---------- 420px ---------- */
 @media (max-width: 420px) {
   .services_container .services_para {
     font-size: 12px;
@@ -183,7 +170,6 @@
   }
 }
 
-/* ---------- 380px ---------- */
 @media (max-width: 380px) {
   .services_tittle {
     font-size: 1.6rem;
@@ -202,7 +188,6 @@
   }
 }
 
-/* ---------- 360px ---------- */
 @media (max-width: 360px) {
   .services_tittle {
     font-size: 1.45rem;
@@ -213,7 +198,6 @@
   }
 }
 
-/* ---------- 320px ---------- */
 @media (max-width: 320px) {
   .services_tittle {
     font-size: 1.3rem;
@@ -223,7 +207,7 @@
     padding: 15px;
   }
 
-  .icon {
+  .icon{
     width: 65px;
     height: 55px;
   }

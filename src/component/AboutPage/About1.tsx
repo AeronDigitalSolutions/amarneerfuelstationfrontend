@@ -1,4 +1,6 @@
-import './About.css'
+// import './About.css'
+// import '../../style/About/About1.css'
+import '../../style/About/About.css'
 import Footer from "../Footer";
 import Header from "../Header";
 import CoreValues from './CoreValue';
@@ -8,6 +10,9 @@ import GallaxySection from './GallaxySection';
 import Team from './Team';
 import about1 from '../../assets/about1.jpg'
 import top from '../../assets/servicestop.png'
+import Post from '../Post';
+import StateSection from '../StateSection';
+import ChatProject from '../ChatProject';
 const AboutSection = () => {
   return (
     <>
@@ -29,9 +34,9 @@ const AboutSection = () => {
         <div className="top-section">
           <div className="left">
             <h1>
-              OUR TALENTED <br />
-              STRATEGISTS. <br />
-              <span className="highlight">EXPERIENCES.</span>
+            OUR EXPERT <br />
+             INDUSTRY-READY <br />
+              <span className="highlight">SOLUTIONS.</span>
             </h1>
           </div>
 
@@ -46,7 +51,7 @@ const AboutSection = () => {
         <div className="bottom-section">
           <div className="trusted">
             <div className="icon-star">✦</div>
-            <p className='about_para_p'>Trusted by global brands and startups</p>
+            <p className='about_para_p'>Trusted by petrol pumps and fuel businesses across India.</p>
           </div>
 
           <button className="book-btn">
@@ -57,10 +62,13 @@ const AboutSection = () => {
       </div>
 
     </div>
+    <Post/>
+    <StateSection/>
     <CoreValues/>
     <Feature/>
     <GallaxySection/>
     <Team/>
+    <ChatProject/>
     <Footer/>
     </>
   );

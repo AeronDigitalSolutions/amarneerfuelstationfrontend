@@ -5,28 +5,28 @@ import about from '../assets/about.png'
 const Post = () => {
   return (
 
- <section className="about-section">
+    <section className="about-section">
       <div className="about-container">
         <div className="about-left">
           <div className="about-image-frame">
             <img src={about} alt="About Us" className="about-main-img" />
           </div>
 
-        
+
         </div>
 
         <div className="about-right">
-          <p className="about-subtitle" data-aos="fade-in"  data-aos-anchor-placement="bottom-center">ABOUT US</p>
+          <p className="about-subtitle" data-aos="fade-in" data-aos-anchor-placement="bottom-center">ABOUT US</p>
           <p className="about-title">
-            OUR ELEVATED DIGITAL <br /> EXPERIENCES.
+            OUR ELEVATED DIGITAL  <br /> EXPERIENCES.
           </p>
           <p className="about-desc">
-            Our secret sauce ensures scalability and attracts talented,
-            creative people who aspire to achieve incredible things
-            together—while having some fun along the way.
+            We build powerful, scalable systems designed to streamline petrol pump operations.
+             Our platform helps owners manage sales, stock, staff, credit, and finances 
+             effortlessly—while keeping everything running smoothly every day.
           </p>
           <button className="discover-btn_post">
-            DISCOVER MORE 
+            DISCOVER MORE
             {/* <LuArrowUpRight className="arrow-icon" /> */}
           </button>
         </div>

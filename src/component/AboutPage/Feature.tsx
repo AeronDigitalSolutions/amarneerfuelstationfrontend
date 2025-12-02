@@ -1,51 +1,47 @@
 // import React from "react";
-import "./Feature.css";
-
+// import "./Feature.css";
+import '../../style/About/Feature.css'
 const Feature= () => {
   return (
     <section className="features-section">
       <h1 className="main-title">
-        DELIVERING INNOVATIVE DIGITAL <br /> PRODUCTS & SOLUTIONS.
+     DELIVERING INNOVATIVE DIGITAL  <br /> PRODUCTS & SOLUTIONS.
       </h1>
 
       <p className="subtitle">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus,
-        luctus nec ullamcorper mattis, pulvinar dapibus leo.
+      We provide end-to-end software solutions that streamline fuel sales, stock control, staff management,
+       and daily pump operations.
       </p>
 
       <div className="features-grid">
-        <div className="feature-card">
-          <h2>Passion and personality</h2>
+        <div className="feature-card" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
+          <h2>Passion and precision</h2>
           <p>
-            Curabitur at felis non libero suscipit fermentum. Duis volutpat, ante
-            et scelerisque aliquet libero id nulla.
+            We build every module with care to ensure accurate fuel, stock, and sales tracking.
           </p>
           <span className="number-badge">01</span>
         </div>
 
-        <div className="feature-card">
-          <h2>Measure twice, code once</h2>
+        <div className="feature-card" data-aos="fade-up" data-aos-delay="200" data-aos-anchor-placement="bottom-bottom">
+          <h2>Measure twice, automate once</h2>
           <p>
-            Curabitur at felis non libero suscipit fermentum. Duis volutpat, ante
-            et scelerisque aliquet libero id nulla.
+           Our system reduces manual work by automating key pump operations.
           </p>
           <span className="number-badge">02</span>
         </div>
 
-        <div className="feature-card">
-          <h2>Fresh design, smart business processes</h2>
+        <div className="feature-card" data-aos="fade-up" data-aos-delay="400" data-aos-anchor-placement="bottom-bottom">
+          <h2>Smart design, smooth workflows</h2>
           <p>
-            Curabitur at felis non libero suscipit fermentum. Duis volutpat, ante
-            et scelerisque aliquet libero id nulla.
+            Easy-to-use screens streamline daily tasks for owners and staff.
           </p>
           <span className="number-badge">03</span>
         </div>
 
-        <div className="feature-card">
-          <h2>Unconventional — and highly effective</h2>
+        <div className="feature-card" data-aos="fade-up" data-aos-delay="600" data-aos-anchor-placement="bottom-bottom">
+          <h2>Practical — and highly effective</h2>
           <p>
-            Curabitur at felis non libero suscipit fermentum. Duis volutpat, ante
-            et scelerisque aliquet libero id nulla.
+            Real-world pump challenges shaped our powerful feature set.
           </p>
           <span className="number-badge">04</span>
         </div>

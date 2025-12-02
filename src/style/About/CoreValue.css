@@ -7,10 +7,10 @@
 }
 
 .values-container {
-    width: 90%;
+  width: 90%;
   margin: auto;
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -26,12 +26,15 @@
   justify-content: center;
   gap: 7px;
 }
-.dot, .dot2 {
+
+.dot,
+.dot2 {
   width: 8px;
   height: 8px;
   background: white;
   border-radius: 50%;
 }
+
 .dot2 {
   opacity: 0.4;
 }
@@ -61,11 +64,11 @@
   text-align: center;
   /* padding: 40px 25px; */
   padding-bottom: 30px;
-    padding-top: 10px;
-    padding-right: 0px;
-    padding-left: 0px;
-  border-right: 1px solid rgba(255,255,255,0.15);
-  border-bottom: 1px solid rgba(255,255,255,0.15);
+  padding-top: 10px;
+  padding-right: 0px;
+  padding-left: 0px;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .icon {
@@ -89,8 +92,9 @@
   font-weight: 600;
   cursor: pointer;
 }
-.value-card h3:hover{
-color: #FDc448;
+
+.value-card h3:hover {
+  color: #FDc448;
 }
 
 .value-card p {
@@ -100,6 +104,7 @@ color: #FDc448;
   line-height: 1.9rem;
   opacity: 0.8;
 }
+
 .values-left {
   width: 100%;
   margin-bottom: 40px;
@@ -114,6 +119,7 @@ color: #FDc448;
     flex-direction: column;
     text-align: center;
   }
+
   .values-right {
     width: 100%;
     margin-top: 40px;
@@ -124,6 +130,7 @@ color: #FDc448;
   .grid-box {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .main-heading {
     font-size: 50px;
   }
@@ -133,13 +140,46 @@ color: #FDc448;
   .grid-box {
     grid-template-columns: 1fr;
   }
+
   .main-heading {
-    font-size: 40px;
+    font-size: 36px;
   }
 }
-@media(max-width:420px){
-  .values-wrapper{
+
+@media(max-width:420px) {
+  .values-wrapper {
     padding: 30px 0px;
   }
- 
+
+  .values-left {
+    margin-bottom: 0px;
+  }
+
+  .responsivetext_CV {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .main-heading {
+    margin-bottom: 0px;
+  }
+.tiitle_lorem{
+  text-align: justify;
+}
+.icon{
+  width: 62px;
+  height: 62px;
+}
+  .value-card {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    padding: 20px 20px;
+    gap: 1rem;
+    border-left: 0.1px solid grey;
+    border-bottom: 0.1px solid grey !important;
+    border-right: 0.1px solid grey !important;
+  }
 }

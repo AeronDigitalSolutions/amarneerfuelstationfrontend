@@ -10,19 +10,20 @@ const Footer = () => {
 
         <div className='logo'>
           <img src={logo} alt='logo' />
-          <p style={{color:'white',marginTop:'20px'}}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Id.</p>
+          <p style={{color:'white',marginTop:'20px'}}>Smart, reliable software for managing petrol pump operations end-to-end.</p>
           <button className="discover-btn" style={{ marginTop: '40px' }}>
-            Company Desk
+           Company Desk
           </button>
         </div>
 
         <div className="footer-column">
           <h4>Services</h4>
           <ul>
-            <li>Branding</li>
-            <li>UI and UX design</li>
-            <li>Web Design</li>
-            <li>SaaS Design</li>
+            <li>Fuel Sales & POS</li>
+            <li>Tank Stock Management</li>
+            <li>Attendance & Payroll</li>
+            <li>Accounting & Finance</li>
+            <li>Reports & Dashboard</li>
           </ul>
 
           
@@ -32,20 +33,20 @@ const Footer = () => {
         <div className="footer-column">
           <h4>Case Studies</h4>
           <ul>
-            <li>Brand Mode</li>
-            <li>Better AI</li>
-            <li>Formwork</li>
-            <li>Risetech</li>
+            <li>Automated Pump Setup</li>
+            <li>Real-Time UPI Sync</li>
+            <li>Multi-Branch Management</li>
+            <li>Fuel Stock Accuracy</li>
           </ul>
         </div>
 
         <div className="footer-column">
           <h4>Contact</h4>
           <ul>
-            <li>Clutch</li>
-            <li>Behance</li>
-            <li>Dribbble</li>
-            <li>Awwwards</li>
+            <li>Support</li>
+            <li>Documentation</li>
+            <li>WhatsApp</li>
+            <li>Help Center</li>
           </ul>
         </div>
 
@@ -61,14 +62,14 @@ const Footer = () => {
 
         <div className='right_footer_text'>
           <p>Let's work together</p>
-          <p className='right_para_yellow'>Call Creavision</p>
+          <p className='right_para_yellow'>Call Aeron Digital</p>
         </div>
       </div>
 
       <hr />
 
       <p className='footer_copy'>
-        Copyright © 2025 Creavision | Powered by Onecontributor
+        Copyright © 2025 Aeron Digital | Powered by Onecontributor
       </p>
 
     </footer>

@@ -34,7 +34,7 @@ const Services = () => {
                 <img className='img_services_img' src={graphic} alt="icon" />
               </div>
               <h3 className='services_para'>Sale Entry</h3>
-              <p className='services_desc'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <p className='services_desc'>Quick and accurate fuel sale recording with POS integration.</p>
             </div>
           </Link>
 
@@ -48,7 +48,7 @@ const Services = () => {
                 <img className='img_services_img' src={social} alt="icon" />
               </div>
               <h3 className='services_para'> Fuel Tank Management </h3>
-              <p className='services_desc'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <p className='services_desc'>Monitor tank stock, dips, and variances in real time.</p>
             </div>
           </Link>
 
@@ -62,7 +62,7 @@ const Services = () => {
                 <img className='img_services_img' src={brand} alt="icon" />
               </div>
               <h3 className='services_para'>Attendance</h3>
-              <p className='services_desc'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <p className='services_desc'>Track staff attendance and manage payroll effortlessly.</p>
             </div>
           </Link>
 
@@ -77,7 +77,7 @@ const Services = () => {
                 <img className='img_services_img' src={seo} alt="icon" />
               </div>
               <h3 className='services_para'>Fuel Tank Management</h3>
-              <p className='services_desc'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <p className='services_desc'>Track tank stock, dips, and deliveries with real-time accuracy.</p>
             </div>
           </Link>
 
@@ -91,7 +91,7 @@ const Services = () => {
                 <img className='img_services_img' src={seo} alt="icon" />
               </div>
               <h3 className='services_para'>Fuel Sale Entry</h3>
-              <p className='services_desc'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <p className='services_desc'>Record daily fuel sales quickly with an integrated POS.</p>
             </div>
           </Link>
 
@@ -105,7 +105,7 @@ const Services = () => {
                 <img className='img_services_img' src={shape} alt="icon" />
               </div>
               <h3 className='services_para'>Dashboard</h3>
-              <p className='services_desc'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <p className='services_desc'>View live sales, stock, and performance in one smart panel.</p>
             </div>
           </Link>
 

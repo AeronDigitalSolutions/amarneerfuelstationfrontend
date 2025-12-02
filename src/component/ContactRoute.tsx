@@ -20,8 +20,8 @@ const ContactRoute = () => {
 
       <div className="contact-points">
         <p>↘️ &nbsp;We will respond to you within 12 hours.</p>
-        <p>↘️ &nbsp;Project details and create a brief.</p>
-        <p>↘️ &nbsp;We’ll sign an NDA if requested.</p>
+        <p>↘️ &nbsp;Share your petrol pump requirements, and we’ll prepare a clear project brief.</p>
+        <p>↘️ &nbsp;We’ll sign an NDA if required for confidential discussions.</p>
       </div>
 
       <div className="profile-section">

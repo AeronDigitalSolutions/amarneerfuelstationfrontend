@@ -1,4 +1,4 @@
-import  { useEffect } from 'react';
+import { useEffect } from 'react';
 import '../style/Qestion.css';
 import { IoIosArrowDown } from 'react-icons/io';
 import { FaPhone } from 'react-icons/fa6';
@@ -28,7 +28,7 @@ const Question = () => {
         </p>
 
         <p className='text_question'>
-          “Have questions or want to explore new opportunities? Contact us directly through our website.”
+          Need help or want to streamline your pump operations? Contact us directly through our website.
         </p>
 
         <button className="contact-btn">
@@ -47,51 +47,51 @@ const Question = () => {
             <span className="accordion-icon"><IoIosArrowDown /></span>
           </summary>
           <div className="accordion-body">
-            <p>We offer a full suite of digital marketing services including SEO, PPC, social media, content marketing, and conversion-rate optimisation.</p>
+            <p>We provide a complete petrol pump management system covering sales, stock, staff, credit, POS, and accounting automation.</p>
           </div>
         </details>
 
         <details className="accordion-item">
-          <summary className="accordion-header" data-aos="fade-in"  data-aos-anchor-placement="bottom-bottom" >
+          <summary className="accordion-header" data-aos="fade-in" data-aos-anchor-placement="bottom-bottom" >
             <span className="accordion-number">02.</span>
-            <span className="accordion-question">How Do You Measure Campaign Success?</span>
+            <span className="accordion-question">How Do You Measure System Performance?</span>
             <span className="accordion-icon"><IoIosArrowDown /></span>
           </summary>
           <div className="accordion-body">
-            <p>We use a mix of KPIs such as ROI, cost per acquisition (CPA), click-through rates, engagement metrics and customer lifetime value.</p>
+            <p>We track accuracy, real-time sync, stock variance, sales reports, UPI logs, and operational efficiency improvements.</p>
           </div>
         </details>
 
         <details className="accordion-item">
-          <summary className="accordion-header" data-aos="fade-in"  data-aos-anchor-placement="bottom-bottom" >
+          <summary className="accordion-header" data-aos="fade-in" data-aos-anchor-placement="bottom-bottom" >
             <span className="accordion-number">03.</span>
             <span className="accordion-question">How Long Does It Take to See Results?</span>
             <span className="accordion-icon"><IoIosArrowDown /></span>
           </summary>
           <div className="accordion-body">
-            <p>Typically you will start seeing meaningful results within 3-6 months, though this depends on your industry, budget and current state.</p>
+            <p>Most pumps experience smoother operations and better control within the first few weeks of using the platform.</p>
           </div>
         </details>
 
         <details className="accordion-item">
-          <summary className="accordion-header" data-aos="fade-in"  data-aos-anchor-placement="bottom-bottom" >
+          <summary className="accordion-header" data-aos="fade-in" data-aos-anchor-placement="bottom-bottom" >
             <span className="accordion-number">04.</span>
-            <span className="accordion-question">How Much Do Your Services Cost?</span>
+            <span className="accordion-question">How Much Does Your System Cost?</span>
             <span className="accordion-icon"><IoIosArrowDown /></span>
           </summary>
           <div className="accordion-body">
-            <p>Our services are tailored to your needs. We provide custom pricing based on scope, deliverables and expected outcomes.</p>
+            <p>Pricing is customized based on modules, users, and integrations required for your petrol pump setup.</p>
           </div>
         </details>
 
         <details className="accordion-item">
-          <summary className="accordion-header" data-aos="fade-in"  data-aos-anchor-placement="bottom-bottom" >
+          <summary className="accordion-header" data-aos="fade-in" data-aos-anchor-placement="bottom-bottom" >
             <span className="accordion-number">05.</span>
-            <span className="accordion-question">What Makes Your Agency Different?</span>
+            <span className="accordion-question">What Makes Your Platform Different?</span>
             <span className="accordion-icon"><IoIosArrowDown /></span>
           </summary>
           <div className="accordion-body">
-            <p>We combine deep domain expertise, data-driven strategies and full transparency — you always see what we’re doing and why.</p>
+            <p>We offer an all-in-one solution with automation, real-time UPI API sync, advanced reports, and reliable support.</p>
           </div>
         </details>
       </div>

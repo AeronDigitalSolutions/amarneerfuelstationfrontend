@@ -6,10 +6,10 @@ const ChatProject = () => {
      <div className="contact-container">
       <div className="contact-box">
         <h1 className="contact-title" style={{color:'black'}}>
-          HAVE A PROJECT IN MIND? LET’S <br /> CHAT!
+         HAVE A PROJECT IN MIND? LET’S <br /> CHAT!
         </h1>
         <p className="contact-subtitle">
-          Need more clarity? Let our team help you.
+          Need more clarity? Let our team guide you.
         </p>
         <button className="contact-button">
           CONTACT US

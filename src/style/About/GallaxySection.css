@@ -12,7 +12,9 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 35px;
 }
-
+.gallery-card2{
+  display: none !important;
+}
 .gallery-card {
   width: 100%;
   height: 175px;
@@ -22,7 +24,7 @@
 
 .gallery-card-large {
   width: 100%;
-  height: 350px;
+  height: 310px;
   object-fit: cover;
   border-radius: 16px;
   grid-column: span 2;
@@ -39,8 +41,9 @@
 
 .team-box h3 {
   font-size: 20px;
-  margin-bottom: 15px;
   font-weight: 600;
+  margin-bottom: 5px;
+  text-align: center;
 }
 
 .team-avatars {
@@ -50,10 +53,10 @@
 }
 
 .team-avatars img {
-  width: 45px;
-  height: 45px;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
   object-fit: cover;
-  border-radius: 50%;
 }
 
 .team-btn {
@@ -66,7 +69,6 @@
   cursor: pointer;
 }
 
-
 @media (max-width: 992px) {
   .gallery-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -78,22 +80,68 @@
 }
 
 @media (max-width: 480px) {
+
   .gallery-grid {
-    grid-template-columns: 1fr;
+    width: 95%;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
   }
 
-  .gallery-card,
+  .team-avatars img {
+    width: 100%;
+    border-radius: 0px;
+    object-fit: cover;
+    height: auto;
+  }
+  .team-box h3{
+    text-align: center;
+  }
+.gallery-card2{
+  display: flex ;
+}
+  .gallery-card {
+    height: 160px !important;
+  }
+
   .gallery-card-large {
-    height: 220px;
+    height: 175px !important;
+    grid-column: span 2 !important;
+    margin: 0 !important;
+  }
+
+  .team-box {
+    grid-column: span 2 !important;
+    padding: 20px;
+    margin-top: 12px;
   }
 }
 
-@media (max-width: 370px) {
-  .team-box h3 {
-    font-size: 16px;
+@media (max-width: 420px) {
+  .gallery-card {
+    height: 150px;
+  }
+.gallery-card2{
+  display: flex !important;
+  height: 151px;
+  border-radius: 10px;
+
+}
+  .gallery-card-large {
+    height: 165px;
+  }
+}
+
+@media (max-width: 380px) {
+  .gallery-card {
+    height: 140px;
   }
 
-  .team-btn {
-    font-size: 12px;
+  .gallery-card-large {
+    height: 155px;
+  }
+
+  .team-box {
+    padding: 15px;
   }
 }

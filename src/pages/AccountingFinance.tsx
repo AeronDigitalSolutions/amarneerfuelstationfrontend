@@ -361,7 +361,6 @@ export default function AccountingFinance() {
         )}
       </div>
 
-      {/* FIXED SUMMARY BAR */}
       <div className={styles.fixedSummary}>
         <span><strong>Purchase:</strong> ₹{summary.totalPurchase.toFixed(2)}</span>
         <span><strong>Expense:</strong> ₹{summary.totalExpense.toFixed(2)}</span>

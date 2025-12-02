@@ -18,28 +18,28 @@ const StateSection = () => {
           <p className="stats-number">
             20 <span>+</span>
           </p>
-          <p className="stats-text">Years of Excellence</p>
+          <p className="stats-text">Years of Trusted Service</p>
         </div>
 
         <div className="stats-card" data-aos="fade-up" data-aos-delay="200" data-aos-anchor-placement="bottom-bottom">
           <p className="stats-number">
             98%<span> +</span>
           </p>
-          <p className="stats-text">Client Repeat Business</p>
+          <p className="stats-text">Client Retention Rate</p>
         </div>
 
         <div className="stats-card" data-aos="fade-up" data-aos-delay="400" data-aos-anchor-placement="bottom-bottom">
           <p className="stats-number">
             50% <span> +</span>
           </p>
-          <p className="stats-text">boost in conversions after redesign</p>
+          <p className="stats-text">Faster Operations With Automation</p>
         </div>
 
         <div className="stats-card" data-aos="fade-up" data-aos-delay="600" data-aos-anchor-placement="bottom-bottom">
           <p className="stats-number">
             100 <span>+</span>
           </p>
-          <p className="stats-text">Thriving Projects</p>
+          <p className="stats-text">Active Petrol Pump Installations</p>
         </div>
 
       </div>

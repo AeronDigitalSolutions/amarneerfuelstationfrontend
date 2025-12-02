@@ -261,4 +261,10 @@ select {
     display: flex;
     justify-content: center;
 }
+.modalContent {
+    background: white;
+    padding: 28px;
+    width: 386px;
+    border-radius: 15px;
+}
 }
