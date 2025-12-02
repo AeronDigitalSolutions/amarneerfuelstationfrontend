@@ -25,17 +25,9 @@ import ShiftTiming from "./pages/ShiftTiming";
 import LivePayment from "./pages/LivePayment";
 import PaymentComparison from "./pages/PaymentComparison";
 
-// NEW ROLE-BASED DASHBOARDS
-import ManagerDashboard from "./pages/ManagerDashboard";
-import CashierDashboard from "./pages/CashierDashboard";
-import AccountantDashboard from "./pages/AccountantDashboard";
-import AttendantDashboard from "./pages/AttendantDashboard";
-
-// ADMIN PAGE
+import About1 from "./component/AboutPage/About1";
 import AdminRoleManagement from "./pages/AdminRoleManagement";
-
-// AUTH GUARD
-import AuthGuard from "./guards/AuthGuards";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -48,75 +40,19 @@ function App() {
             PUBLIC ROUTES 
         ========================= */}
         <Route path="/" element={<Home />} />
-        <Route path="/contact" element={<ContactRoute />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/sign" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-
-        {/* ========================
-            ROLE-BASED DASHBOARDS 
-        ========================= */}
-
-        {/* ADMIN */}
-        <Route
-          path="/adminloginpage"
-          element={
-            <AuthGuard role="Admin">
-              <AdminRoleManagement />
-            </AuthGuard>
-          }
-        />
-
-        {/* MANAGER */}
-        <Route
-          path="/dashboard-manager"
-          element={
-            <AuthGuard role="Manager">
-              <ManagerDashboard />
-            </AuthGuard>
-          }
-        />
-
-        {/* CASHIER */}
-        <Route
-          path="/dashboard-cashier"
-          element={
-            <AuthGuard role="Cashier">
-              <CashierDashboard />
-            </AuthGuard>
-          }
-        />
-
-        {/* ACCOUNTANT */}
-        <Route
-          path="/dashboard-accountant"
-          element={
-            <AuthGuard role="Accountant">
-              <AccountantDashboard />
-            </AuthGuard>
-          }
-        />
-
-        {/* ATTENDANT */}
-        <Route
-          path="/dashboard-attendant"
-          element={
-            <AuthGuard role="Attendant">
-              <AttendantDashboard />
-            </AuthGuard>
-          }
-        />
-
-        {/* ========================
-            OLD MODULE ROUTES 
-            (Only used if you still need them)
-        ========================= */}
         <Route path="/dashboard" element={<DashboardMain />} />
         <Route path="/saleentry" element={<SaleEntry />} />
         <Route path="/tanks" element={<TankManagement />} />
         <Route path="/finance" element={<AccountingFinance />} />
         <Route path="/attendance" element={<AttendancePayroll />} />
         <Route path="/creditline" element={<CreditLineManagement />} />
+        <Route path="/admin" element={<AdminRoleManagement/>} />
+        <Route path="/dash" element={<Dashboard/>} />
+        <Route path="/contact" element={<ContactRoute />} />
+        <Route path="/sign" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/dashboardmain" element={<DashboardMain />} />
+        <Route path="/services" element={<Services />} />
         <Route path="/fuelrate" element={<FuelRates />} />
         <Route path="/pump" element={<PumpNo />} />
         <Route path="/addtank" element={<AddTank />} />
@@ -124,12 +60,7 @@ function App() {
         <Route path="/shift" element={<ShiftTiming />} />
         <Route path="/payment" element={<LivePayment />} />
         <Route path="/paymentcomp" element={<PaymentComparison />} />
-
-        {/* ========================
-            FALLBACK 
-        ========================= */}
-        <Route path="*" element={<Home />} />
-
+        <Route path="/about" element={<About1 />} />
       </Routes>
     </BrowserRouter>
   );

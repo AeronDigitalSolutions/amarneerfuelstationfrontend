@@ -6,6 +6,7 @@
     font-weight: 600;
 }
 
+
 .pump_container {
     display: flex;
     justify-content: center;
@@ -100,4 +101,12 @@
     padding: 10px;
     border: 1px solid #cbd5e1;
     text-align: center;
+}
+
+
+@media(max-width:420px){
+    .modalButtons{
+       display: flex;
+    justify-content: center;
+    }
 }

@@ -48,7 +48,7 @@
 .table th,
 .table td {
     padding: 10px;
-    border: 1px solid #eef2ff;
+    border-bottom: 1px solid #eef2ff;
     text-align: left;
 }
 
@@ -111,8 +111,8 @@
     color: white;
     border: none;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    width: 26px;
+    height: 26px;
     cursor: pointer;
 }
 

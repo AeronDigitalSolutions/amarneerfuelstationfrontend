@@ -376,8 +376,10 @@ export default function AdminRoleManagement() {
                         </div>
                       </td>
                       <td>
+                        <div className="td" style={{display:'flex',justifyContent:'center'}}>
                         <button className={styles.rowBtn} onClick={() => openEditModal(u)}>Edit</button>
                         <button className={styles.deleteButton} onClick={() => deleteUser(u._id!)} disabled={loading}>🗑️</button>
+                        </div>
                       </td>
                     </tr>
                   ))

@@ -57,7 +57,7 @@ export default function Dashboard() {
 
   return (
     <div className={styles.container}>
-      <h1>📊 Petrol Pump Dashboard</h1>
+      <h1 >📊 Petrol Pump Dashboard</h1>
 
       {/* 🧮 Stats Grid */}
       <div className={styles.grid}>

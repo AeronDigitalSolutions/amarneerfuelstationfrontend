@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import '../style/Addtank.css'
 interface Tank {
   _id?: string;
   tankId: string;
@@ -62,15 +62,16 @@ export default function AddTank() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>➕ Add Tank</h1>
+    <div className="add_continer_backend" >
+      {/* style={{ padding: 20 }}> */}
+      <h1>Add Tank </h1>
 
-      <div
-        style={{
-          display: "flex",
-          gap: 20,
-          marginBottom: 20,
-        }}
+      <div className="tank_flex"
+        // style={{
+        //   display: "flex",
+        //   gap: 20,
+        //   marginBottom: 20,
+        // }}
       >
         <div>
           <label>Tank ID</label>
@@ -107,17 +108,17 @@ export default function AddTank() {
           />
         </div>
       </div>
-
-      <button onClick={handleSubmit} style={{ padding: "10px 20px" }}>
+<div  className="button_tank" >
+      <button onClick={handleSubmit} >
         Save Tank
       </button>
+</div>
+      <h2 className='tank_list_heading' > Tank List</h2>
 
-      <h2 style={{ marginTop: 40 }}>📋 Tank List</h2>
-
-      <table
-        border={1}
-        cellPadding={8}
-        style={{ width: "100%", marginTop: 10 }}
+      <table  className="table_add_tank"
+        // border={1}
+        // cellPadding={8}
+        style={{ width: "100%", marginTop: 10, }}
       >
         <thead>
           <tr>

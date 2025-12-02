@@ -8,17 +8,24 @@ import graphic from '../assets/graphic.png';
 import top from '../assets/servicestop.png'
 import Header from "../component/Header";
 import Footer from "../component/Footer";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 export default function DashboardMain() {
+   AOS.init({
+      duration: 1000,
+      offset: 120,
+      once: true,
+    });
   return (
     <>
     <Header/>
-    <h1 style={{fontSize:'2rem',color:'Black', display:'flex', justifyContent:'center' ,marginBottom:'0px'}}>Petro Pump DashBoard</h1>
-    <p style={{fontSize:'1.3rem',color:'grey', display:'flex', justifyContent:'center' , marginTop:'10px'}}>Welcome! Choose a Section a section to begin</p>
+    <h1 className="dashbord_heading"  data-aos="fade-in"  data-aos-anchor-placement="bottom-center">Petro Pump DashBoard</h1>
+    <p className="dashbord_sub_tittle"  data-aos="fade-in"  data-aos-anchor-placement="bottom-center">Welcome! Choose a Section a section to begin</p>
    
 <div className="dash">
       <main className='grid_services_dash'>
 
-         <Link to='/admin' className="service-box_dash">
+         <Link to='/admin' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>
@@ -31,7 +38,7 @@ export default function DashboardMain() {
           </div>
         </Link>
 
-        <Link to='/dashboard' className="service-box_dash">
+        <Link to='/dashboard' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>
@@ -45,7 +52,7 @@ export default function DashboardMain() {
         </Link>
 
 
- <Link to='/shift' className="service-box_dash">
+ <Link to='/shift' className="service-box_dash" data-aos="fade-up"   data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>
@@ -58,7 +65,7 @@ export default function DashboardMain() {
           </div>
         </Link> 
 
-  <Link to='/testfuel' className="service-box_dash">
+  <Link to='/testfuel' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>
@@ -72,7 +79,7 @@ export default function DashboardMain() {
         </Link> 
         
 
- <Link to='/fuelrate' className="service-box_dash">
+ <Link to='/fuelrate' className="service-box_dash" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>
@@ -86,7 +93,7 @@ export default function DashboardMain() {
         </Link>
 
 
-   <Link to='/pump' className="service-box_dash">
+   <Link to='/pump' className="service-box_dash" data-aos="fade-up"   data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>
@@ -100,7 +107,7 @@ export default function DashboardMain() {
         </Link> 
 
 
-         <Link to='/addtank' className="service-box_dash">
+         <Link to='/addtank' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>
@@ -113,7 +120,7 @@ export default function DashboardMain() {
           </div>
         </Link> 
         
-<Link to='/saleentry' className="service-box_dash">
+<Link to='/saleentry' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>
@@ -126,7 +133,7 @@ export default function DashboardMain() {
           </div>
         </Link>
 
-  <Link to='/tanks' className="service-box_dash">
+  <Link to='/tanks' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>
@@ -139,7 +146,7 @@ export default function DashboardMain() {
           </div>
         </Link>
 
-<Link to='/attendance' className="service-box_dash">
+<Link to='/attendance' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>
@@ -153,7 +160,7 @@ export default function DashboardMain() {
         </Link>
 
 
-        <Link to='/creditline' className="service-box_dash">
+        <Link to='/creditline' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>
@@ -168,7 +175,7 @@ export default function DashboardMain() {
 
         
 
- <Link to='/finance' className="service-box_dash">
+ <Link to='/finance' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
           </div>

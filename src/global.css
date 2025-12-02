@@ -10,7 +10,7 @@
 .custom {
   margin: 0 !important;
   padding: 0 !important;
-  background: #fff; /* or your page background */
+  /* background: #fff; */
 }
 
 /* Remove extra top & bottom gap of custom_container */
@@ -18,7 +18,9 @@
   padding: 20px 0 !important;
   margin: 0 auto;
 }
-
+/* .testimonials-section{
+  color: #2563eb;
+} */
 :root {
   /* 🌞 Light mode colors */
   --bg-color: #f9fafb;
@@ -91,7 +93,7 @@ button:hover {
    ============================== */
 .themeToggle {
   position: fixed;
-  top: 1rem;
+  top: 33rem;
   right: 1rem;
   background: var(--card-color);
   color: var(--text-color);
@@ -107,6 +109,15 @@ button:hover {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s;
   z-index: 999;
+}
+@media (max-width: 780px) {
+  .themeToggle {
+    bottom: 2rem;
+    left: 1rem;
+    top: auto;       
+    left: auto;     
+    position: fixed;  
+  }
 }
 
 .themeToggle:hover {

@@ -910,7 +910,8 @@ export default function CreditLineManagement() {
               <option>Diesel</option>
             </select>
 
-            <button onClick={addVehicle}>Add</button>
+            <button  style={{padding:'10px 11px', display:'flex',justifyContent:'center' ,marginTop:'10px' }} onClick={addVehicle}>Add</button>
+           
           </div>
         </div>
       )}

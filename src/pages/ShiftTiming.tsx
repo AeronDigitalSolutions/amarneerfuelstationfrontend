@@ -109,7 +109,7 @@ export default function ShiftTiming() {
                 <td>{s.shiftName}</td>
                 <td>{s.startTime}</td>
                 <td>{s.endTime}</td>
-                <td>
+                <td style={{display:'flex' ,justifyContent:'center'}}>
                   <button className={styles.editBtn} onClick={() => openEdit(s)}><MdEdit /></button>
                   <button className={styles.deleteBtn} onClick={() => deleteShift(s._id)}><MdDelete /></button>
                 </td>

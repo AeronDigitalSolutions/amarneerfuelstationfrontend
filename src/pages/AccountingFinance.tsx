@@ -62,7 +62,6 @@ export default function AccountingFinance() {
     cashbookBalance: 0,
   });
 
-  // DATE FILTER — SINGLE DATE ONLY
   const [filterDate, setFilterDate] = useState("");
 
   useEffect(() => {
@@ -243,16 +242,16 @@ export default function AccountingFinance() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>💰 Accounting & Finance</h1>
+      <h1 className={styles.title}> Accounting & Finance</h1>
 
       <div className={styles.buttonRow}>
         <div className={styles.leftButtons}>
           <button className={styles.openButton} onClick={() => setShowAddModal(true)}>
-            ➕ Add New Entry
+            Add New Entry 
           </button>
 
           <button className={styles.secondaryButton} onClick={openDailyModal}>
-            ➕ Add Daily Expenses
+            Add Daily Expenses
           </button>
         </div>
 
@@ -291,7 +290,7 @@ export default function AccountingFinance() {
       <div className={styles.tableContainer}>
         {activeTable === "ledger" ? (
           <>
-            <h2 className={styles.sectionTitle}>📘 Ledger Entries</h2>
+            <h2 className={styles.sectionTitle}> Ledger Entries</h2>
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -317,7 +316,7 @@ export default function AccountingFinance() {
                     <td>{e.credit}</td>
                     <td>{e.amount}</td>
                     <td>{e.supplierName || "-"}</td>
-                    <td>
+                    <td className="act">
                       <button onClick={() => handleEdit(e)} className={styles.editButton}>✏️</button>
                       <button onClick={() => handleDelete(e._id)} className={styles.deleteButton}>🗑️</button>
                     </td>
