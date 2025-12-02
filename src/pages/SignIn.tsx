@@ -4,10 +4,10 @@ import { FaEye } from "react-icons/fa";
 import "../pagecss/SignIn.css";
 import Header from "../component/Header";
 import Footer from "../component/Footer";
-import shape1 from "../assets/shape1.png";
-import shape2 from "../assets/shape2.png";
-import shape3 from "../assets/shape3.png";
-import shape4 from "../assets/shape4.png";
+// import shape1 from "../assets/shape1.png";
+// import shape2 from "../assets/shape2.png";
+// import shape3 from "../assets/shape3.png";
+// import shape4 from "../assets/shape4.png";
 
 // 🔥 Auto Switch Backend (Local + Live)
 const BASE_URL =
@@ -99,10 +99,7 @@ export default function SignIn() {
     <>
       <Header />
       <div className="login-wrapper">
-        <img src={shape1} className="parallax shape-1" data-speed="10" />
-        <img src={shape2} className="parallax shape-2" data-speed="16" />
-        <img src={shape3} className="parallax shape-3" data-speed="20" />
-        <img src={shape4} className="parallax shape-4" data-speed="14" />
+
 
         <div className="login-box">
           <p className="title_login">
