@@ -20,7 +20,7 @@ export default function DashboardMain() {
     <>
     <Header/>
     <h1 className="dashbord_heading"  data-aos="fade-in"  data-aos-anchor-placement="bottom-center">Petro Pump DashBoard</h1>
-    <p className="dashbord_sub_tittle"  data-aos="fade-in"  data-aos-anchor-placement="bottom-center">Welcome! Choose a Section a section to begin</p>
+    <p className="dashbord_sub_tittle"  data-aos="fade-in"  data-aos-anchor-placement="bottom-center">Welcome! Choose a section to begin.</p>
    
 <div className="dash">
       <main className='grid_services_dash'>
@@ -34,7 +34,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>Admin</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>Manage users, roles, permissions, and system settings securely.</p>
           </div>
         </Link>
 
@@ -47,7 +47,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>DashBoard</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>View live sales, stock, credit, and operations in one place.</p>
           </div>
         </Link>
 
@@ -61,7 +61,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>Shift</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>Handle shift start, meter readings, sales entry, and closing totals.</p>
           </div>
         </Link> 
 
@@ -74,7 +74,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>Test Fuel</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>Record and monitor test fuel usage for accurate meter calibration.</p>
           </div>
         </Link> 
         
@@ -88,7 +88,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>Fuel Rate</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>Set and update daily fuel prices for all products instantly.</p>
           </div>
         </Link>
 
@@ -102,7 +102,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>Pump Management</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>Manage pump numbers, nozzles, meters, and operator assignments.</p>
           </div>
         </Link> 
 
@@ -116,7 +116,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>Add Tank</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>Add new tanks and define product type, capacity, and details.</p>
           </div>
         </Link> 
         
@@ -129,7 +129,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>SaleEntry</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>Enter daily fuel sales with meter readings and automated totals.</p>
           </div>
         </Link>
 
@@ -142,7 +142,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>Fuel Tank Management</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>Track tank dips, stock levels, receipts, and fuel variance..</p>
           </div>
         </Link>
 
@@ -155,7 +155,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>Attendance</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>Track staff attendance, shift timings, and daily work status.</p>
           </div>
         </Link>
 
@@ -169,7 +169,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>CreditLine</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>Manage supplier and customer credit with clear outstanding reports.</p>
           </div>
         </Link>
 
@@ -184,7 +184,7 @@ export default function DashboardMain() {
               <img className='img_services_img_dash' src={graphic} alt="icon" />
             </div>
             <h3 className='services_para_dash'>Finance</h3>
-            <p className='services_desc_dash'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p className='services_desc_dash'>Handle expenses, cash flow, and accounting summaries with ease.</p>
           </div>
         </Link>
       </main>

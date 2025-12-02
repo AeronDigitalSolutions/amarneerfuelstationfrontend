@@ -33,9 +33,9 @@ const Testimonials = () => {
   };
 
   const data = [
-   { name: "Julia", role: "Marketing Director", img: img2, text: "Amazing work!" },
-  { name: "Mark", role: "Manager", img: img4, text: "Very professional." },
-  { name: "Aman", role: "CEO", img: img1, text: "Loved the UI/UX." },
+   { name: "Aman", role: "CEO", img: img2, text: "System is smooth and very easy to use." },
+  { name: "Riya", role: "Owner", img: img4, text: "Daily reports are accurate and helpful." },
+  { name: "Julia", role: "Marketing Director", img: img1, text: "Great platform for managing operations." },
   { name: "Riya", role: "Owner", img: img5, text: "Great results!" }
   ];
 

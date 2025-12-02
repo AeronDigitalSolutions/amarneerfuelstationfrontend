@@ -1,5 +1,4 @@
-// import React from "react";
-import "./Team.css";
+import '../../style/About/Team.css'
 import image1 from '../../assets/Team-01.png'
 import Team2 from '../../assets/Teams-02.png'
 import Team3 from '../../assets/Teams-03.png'
@@ -24,7 +23,7 @@ const Team = () => {
           </div>
           <div className="team_info">
             <h3>Michael Ramirez</h3>
-            <p>CEO creavision</p>
+            <p>CEO Aeron Digital Solutions</p>
           </div>
         </div>
 
@@ -45,8 +44,8 @@ const Team = () => {
             <img src={Team3} alt="" />
           </div>
           <div className="team_info">
-            <h3>Emily Davis</h3>
-            <p>Chief Technology</p>
+            <h3>Robert</h3>
+            <p>VP of Operations</p>
           </div>
         </div>
 

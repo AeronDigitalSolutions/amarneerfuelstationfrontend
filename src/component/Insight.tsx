@@ -19,9 +19,9 @@ const Insight = () => {
             <img src={img1} alt="Cognitive Biases in User Research" />
           </div>
           <div className="article-info">
-            <p className="meta">SEO Optimization | July 2, 2025</p>
-            <h3>Cognitive Biases in User Research You Should Avoid</h3>
-            <p className="author">by creapixels</p>
+            <p className="meta">Fuel Management | July 2, 2025</p>
+            <h3>Common Fuel Handling Mistakes Petrol Pumps Should Avoid</h3>
+            <p className="author">by Aeron Digital</p>
           </div>
         </div>
 
@@ -30,9 +30,9 @@ const Insight = () => {
             <img src={img2} alt="Mobile App Design Trends" />
           </div>
           <div className="article-info">
-            <p className="meta">App Design | July 3, 2025</p>
-            <h3>Top Mobile App Design Trends to Follow in 2025</h3>
-            <p className="author">by creapixels</p>
+            <p className="meta">Operations | July 3, 2025</p>
+            <h3>Top Automation Trends Transforming Petrol Pumps in 2025</h3>
+            <p className="author">by Aeron Digital</p>
           </div>
         </div>
 
@@ -41,11 +41,11 @@ const Insight = () => {
             <img src={img3} alt="Web Design Agencies 2025" />
           </div>
           <div className="article-info">
-            <p className="meta">Website Design | July 3, 2025</p>
+            <p className="meta">Business Growth | July 3, 2025</p>
             <h3>
-              Top 10 Web Design Agencies Worldwide in 2025 for Your Projects
+             How Smart Reporting Helps Petrol Pumps Boost Profitability
             </h3>
-            <p className="author">by creapixels</p>
+            <p className="author">by Aeron Digital</p>
           </div>
         </div>
       </div>

@@ -421,4 +421,14 @@ padding-left: 0px; */
   display: flex;
     justify-content: center;
 }
+    .filterBar{
+        gap: 8px;
+        display: flex;
+        /* padding: 0px 137px; */
+        flex-direction: column;
+    }
+    .searchInline{
+    width: 80%;
+    margin-left: 69px;
+}
 }
