@@ -38,6 +38,8 @@ import AdminRoleManagement from "./pages/AdminRoleManagement";
 
 // AUTH GUARD
 import AuthGuard from "./guards/AuthGuards";
+import AttendantSign from "./pages/AttendantSign";
+import AttendancePage from "./pages/AttendancePage";
 
 function App() {
   return (
@@ -132,6 +134,8 @@ function App() {
         {/* OPTIONAL OLD ADMIN PAGE */}
         <Route path="/admin" element={<AdminRoleManagement />} />
         <Route path="/dash" element={<Dashboard />} />
+<Route path="/attendant-login" element={<AttendantSign/>} />
+<Route path="/attendant-attendance" element={<AttendancePage/>} />
 
         {/* ========================
             FALLBACK 
