@@ -184,11 +184,6 @@
   opacity: 0.9;
 }
 
-/* ============================================================
-   📱📱 MOBILE RESPONSIVENESS — ALL BREAKPOINTS ADDED
-   ============================================================ */
-
-/* 600px — Base Mobile */
 @media (max-width: 600px) {
   .contact-title {
     font-size: 41px;
@@ -216,7 +211,6 @@
   }
 }
 
-/* 470px — Smaller Phones */
 @media (max-width: 470px) {
   .contact-title {
     font-size: 36px;
@@ -241,7 +235,6 @@
   }
 }
 
-/* 420px — Compact Layout Fix */
 @media (max-width: 420px) {
   .contact-title {
     font-size: 32px;
@@ -258,7 +251,6 @@
   }
 }
 
-/* 380px — Very Small Phones */
 @media (max-width: 380px) {
   .contact-title {
     font-size: 28px;
@@ -289,7 +281,7 @@
 
 
 [data-theme="dark"] .contact-point {
-  background: #12121e;
+  /* background: #12121e; */
   color: #ffffff;
   box-shadow: 0 0 10px rgba(255,255,255,0.1);
 }

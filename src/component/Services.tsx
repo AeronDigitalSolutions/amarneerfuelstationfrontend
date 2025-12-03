@@ -30,7 +30,7 @@ const Services = () => {
               <img src={top} alt='top' />
             </div>
             <div className="box_grid_services">
-              <div className="icon">
+              <div className="iconS">
                 <img className='img_services_img' src={graphic} alt="icon" />
               </div>
               <h3 className='services_para'>Sale Entry</h3>
@@ -44,7 +44,7 @@ const Services = () => {
               <img src={top} alt='top' />
             </div>
             <div className="box_grid_services">
-              <div className="icon">
+              <div className="iconS">
                 <img className='img_services_img' src={social} alt="icon" />
               </div>
               <h3 className='services_para'> Fuel Tank Management </h3>
@@ -58,7 +58,7 @@ const Services = () => {
               <img src={top} alt='top' />
             </div>
             <div className="box_grid_services">
-              <div className="icon">
+              <div className="iconS">
                 <img className='img_services_img' src={brand} alt="icon" />
               </div>
               <h3 className='services_para'>Attendance</h3>
@@ -73,7 +73,7 @@ const Services = () => {
               <img src={top} alt='top' />
             </div>
             <div className="box_grid_services">
-              <div className="icon">
+              <div className="iconS">
                 <img className='img_services_img' src={seo} alt="icon" />
               </div>
               <h3 className='services_para'>Fuel Tank Management</h3>
@@ -87,7 +87,7 @@ const Services = () => {
               <img src={top} alt='top' />
             </div>
             <div className="box_grid_services">
-              <div className="icon">
+              <div className="iconS">
                 <img className='img_services_img' src={seo} alt="icon" />
               </div>
               <h3 className='services_para'>Fuel Sale Entry</h3>
@@ -101,7 +101,7 @@ const Services = () => {
               <img src={top} alt='top' />
             </div>
             <div className="box_grid_services">
-              <div className="icon">
+              <div className="iconS">
                 <img className='img_services_img' src={shape} alt="icon" />
               </div>
               <h3 className='services_para'>Dashboard</h3>

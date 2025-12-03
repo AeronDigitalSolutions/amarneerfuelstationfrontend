@@ -428,7 +428,9 @@ padding-left: 0px; */
         flex-direction: column;
     }
     .searchInline{
-    width: 80%;
-    margin-left: 69px;
+    /* width: 80%;
+    margin-left: 69px; */
+    width: 75%;
+        margin-left: 101px;
 }
 }

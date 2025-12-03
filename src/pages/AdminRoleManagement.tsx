@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "../style/adminrole.module.css";
+import { useNavigate } from "react-router-dom";
 
 type User = {
   _id?: string;
@@ -32,6 +33,16 @@ export default function AdminRoleManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(false);
+const navigate = useNavigate();
+
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("userRole");
+  localStorage.removeItem("username");
+
+  // redirect to login
+  navigate("/sign");
+};
 
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -295,7 +306,14 @@ export default function AdminRoleManagement() {
      -------------------- */
   return (
     <div className={styles.container}>
-      <h1>Admin & Role Management</h1>
+      <div className={styles.headerRow}>
+  <h1>Admin & Role Management</h1>
+
+  <button className={styles.logoutBtn} onClick={handleLogout}>
+    🔓 Logout
+  </button>
+</div>
+
 
       <div className={styles.topRow}>
          <div>

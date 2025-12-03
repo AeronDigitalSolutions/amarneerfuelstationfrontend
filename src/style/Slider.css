@@ -225,9 +225,9 @@
 
 @media (max-width:420px){
   
-.slider-card{
+/* .slider-card{
     margin-left: 20px;
-  }
+  } */
   
   .slider-controls{
         justify-content: flex-end;

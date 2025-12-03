@@ -1,6 +1,7 @@
 // import React from 'react'
 import '../style/Custom.css'
-import Image from '../assets/right_custom.jpg'
+// import Image from '../assets/right_custom.jpg'
+import myvideo from '../assets/videoplayback.mp4'
 // import { LuArrowUpRight } from "react-icons/lu";
 const Custom = () => {
   return (
@@ -28,7 +29,21 @@ const Custom = () => {
 
         <div className='right_custom'>
           <div className='image_custom'>
-            <img src={Image} alt='image'/>
+             <video 
+      // width="100%" 
+      // height="auto" 
+      // controls 
+      autoPlay 
+      loop 
+      muted 
+      // playsInline
+    >
+      <source src={myvideo} type="video/mp4" />
+      Your browser does not support HTML5 video.
+    </video>
+            {/* <img src={Image} alt='image'/> */}
+            {/* <iframe width="560" height="315" src="<iframe width="325" height="578" src="https://www.youtube.com/embed/_QiVoaqI4Lk" title="Indian Oil Filling Station 👌 #shorts" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>></iframe> */}
+
           </div>
         </div>
       </div>
