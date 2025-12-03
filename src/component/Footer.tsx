@@ -5,14 +5,20 @@ import logo from "../assets/Logo.png";
 export default function Footer() {
   const [showQR, setShowQR] = useState(false);
 
-  // AUTO-DETECT URL
+  // Auto detect environment
   const isLocalhost =
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1";
 
+  // Target link (attendance login page)
   const attendantUrl = isLocalhost
     ? `${window.location.origin}/attendant-login`
     : "https://amarneerfuelstationfrontend.vercel.app/attendant-login";
+
+  // LIVE QR CODE URL (no PNG required)
+  const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
+    attendantUrl
+  )}`;
 
   return (
     <>
@@ -21,11 +27,10 @@ export default function Footer() {
           <div className="logo">
             <img src={logo} alt="logo" />
             <p style={{ color: "white", marginTop: "20px" }}>
-              Smart, reliable software for managing petrol pump operations
-              end-to-end.
+              Smart, reliable software for managing petrol pump operations end-to-end.
             </p>
 
-            {/* 🔥 ATTENDANCE BUTTON */}
+            {/* Attendance Button */}
             <button
               className="discover-btn"
               style={{ marginTop: "30px" }}
@@ -88,21 +93,14 @@ export default function Footer() {
         </p>
       </footer>
 
-      {/* ==========================
-          QR CODE POPUP MODAL
-      =========================== */}
+      {/* QR POPUP */}
       {showQR && (
         <div className="qr-backdrop" onClick={() => setShowQR(false)}>
           <div className="qr-box" onClick={(e) => e.stopPropagation()}>
             <h3>Scan to Mark Attendance</h3>
 
-            <img
-              src={`https://chart.googleapis.com/chart?cht=qr&chs=250x250&chl=${encodeURIComponent(
-                attendantUrl
-              )}`}
-              alt="QR Code"
-              className="qr-img"
-            />
+            {/* LIVE QR CODE */}
+            <img src={qrApi} alt="QR Code" className="qr-img" />
 
             <p style={{ marginTop: "12px", color: "#fff" }}>
               Or open manually:
