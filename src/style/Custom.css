@@ -97,13 +97,20 @@
 }
 
 .image_custom img {
-  /* width: ; */
-  /* height: 57vh; */
+ 
   width: 70%;
   aspect-ratio: 9/16;
   object-fit: contain;
   border-radius: 15px;
 }
+.image_custom video {
+
+  width: 86%;
+  aspect-ratio: 9/16;
+  object-fit: contain;
+  border-radius: 15px;
+}
+
 
 
 @media (max-width: 1024px) {
@@ -203,7 +210,7 @@
     width: 100%;
   }
 
-  .image_custom img {
+  .image_custom video {
     width: 100%;
   }
 }
@@ -239,7 +246,7 @@
     0px;
   }
 
-  .image_custom img {
+  .image_custom video {
     width: auto;
     height: 56vh;
     border-radius: 0px;

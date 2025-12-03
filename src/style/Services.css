@@ -63,7 +63,7 @@
     0 4px 10px rgba(255, 179, 0, 0.4);
 }
 
-.icon {
+.iconS {
   width: 80px;
   height: 80px;
   border-radius: 12px;
@@ -74,7 +74,7 @@
   margin-bottom: 15px;
 }
 
-.icon img {
+.iconS img {
   width: 50px;
 }
 
@@ -106,12 +106,12 @@
     padding: 25px;
   }
 
-  .icon {
+  .iconS {
     width: 70px;
     height: 55px;
   }
 
-  .icon img {
+  .iconS img {
     width: 45px;
   }
 }
@@ -162,12 +162,12 @@
     padding: 0px 5px;
   }
 
-  .icon {
+  .iconS {
     width: 72px;
     height: 65px;
   }
 
-  .icon img {
+  .iconS img {
     width: 38px;
   }
 }
@@ -209,12 +209,12 @@
     padding: 15px;
   }
 
-  .icon{
+  .iconS{
     width: 65px;
     height: 55px;
   }
 
-  .icon img {
+  .iconS img {
     width: 32px;
   }
 }

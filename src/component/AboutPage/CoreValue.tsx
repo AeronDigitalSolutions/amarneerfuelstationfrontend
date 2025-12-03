@@ -52,7 +52,7 @@ const CoreValues = () => {
               </div>
 
               <div className="value-card">
-                <div className="icon"><img src={integrity} alt="integrity" /></div>
+                <div className="icon"><img className='iconc' src={integrity} alt="integrity" /></div>
                 {/* <h3>Integrity</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p> */}
                  <div className='responsivetext_CV'>
@@ -63,7 +63,7 @@ const CoreValues = () => {
 
 
               <div className="value-card" style={{ borderRight: '0px' }}>
-                <div className="icon"><img src={collabation} alt="collabation" /></div>
+                <div className="icon"><img className='iconc' src={collabation} alt="collabation" /></div>
                 <div className='responsivetext_CV'>
                   <h3 className='tiitle_cv'>Innovation</h3>
                   <p className='tiitle_lorem'>We constantly evolve with new automation and reporting features..</p>
@@ -74,7 +74,7 @@ const CoreValues = () => {
 
 
               <div className="value-card" style={{ borderBottom: '0px' }}>
-                <div className="icon"><img src={cust} alt="cust" /></div>
+                <div className="icon"><img className='iconc' src={cust} alt="cust" /></div>
                  <div className='responsivetext_CV'>
                   <h3 className='tiitle_cv'>Efficiency</h3>
                   <p className='tiitle_lorem'>We simplify daily tasks so petrol pumps run faster and smoother.</p>
@@ -85,7 +85,7 @@ const CoreValues = () => {
 
 
               <div className="value-card" style={{ borderBottom: '0px' }}>
-                <div className="icon"><img src={account} alt="acount" /></div>
+                <div className="icon"><img className='iconc' src={account} alt="acount" /></div>
                 <div className='responsivetext_CV'>
                   <h3 className='tiitle_cv'>Growth</h3>
                   <p className='tiitle_lorem'>Our tools help pump owners scale operations with confidence.</p>
@@ -96,7 +96,7 @@ const CoreValues = () => {
 
 
               <div className="value-card" style={{ borderRight: '0px', borderBottom: '0px' }}>
-                <div className="icon"><img src={inno} alt="inno" /></div>
+                <div className="icon"><img className='iconc' src={inno} alt="inno" /></div>
                <div className='responsivetext_CV'>
                   <h3 className='tiitle_cv'>Dependability</h3>
                   <p className='tiitle_lorem'>A stable system you can rely on every day without interruptions.</p>

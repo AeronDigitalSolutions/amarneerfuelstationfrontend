@@ -19,7 +19,7 @@ const Header = () => {
           <nav>
 
             <div className="logo_header">
-              <img src={logo} alt="logo" className="logoh" />
+           <Link to='/'> <img src={logo} alt="logo" className="logoh" /></Link>  
             </div>
 
             <ul className={isOpen ? "nav_link active" : "nav_link"}>

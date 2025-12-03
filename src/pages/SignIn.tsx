@@ -1,5 +1,3 @@
-
-
 import { useEffect } from "react";
 import { FaEye, FaGoogle, FaFacebookF, FaTwitter, FaLinkedinIn } from "react-icons/fa";
 import "../pagecss/SignIn.css";
