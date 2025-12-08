@@ -1,6 +1,7 @@
 /* ================================
    GLOBAL CONTAINER
 ================================ */
+
 .container {
   padding: 30px;
   background: #eef3f7;
@@ -8,7 +9,15 @@
   font-family: "Segoe UI", sans-serif;
   padding-bottom: 120px; /* space for fixed summary */
 }
-
+.accountth{
+  color: #000;
+}
+.accounttd{
+  color: #000;
+}
+[data-theme="dark"] .accounttd {
+  color: #4b5563;
+}
 .title {
   font-size: 2rem;
   font-weight: 700;
@@ -65,7 +74,7 @@
   border: 1px solid #cfd5df;
   border-radius: 10px;
   font-size: 1rem;
-  background: white;
+  /* background: white; */
 }
 
 /* ================================
@@ -173,7 +182,8 @@
 
 .fixedSummary span {
   padding: 6px 12px;
-  background: #eef3f7;
+  /* background: #eef3f7; */
+  color: #000;
   border-radius: 10px;
   border: 1px solid #d7dee6;
 }

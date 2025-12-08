@@ -3,11 +3,22 @@
   display: flex;
   justify-content: center;
   padding: 36px 18px;
-  background: #f7fafc;
+  /* background: #f7fafc; */
   min-height: 100vh;
   font-family: Inter, sans-serif;
 }
-
+.pumpth{
+  color: #000;
+}
+[dark-theme='dark'].pumpth{
+  color: #000;
+}
+.pumptd{
+  color: #000;
+}
+[dark-theme='dark'].pumptd{
+  color: #000;
+}
 .card {
   width: 100%;
   max-width: 800px;

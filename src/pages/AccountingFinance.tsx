@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "../style/accountingfinance.module.css";
+import FullScreenLoader from "../component/FullScreenLoader";
 
 type Finance = {
   _id?: string;
@@ -44,6 +45,7 @@ export default function AccountingFinance() {
   const [showDailyModal, setShowDailyModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editEntry, setEditEntry] = useState<Finance | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [dailyExpense, setDailyExpense] = useState({
     userTimestamp: "",
@@ -76,6 +78,9 @@ export default function AccountingFinance() {
     } catch (err) {
       console.error("Error fetching entries:", err);
     }
+    finally {
+      setLoading(false); // hide loader when complete
+    }
   };
 
   const fetchSummary = async () => {
@@ -84,6 +89,9 @@ export default function AccountingFinance() {
       setSummary(res.data);
     } catch (err) {
       console.error("Error fetching summary:", err);
+    }
+     finally {
+      setLoading(false); // hide loader when complete
     }
   };
 
@@ -158,6 +166,9 @@ export default function AccountingFinance() {
       fetchSummary();
     } catch {
       alert("Error deleting");
+    }
+     finally {
+      setLoading(false); // hide loader when complete
     }
   };
 
@@ -241,6 +252,8 @@ export default function AccountingFinance() {
   const dailyEntries = entries.filter((e) => isDaily(e) && matchesDate(e));
 
   return (
+    <>
+     <FullScreenLoader loading={loading} />
     <div className={styles.container}>
       <h1 className={styles.title}> Accounting & Finance</h1>
 
@@ -294,29 +307,29 @@ export default function AccountingFinance() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Type</th>
-                  <th>Category</th>
-                  <th>Description</th>
-                  <th>Debit</th>
-                  <th>Credit</th>
-                  <th>Amount</th>
-                  <th>Supplier</th>
-                  <th>Actions</th>
+                  <th className={styles.accountth}>Date</th>
+                  <th className={styles.accountth}>Type</th>
+                  <th className={styles.accountth}>Category</th>
+                  <th className={styles.accountth}>Description</th>
+                  <th className={styles.accountth}>Debit</th>
+                  <th className={styles.accountth}>Credit</th>
+                  <th className={styles.accountth}>Amount</th>
+                  <th className={styles.accountth}>Supplier</th>
+                  <th className={styles.accountth}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {ledgerEntries.map((e) => (
                   <tr key={e._id}>
-                    <td>{new Date(e.createdAt || "").toLocaleString()}</td>
-                    <td>{e.entryType}</td>
-                    <td>{e.category}</td>
-                    <td>{e.description}</td>
-                    <td>{e.debit}</td>
-                    <td>{e.credit}</td>
-                    <td>{e.amount}</td>
-                    <td>{e.supplierName || "-"}</td>
-                    <td className="act">
+                    <td className={styles.accounttd}>{new Date(e.createdAt || "").toLocaleString()}</td>
+                    <td className={styles.accounttd}>{e.entryType}</td>
+                    <td className={styles.accounttd}>{e.category}</td>
+                    <td className={styles.accounttd}>{e.description}</td>
+                    <td className={styles.accounttd}>{e.debit}</td>
+                    <td className={styles.accounttd}>{e.credit}</td>
+                    <td className={styles.accounttd}>{e.amount}</td>
+                    <td className={styles.accounttd}>{e.supplierName || "-"}</td>
+                    <td  className="act">
                       <button onClick={() => handleEdit(e)} className={styles.editButton}>✏️</button>
                       <button onClick={() => handleDelete(e._id)} className={styles.deleteButton}>🗑️</button>
                     </td>
@@ -331,24 +344,24 @@ export default function AccountingFinance() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Auto Timestamp</th>
-                  <th>User Timestamp</th>
-                  <th>Amount</th>
-                  <th>Description</th>
-                  <th>Name</th>
-                  <th>Attendant</th>
-                  <th>Actions</th>
+                  <th  className={styles.accountth}>Auto Timestamp</th>
+                  <th  className={styles.accountth}>User Timestamp</th>
+                  <th  className={styles.accountth}>Amount</th>
+                  <th  className={styles.accountth}>Description</th>
+                  <th  className={styles.accountth}>Name</th>
+                  <th  className={styles.accountth}>Attendant</th>
+                  <th  className={styles.accountth}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {dailyEntries.map((d) => (
                   <tr key={d._id}>
-                    <td>{d.autoTimestamp ? new Date(d.autoTimestamp).toLocaleString() : "-"}</td>
-                    <td>{d.userTimestamp ? new Date(d.userTimestamp).toLocaleString() : "-"}</td>
-                    <td>{d.amount}</td>
-                    <td>{d.description}</td>
-                    <td>{d.name || "-"}</td>
-                    <td>{d.attendantName || "-"}</td>
+                    <td  className={styles.accounttd}>{d.autoTimestamp ? new Date(d.autoTimestamp).toLocaleString() : "-"}</td>
+                    <td  className={styles.accounttd}>{d.userTimestamp ? new Date(d.userTimestamp).toLocaleString() : "-"}</td>
+                    <td  className={styles.accounttd}>{d.amount}</td>
+                    <td  className={styles.accounttd}>{d.description}</td>
+                    <td  className={styles.accounttd}>{d.name || "-"}</td>
+                    <td  className={styles.accounttd}>{d.attendantName || "-"}</td>
                     <td>
                       <button onClick={() => handleEdit(d)} className={styles.editButton}>✏️</button>
                       <button onClick={() => handleDelete(d._id)} className={styles.deleteButton}>🗑️</button>
@@ -372,7 +385,7 @@ export default function AccountingFinance() {
       {showAddModal && (
         <div className={styles.modalOverlay} onClick={() => setShowAddModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h3>Add New Entry</h3>
+            <h3 className={styles.title}>Add New Entry</h3>
             <div className={styles.formGrid}>
               <select name="entryType" value={entry.entryType} onChange={handleChange}>
                 <option value="Journal">Journal Entry</option>
@@ -403,7 +416,7 @@ export default function AccountingFinance() {
       {showDailyModal && (
         <div className={styles.modalOverlay} onClick={() => setShowDailyModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h3>Add Daily Expense</h3>
+            <h3 className={styles.title}>Add Daily Expense</h3>
 
             <div className={styles.formGrid}>
               <input
@@ -501,5 +514,6 @@ export default function AccountingFinance() {
         </div>
       )}
     </div>
+    </>
   );
 }

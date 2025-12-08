@@ -20,7 +20,7 @@ const Insight = () => {
           </div>
           <div className="article-info">
             <p className="meta">Fuel Management | July 2, 2025</p>
-            <h3>Common Fuel Handling Mistakes Petrol Pumps Should Avoid</h3>
+            <h3 className='common'>Common Fuel Handling Mistakes Petrol Pumps Should Avoid</h3>
             <p className="author">by Aeron Digital</p>
           </div>
         </div>
@@ -31,7 +31,7 @@ const Insight = () => {
           </div>
           <div className="article-info">
             <p className="meta">Operations | July 3, 2025</p>
-            <h3>Top Automation Trends Transforming Petrol Pumps in 2025</h3>
+            <h3 className='common'>Top Automation Trends Transforming Petrol Pumps in 2025</h3>
             <p className="author">by Aeron Digital</p>
           </div>
         </div>
@@ -42,7 +42,7 @@ const Insight = () => {
           </div>
           <div className="article-info">
             <p className="meta">Business Growth | July 3, 2025</p>
-            <h3>
+            <h3 className="common">
              How Smart Reporting Helps Petrol Pumps Boost Profitability
             </h3>
             <p className="author">by Aeron Digital</p>

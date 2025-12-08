@@ -1,4 +1,5 @@
 // PumpNo.tsx
+import FullScreenLoader from "../component/FullScreenLoader";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "../style/pumpno.module.css";
@@ -26,7 +27,7 @@ export default function PumpNo() {
 
   const [selectedFuels, setSelectedFuels] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchPumps();
@@ -38,6 +39,9 @@ export default function PumpNo() {
       setPumps(res.data);
     } catch (err) {
       console.error("❌ Failed to fetch pumps:", err);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -86,6 +90,8 @@ export default function PumpNo() {
   };
 
   return (
+    <>
+    <FullScreenLoader loading={loading} />
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
@@ -104,17 +110,17 @@ export default function PumpNo() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Pump No</th>
-                  <th>Pump Name</th>
-                  <th>Fuel Types</th>
+                  <th className={styles.pumpth}>Pump No</th>
+                  <th className={styles.pumpth}>Pump Name</th>
+                  <th className={styles.pumpth}>Fuel Types</th>
                 </tr>
               </thead>
               <tbody>
                 {pumps.map((p, i) => (
                   <tr key={p._id || i}>
-                    <td>{p.pumpNo}</td>
-                    <td>{p.pumpName}</td>
-                    <td>{p.fuels?.map((f) => f.type).join(", ")}</td>
+                    <td className={styles.pumptd}>{p.pumpNo}</td>
+                    <td className={styles.pumptd}>{p.pumpName}</td>
+                    <td className={styles.pumptd}>{p.fuels?.map((f) => f.type).join(", ")}</td>
                   </tr>
                 ))}
               </tbody>
@@ -131,15 +137,15 @@ export default function PumpNo() {
             <h2>Add Pump</h2>
 <div className={styles.pump_grid}>
   <div className={styles.number}>
-            <label>Pump Number</label>
+            <label className={styles.pumptd}>Pump Number</label>
             <input name="pumpNo" value={newPump.pumpNo} onChange={handleChange} />
 </div>
 <div className={styles.number}>
-            <label>Pump Name</label>
+            <label className={styles.pumptd}>Pump Name</label>
             <input name="pumpName" value={newPump.pumpName} onChange={handleChange} />
             </div>
 </div>
-            <label>Select Fuel Types</label>
+            <label className={styles.pumptd}>Select Fuel Types</label>
             <div className={styles.fuelChips}>
               {["Petrol", "Diesel", "Premium Petrol", "CNG"].map((fuel) => (
                 <button
@@ -164,5 +170,6 @@ export default function PumpNo() {
         </div>
       )}
     </div>
+    </>
   );
 }

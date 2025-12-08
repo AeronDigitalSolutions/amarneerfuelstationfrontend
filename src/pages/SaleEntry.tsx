@@ -1,4 +1,5 @@
 // SaleEntry.tsx — UPDATED WITH FILTERS + SORTING (Option A arrows)
+import FullScreenLoader from "../component/FullScreenLoader";
 import { useState, useEffect, type MouseEvent, type JSX } from "react";
 import axios from "axios";
 import { FaChevronUp } from "react-icons/fa6";
@@ -67,6 +68,13 @@ interface Sale {
 export default function SaleEntry(): JSX.Element {
   const [sales, setSales] = useState<Sale[]>([]);
   const [pumps, setPumps] = useState<Pump[]>([]);
+    // const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  //   useEffect(() => {
+  //   fetchPlans();
+  // }, []);
+
   const [rates, setRates] = useState<FuelRates>({
     petrol: 0,
     diesel: 0,
@@ -130,6 +138,9 @@ export default function SaleEntry(): JSX.Element {
     } catch (err) {
       console.error("❌ Failed to fetch sales:", err);
     }
+    finally {
+      setLoading(false); // hide loader when complete
+    }
   };
 
   const fetchPumps = async () => {
@@ -138,6 +149,9 @@ export default function SaleEntry(): JSX.Element {
       setPumps(res.data);
     } catch (err) {
       console.error("❌ Failed to fetch pumps:", err);
+    }
+    finally {
+      setLoading(false); // hide loader when complete
     }
   };
 
@@ -149,6 +163,9 @@ export default function SaleEntry(): JSX.Element {
     } catch (err) {
       console.error("❌ Failed to fetch fuel rates:", err);
     }
+    finally {
+      setLoading(false); // hide loader when complete
+    }
   };
 
   // ⭐ FETCH SHIFTS (NEW)
@@ -158,6 +175,9 @@ export default function SaleEntry(): JSX.Element {
       setShiftList(res.data);
     } catch (err) {
       console.error("❌ Failed to fetch shifts:", err);
+    }
+    finally {
+      setLoading(false); // hide loader when complete
     }
   };
 
@@ -458,6 +478,8 @@ export default function SaleEntry(): JSX.Element {
   // ---------------- UI RENDER ---------------------
 
   return (
+    <>
+     <FullScreenLoader loading={loading} />
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Fuel Sale Records</h1>
@@ -878,5 +900,6 @@ export default function SaleEntry(): JSX.Element {
         </div>
       )}
     </div>
+    </>
   );
 }

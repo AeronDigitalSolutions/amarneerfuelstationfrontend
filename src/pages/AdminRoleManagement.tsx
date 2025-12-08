@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "../style/adminrole.module.css";
+import FullScreenLoader from "../component/FullScreenLoader";
 
 type User = {
   _id?: string;
@@ -29,6 +30,7 @@ type Permissions = {
 const BASE_URL = "https://amarneerfuelstationbackend.onrender.com"; // keep your backend
 
 export default function AdminRoleManagement() {
+    // const [loading, setLoading] = useState<boolean>(true);
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(false);
@@ -88,6 +90,9 @@ export default function AdminRoleManagement() {
       setLogs(data);
     } catch (err: any) {
       console.error("Error fetching logs:", err);
+    }
+     finally {
+      setLoading(false); // hide loader when complete
     }
   };
 
@@ -294,6 +299,9 @@ export default function AdminRoleManagement() {
      JSX
      -------------------- */
   return (
+    <>
+     <FullScreenLoader loading={loading} />
+    
     <div className={styles.container}>
       <h1>Admin & Role Management</h1>
 
@@ -362,10 +370,10 @@ export default function AdminRoleManagement() {
                 ) : (
                   filteredUsers.map((u) => (
                     <tr key={u._id}>
-                      <td>{u.username}</td>
-                      <td>{u.email}</td>
-                      <td>{u.role}</td>
-                      <td>{u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}</td>
+                      <td className={styles.admin_table}>{u.username}</td>
+                      <td className={styles.admin_table}>{u.email}</td>
+                      <td className={styles.admin_table}>{u.role}</td>
+                      <td className={styles.admin_table}>{u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}</td>
                       <td>
                         <div className={styles.permList}>
                           <span className={u.permissions?.manageUsers ? styles.permOn : styles.permOff}>MU</span>
@@ -409,10 +417,10 @@ export default function AdminRoleManagement() {
               <tbody>
                 {logs.map((log) => (
                   <tr key={log._id}>
-                    <td>{log.user}</td>
-                    <td>{log.role}</td>
-                    <td>{log.action}</td>
-                    <td>{new Date(log.timestamp).toLocaleString()}</td>
+                    <td className={styles.admin_table}>{log.user}</td>
+                    <td className={styles.admin_table}>{log.role}</td>
+                    <td className={styles.admin_table}>{log.action}</td>
+                    <td className={styles.admin_table}>{new Date(log.timestamp).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -537,5 +545,6 @@ export default function AdminRoleManagement() {
         </div>
       )}
     </div>
+    </>
   );
 }

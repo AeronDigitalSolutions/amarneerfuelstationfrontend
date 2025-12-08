@@ -1,4 +1,5 @@
 // TestFuel.tsx
+import FullScreenLoader from "../component/FullScreenLoader";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import styles from "../style/testfuel.module.css";
@@ -25,10 +26,10 @@ export default function TestFuel() {
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<number | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/pumps`).then((res) => setPumps(res.data)).catch(()=>{});
+    axios.get(`${BASE_URL}/pumps`).then((res) => setPumps(res.data)).catch(() => { });
     loadTests();
   }, []);
 
@@ -38,6 +39,9 @@ export default function TestFuel() {
       setTests(res.data);
     } catch (err) {
       console.error(err);
+    }
+     finally {
+      setLoading(false); // hide loader when complete
     }
   };
 
@@ -108,6 +112,8 @@ export default function TestFuel() {
   };
 
   return (
+    <>
+     <FullScreenLoader loading={loading} />
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
@@ -122,18 +128,23 @@ export default function TestFuel() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Pump</th><th>Fuel</th><th>Liters</th><th>Start</th><th>Stop</th><th>Duration</th>
+                  <th className={styles.testth}>Pump</th>
+                  <th className={styles.testth}>Fuel</th>
+                  <th className={styles.testth}>Liters</th>
+                  <th className={styles.testth}>Start</th>
+                  <th className={styles.testth}>Stop</th>
+                  <th className={styles.testth}>Duration</th>
                 </tr>
               </thead>
               <tbody>
                 {tests.map((t) => (
                   <tr key={t._id}>
-                    <td>{t.pumpNo} - {t.pumpName}</td>
-                    <td>{t.fuelType}</td>
-                    <td>{t.liters}</td>
-                    <td>{t.startTime ? new Date(t.startTime).toLocaleTimeString() : "-"}</td>
-                    <td>{t.stopTime ? new Date(t.stopTime).toLocaleTimeString() : "-"}</td>
-                    <td>{t.duration ? formatTime(t.duration) : "-"}</td>
+                    <td className={styles.testtd}>{t.pumpNo} - {t.pumpName}</td>
+                    <td className={styles.testtd}>{t.fuelType}</td>
+                    <td className={styles.testtd}>{t.liters}</td>
+                    <td className={styles.testtd}>{t.startTime ? new Date(t.startTime).toLocaleTimeString() : "-"}</td>
+                    <td className={styles.testtd}>{t.stopTime ? new Date(t.stopTime).toLocaleTimeString() : "-"}</td>
+                    <td className={styles.testtd}>{t.duration ? formatTime(t.duration) : "-"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -148,19 +159,19 @@ export default function TestFuel() {
             <button className={styles.closeBtn} onClick={() => setShowModal(false)}>✖</button>
             <h2>Fuel Test</h2>
 
-            <label>Pump</label>
+            <label className={styles.testth}>Pump</label>
             <select value={selectedPump} onChange={(e) => handlePumpChange(e.target.value)}>
               <option value="">Select Pump</option>
               {pumps.map((p) => (<option key={p._id} value={p._id}>{p.pumpNo} - {p.pumpName}</option>))}
             </select>
 
-            <label>Fuel Type</label>
+            <label className={styles.testth}>Fuel Type</label>
             <select value={selectedFuel} onChange={(e) => setSelectedFuel(e.target.value)}>
               <option value="">Select Fuel</option>
               {fuelOptions.map((f) => (<option key={f} value={f}>{f}</option>))}
             </select>
 
-            <label>Liters</label>
+            <label className={styles.testth}>Liters</label>
             <input type="number" value={liters} onChange={(e) => setLiters(e.target.value)} />
 
             {startTime && <div className={styles.timer}>⏱ {formatTime(elapsed)}</div>}
@@ -182,5 +193,6 @@ export default function TestFuel() {
         </div>
       )}
     </div>
+    </>
   );
 }

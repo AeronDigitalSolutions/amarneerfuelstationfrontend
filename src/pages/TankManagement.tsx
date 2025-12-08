@@ -1,4 +1,5 @@
 // TankManagement.tsx — Modal form + Filters (Date / Tank ID / Fuel) + Full-width table
+import FullScreenLoader from "../component/FullScreenLoader";
 import { useState, useEffect } from "react";
 import styles from "../style/tankmanagement.module.css";
 
@@ -88,6 +89,9 @@ export default function TankManagement() {
     } catch (err) {
       console.error("Failed to fetch tank master:", err);
     }
+     finally {
+      setLoading(false); // hide loader when complete
+    }
   };
 
   const fetchTanks = async () => {
@@ -102,6 +106,9 @@ export default function TankManagement() {
     } catch (err) {
       console.error("Failed to fetch tanks:", err);
     }
+     finally {
+      setLoading(false); // hide loader when complete
+    }
   };
 
   const fetchSales = async () => {
@@ -111,6 +118,9 @@ export default function TankManagement() {
       setSales(data);
     } catch (err) {
       console.error("Failed to fetch sales:", err);
+    }
+     finally {
+      setLoading(false); // hide loader when complete
     }
   };
 
@@ -253,6 +263,9 @@ export default function TankManagement() {
       console.error("Error:", err);
       alert("Save error!");
     }
+     finally {
+      setLoading(false); // hide loader when complete
+    }
   };
 
   const resetForm = () => {
@@ -319,9 +332,11 @@ export default function TankManagement() {
     return true;
   });
 
-  if (loading) return <p>Loading...</p>;
+  // if (loading) return <p>Loading...</p>;
 
   return (
+    <>
+    <FullScreenLoader loading={loading} />
     <div className={styles.container}>
       <h1>Fuel Tank Management</h1>
 
@@ -556,5 +571,6 @@ export default function TankManagement() {
         </table>
       </div>
     </div>
+    </>
   );
 }

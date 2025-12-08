@@ -2,6 +2,13 @@
     padding: 20px;
 }
 
+table {
+  border-collapse: collapse;
+}
+
+table th{
+    border-collapse: collapse;
+}
 .tank_flex {
     display: flex;
     gap: 20px;
@@ -35,4 +42,5 @@ table tbody tr {
 table tbody td{
      padding: 12px;
   border-bottom: 1px solid #e5e7eb;
+      /* background-color: rgb(203, 217, 223); */
 }

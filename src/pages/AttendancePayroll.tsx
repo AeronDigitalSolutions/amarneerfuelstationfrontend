@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "../style/attendancepayroll.module.css";
-
+import FullScreenLoader from "../component/FullScreenLoader";
 type Employee = {
   _id?: string;
   name: string;
@@ -29,7 +29,7 @@ const BASE_URL = "https://amarneerfuelstationbackend.onrender.com";
 export default function AttendancePayroll() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
-  const [, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // MODALS
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
@@ -212,6 +212,8 @@ export default function AttendancePayroll() {
   const filteredData = applyFilters(attendances);
 
   return (
+    <>
+    <FullScreenLoader loading={loading} />
     <div className={styles.container}>
       <h1>Attendance & Payroll Management</h1>
 
@@ -223,14 +225,14 @@ export default function AttendancePayroll() {
           className={styles.primaryButton}
           onClick={() => setShowEmployeeModal(true)}
         >
-          ➕ Add Employee
+          Add Employee ➕ 
         </button>
 
         <button
           className={styles.primaryButton}
           onClick={() => setShowAttendanceModal(true)}
         >
-          ➕ Add Attendance / Shift
+          Add Attendance / Shift ➕ 
         </button>
       </div>
 
@@ -334,19 +336,19 @@ export default function AttendancePayroll() {
                     : employees.find((e) => e._id === a.employeeId);
 
                 return (
-                  <tr key={a._id}>
-                    <td>{a.date}</td>
-                    <td>
+                  <tr className={styles.attendtd} key={a._id}>
+                    <td className={styles.attendtd}>{a.date}</td>
+                    <td className={styles.attendtd}>
                       {empData
                         ? `${empData.name} (${empData.role})`
                         : "Unknown"}
                     </td>
-                    <td>{a.shift}</td>
-                    <td>{a.inTime}</td>
-                    <td>{a.outTime}</td>
-                    <td>{a.status}</td>
-                    <td>{a.overtimeHours}</td>
-                    <td>{a.salaryEarned || 0}</td>
+                    <td className={styles.attendtd}>{a.shift}</td>
+                    <td className={styles.attendtd}>{a.inTime}</td>
+                    <td className={styles.attendtd}>{a.outTime}</td>
+                    <td className={styles.attendtd}>{a.status}</td>
+                    <td className={styles.attendtd}>{a.overtimeHours}</td>
+                    <td className={styles.attendtd}>{a.salaryEarned || 0}</td>
                     <td>
                       <button
                         className={styles.deleteButton}
@@ -375,7 +377,7 @@ export default function AttendancePayroll() {
             className={styles.modalContent}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3>Add Employee</h3>
+            <h3 className={styles.addheading}>Add Employee</h3>
 
             <div className={styles.formGrid}>
               <input
@@ -453,7 +455,7 @@ export default function AttendancePayroll() {
             className={styles.modalContent}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3>Add Attendance / Shift</h3>
+            <h3 className={styles.addheading}>Add Attendance / Shift</h3>
 
             <div className={styles.formGrid}>
               <select
@@ -526,5 +528,6 @@ export default function AttendancePayroll() {
         </div>
       )}
     </div>
+    </>
   );
 }

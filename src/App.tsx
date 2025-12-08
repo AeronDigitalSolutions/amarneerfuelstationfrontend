@@ -8,8 +8,8 @@ import AttendancePayroll from "./pages/AttendancePayroll";
 import CreditLineManagement from "./pages/CreditLineManagement";
 import AdminRoleManagement from "./pages/AdminRoleManagement";
 import Dashboard from "./pages/Dashboard";
-import ThemeToggle from "./component/ThemeToggle"; // ✅ Import ThemeToggle
-import "./global.css"; // ✅ Import global theme styles
+import ThemeToggle from "./component/ThemeToggle"; 
+import "./global.css"; 
 import Home from "./pages/Home";
 import ContactRoute from "./component/ContactRoute";
 import SignIn from "./pages/SignIn";
@@ -24,9 +24,13 @@ import LivePayment from "./pages/LivePayment";
 import PaymentComparison from "./pages/PaymentComparison";
 import Services from "./component/Services";
 import About1 from "./component/AboutPage/About1";
+// import { LoaderProvider } from "./context/LoaderContext";
+// import GlobalLoader from "./component/GlobalLoader"; 
 
 function App() {
   return (
+    //  <LoaderProvider>
+    //   <GlobalLoader />
     <BrowserRouter>
       {/* 🌗 Theme Toggle stays fixed at top-right */}
       <ThemeToggle />
@@ -56,6 +60,7 @@ function App() {
         <Route path="/about" element={<About1 />} />
       </Routes>
     </BrowserRouter>
+    // </LoaderProvider>
   );
 }
 

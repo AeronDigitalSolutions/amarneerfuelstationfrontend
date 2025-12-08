@@ -23,7 +23,7 @@
   font-weight: 700;
   /* display: flex;
   justify-content: center; */
-  color: #1e293b;
+  /* color: #1e293b; */
 }
 
 .addButton {
@@ -59,7 +59,7 @@
 .filterLabel {
   font-weight: 700;
   font-size: 13px;
-  color: #0f172a;
+  /* color: #0f172a; */
 }
 
 .filterInput {

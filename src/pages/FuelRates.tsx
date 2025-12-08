@@ -1,4 +1,5 @@
 // FuelRates.tsx
+import FullScreenLoader from "../component/FullScreenLoader";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "../style/fuelrates.module.css";
@@ -26,7 +27,7 @@ export default function FuelRates() {
   });
 
   const [latestRates, setLatestRates] = useState<FuelRates | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // modal
   const [showModal, setShowModal] = useState(false);
@@ -48,6 +49,9 @@ export default function FuelRates() {
     } catch {
       // no existing rates
       console.log("No existing fuel rates found yet.");
+    }
+     finally {
+      setLoading(false); // hide loader when complete
     }
   };
 
@@ -79,6 +83,8 @@ export default function FuelRates() {
   };
 
   return (
+    <>
+    <FullScreenLoader loading={loading} />
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.headerRow}>
@@ -99,26 +105,26 @@ export default function FuelRates() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Fuel Type</th>
-                  <th>Rate (₹)</th>
+                  <th className={styles.fuelheading}>Fuel Type</th>
+                  <th className={styles.fuelheading}>Rate (₹)</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>Petrol</td>
-                  <td>{latestRates.petrol}</td>
+                  <td className={styles.fueltd}>Petrol</td>
+                  <td className={styles.fueltd}>{latestRates.petrol}</td>
                 </tr>
                 <tr>
-                  <td>Diesel</td>
-                  <td>{latestRates.diesel}</td>
+                  <td className={styles.fueltd}>Diesel</td>
+                  <td className={styles.fueltd}>{latestRates.diesel}</td>
                 </tr>
                 <tr>
-                  <td>Premium Petrol</td>
-                  <td>{latestRates.premiumPetrol}</td>
+                  <td className={styles.fueltd}>Premium Petrol</td>
+                  <td className={styles.fueltd}>{latestRates.premiumPetrol}</td>
                 </tr>
                 <tr>
-                  <td>CNG</td>
-                  <td>{latestRates.cng}</td>
+                  <td className={styles.fueltd}>CNG</td>
+                  <td className={styles.fueltd}>{latestRates.cng}</td>
                 </tr>
               </tbody>
             </table>
@@ -179,5 +185,6 @@ export default function FuelRates() {
         </div>
       )}
     </div>
+    </>
   );
 }
