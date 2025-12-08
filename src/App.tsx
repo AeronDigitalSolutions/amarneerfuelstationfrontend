@@ -44,6 +44,8 @@ import WholeDayReport from "./pages/WholeDayReport";
 
 function App() {
   return (
+    //  <LoaderProvider>
+    //   <GlobalLoader />
     <BrowserRouter>
       <ThemeToggle />
 
@@ -155,6 +157,7 @@ function App() {
 
       </Routes>
     </BrowserRouter>
+    // </LoaderProvider>
   );
 }
 

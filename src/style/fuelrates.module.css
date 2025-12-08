@@ -31,7 +31,22 @@
   font-size: 1.45rem;
   margin: 0;
 }
+[data-theme="dark"] .latest {
+  color: #000;
+}
+.fuelheading{
+  color: #000;
+}
+[dark-theme='dark'].fuelheading{
+  color: #0f172a;
+}
 
+.fueltd{
+ color: #4b5563;;
+}
+[dark-theme='dark'].fueltd{
+  color: #0f172a;
+}
 .primaryBtn {
   background: #2563eb;
   color: white;

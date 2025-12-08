@@ -27,6 +27,9 @@
 .title {
   font-size: 1.8rem;
   font-weight: 700;
+  /* display: flex;
+  justify-content: center; */
+  /* color: #1e293b; */
   color: #1e293b;
 }
 

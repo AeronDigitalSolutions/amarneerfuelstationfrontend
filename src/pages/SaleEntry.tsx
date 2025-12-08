@@ -1,5 +1,6 @@
 /** -------------- FULL UPDATED SaleEntry.tsx (DYNAMIC FUEL RATES) -------------- */
 
+// import FullScreenLoader from "../component/FullScreenLoader";
 import { useState, useEffect, type MouseEvent, type JSX } from "react";
 import axios from "axios";
 import { FaChevronUp } from "react-icons/fa6";
@@ -76,6 +77,13 @@ export default function SaleEntry(): JSX.Element {
 
   const [sales, setSales] = useState<Sale[]>([]);
   const [machines, setMachines] = useState<Machine[]>([]);
+    // const [data, setData] = useState<any[]>([]);
+  // const [loading, setLoading] = useState<boolean>(true);
+
+  //   useEffect(() => {
+  //   fetchPlans();
+  // }, []);
+
 
   // ⭐ Dynamic Fuel Rates (e.g. {Petrol: 110, Diesel: 95})
   const [rates, setRates] = useState<Record<string, number>>({});
@@ -447,6 +455,8 @@ export default function SaleEntry(): JSX.Element {
   ======================================================*/
 
   return (
+    <>
+     {/* <FullScreenLoader loading={loading} /> */}
     <div className={styles.container}>
 
       <div className={styles.header}>
@@ -946,6 +956,7 @@ export default function SaleEntry(): JSX.Element {
       )}
 
     </div>
+    </>
   );
 }
 

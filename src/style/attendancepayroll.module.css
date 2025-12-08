@@ -1,10 +1,24 @@
-/* ===========================================================
-   GLOBAL PAGE CONTAINER
-=========================================================== */
+/* darktheme */
+.attendtd{
+  color: black;
+}
+[dark-theme='dark'].attendtd{
+  color: #fff;
+}
+
+/* modal theme */
+.addheading{
+  color: #000;
+}
+[dark-theme='dark'].addheading{
+  color: #fff;
+}
+
+
 .container {
   padding: 30px;
   font-family: "Inter", sans-serif;
-  background: linear-gradient(to bottom right, #f7faff, #eef2f7);
+  /* background: linear-gradient(to bottom right, #f7faff, #eef2f7); */
   min-height: 100vh;
 }
 
@@ -121,7 +135,7 @@ h2 {
   padding: 11px 14px;
   border-radius: 10px;
   border: 1px solid #cbd5e1;
-  background: #f8fafc;
+  /* background: #f8fafc; */
   font-size: 0.95rem;
   min-width: 160px;
   transition: 0.25s ease;
@@ -201,6 +215,7 @@ h2 {
   transition: 0.25s ease;
 }
 
+
 /* ===========================================================
    DELETE BUTTON
 =========================================================== */
@@ -279,7 +294,7 @@ h2 {
   padding: 11px 13px;
   border-radius: 10px;
   border: 1px solid #cbd5e1;
-  background: #f8fafc;
+  /* background: #f8fafc; */
 }
 
 .formGrid input:focus,

@@ -2,13 +2,17 @@
 .container {
     padding: 32px;
     font-family: Inter, sans-serif;
-    background: #f8fafc;
+    /* background: #f8fafc; */
     min-height: 100vh;
     /* min-height: auto; */
     display: flex;
     justify-content: center;
 }
 
+table tbody tr {
+    border-bottom: none !important;
+    
+}
 .card {
     width: 100%;
     max-width: 900px;
@@ -74,6 +78,19 @@
     padding: 6px 10px;
     border-radius: 6px;
     cursor: pointer;
+}
+
+.shiftth{
+  color: #000000;
+}
+[data-theme="dark"] .shiftth {
+  color: #000;
+}
+.shifttable{
+    color: #4b5563;
+}
+[data-theme="dark"] .shifttable {
+  color: #000;
 }
 
 /* modal */

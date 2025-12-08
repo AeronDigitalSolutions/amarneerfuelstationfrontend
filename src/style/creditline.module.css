@@ -10,7 +10,15 @@
   flex-direction: column;
   align-items: center;
 }
-
+.creditth{
+  color: #000;
+}
+.credittd{
+  color: #000;
+}
+[data-theme="dark"] .credittd {
+  color: #4b5563;
+}
 h1 {
   text-align: center;
   font-size: 2rem;

@@ -1,3 +1,5 @@
+// FuelRates.tsx
+import FullScreenLoader from "../component/FullScreenLoader";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "../style/fuelrates.module.css";
@@ -38,6 +40,9 @@ export default function FuelRates() {
     } catch {
       console.log("No fuel rates found yet.");
     }
+     finally {
+      setLoading(false); // hide loader when complete
+    }
   };
 
   const saveRates = async () => {
@@ -73,6 +78,8 @@ export default function FuelRates() {
   };
 
   return (
+    <>
+    <FullScreenLoader loading={loading} />
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.headerRow}>
@@ -95,8 +102,8 @@ export default function FuelRates() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Fuel Type</th>
-                  <th>Rate (₹)</th>
+                  <th className={styles.fuelheading}>Fuel Type</th>
+                  <th className={styles.fuelheading}>Rate (₹)</th>
                 </tr>
               </thead>
               <tbody>
@@ -181,5 +188,6 @@ export default function FuelRates() {
         </div>
       )}
     </div>
+    </>
   );
 }

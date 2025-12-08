@@ -1,6 +1,6 @@
 .articles {
   /* background: radial-gradient(circle at top left, #261b72, #0b0624); */
-  color: #fff;
+  /* color: #fff; */
   font-family: "Poppins", sans-serif;
   text-align: center;
   padding: 100px 40px;
@@ -14,6 +14,19 @@
   font-size: 14px;
   letter-spacing: 1.5px;
   color: #1e1e24;
+}
+.meta{
+  color: #000;
+}
+[data-theme="dark"] .meta {
+  color: #fff;
+}
+.common_h3{
+  color: #000;
+}
+
+[dark-theme='dark'].common_h3{
+  color: #ffff;
 }
 [data-theme="dark"] .subtext {
   background: linear-gradient(to left, #fff, #8fa8ff);

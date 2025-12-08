@@ -1,3 +1,5 @@
+// TestFuel.tsx
+import FullScreenLoader from "../component/FullScreenLoader";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import styles from "../style/testfuel.module.css";
@@ -45,7 +47,7 @@ export default function TestFuel() {
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<number | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios.get(`${BASE_URL}/machines`)
@@ -61,6 +63,9 @@ export default function TestFuel() {
       setTests(res.data);
     } catch (err) {
       console.error(err);
+    }
+     finally {
+      setLoading(false); // hide loader when complete
     }
   };
 
@@ -139,6 +144,8 @@ export default function TestFuel() {
   };
 
   return (
+    <>
+     <FullScreenLoader loading={loading} />
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
@@ -207,7 +214,7 @@ export default function TestFuel() {
               ))}
             </select>
 
-            <label>Liters</label>
+            <label className={styles.testth}>Liters</label>
             <input type="number" value={liters} onChange={(e) => setLiters(e.target.value)} />
 
             {startTime && <div className={styles.timer}>⏱ {formatTime(elapsed)}</div>}
@@ -240,5 +247,6 @@ export default function TestFuel() {
         </div>
       )}
     </div>
+    </>
   );
 }

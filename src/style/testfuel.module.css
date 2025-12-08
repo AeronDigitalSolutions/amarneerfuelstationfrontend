@@ -1,7 +1,7 @@
 /* testfuel.module.css */
 .container {
   padding: 36px;
-  background: #f8fafc;
+  /* background: #f8fafc; */
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -114,7 +114,19 @@ input {
   border-radius: 8px;
   margin-top: 6px;
 }
-
+.testth{
+  color: black;
+}
+[data-theme="dark"] .testth {
+  color: #000;
+}
+.testtd{
+  color: black;
+}
+[data-theme="dark"] .testtd {
+  /* color: #332323; */
+  color: #4b5563;
+}
 .timer {
   font-size: 1.3rem;
   text-align: center;

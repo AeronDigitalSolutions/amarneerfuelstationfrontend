@@ -1,3 +1,4 @@
+// import FullScreenLoader from "../component/FullScreenLoader";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
@@ -38,6 +39,7 @@ type Account = {
 };
 
 export default function CreditLineManagement() {
+  // const [loading, setLoading] = useState(true);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [search, setSearch] = useState("");
 
@@ -113,6 +115,9 @@ export default function CreditLineManagement() {
       );
     } catch (err) {
       console.error("❌ Failed to fetch accounts:", err);
+    }
+    finally {
+      // setLoading(false);
     }
   };
 
@@ -348,6 +353,9 @@ export default function CreditLineManagement() {
       console.error(err);
       alert("Failed to add account.");
     }
+    finally {
+      // setLoading(false);
+    }
   };
 
   const handleSaleChange = (
@@ -385,6 +393,9 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
     } catch (err) {
       console.error(err);
       alert("Failed to update sale");
+    }
+    finally {
+      // setLoading(false);
     }
   };
 
@@ -441,6 +452,9 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
       setShowPaymentModal(false);
     } catch (err) {
       alert("Payment failed");
+    }
+    finally {
+      // setLoading(false);
     }
   };
 
@@ -512,31 +526,31 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Account ID</th>
-              <th>Name</th>
-              <th>Company</th>
-              <th>Phone</th>
-              <th>Aadhaar</th>
-              <th>PAN</th>
-              <th>Credit Limit</th>
-              <th>Outstanding</th>
+              <th className={styles.creditth}>Account ID</th>
+              <th className={styles.creditth}>Name</th>
+              <th className={styles.creditth}>Company</th>
+              <th className={styles.creditth}>Phone</th>
+              <th className={styles.creditth}>Aadhaar</th>
+              <th className={styles.creditth}>PAN</th>
+              <th className={styles.creditth}>Credit Limit</th>
+              <th className={styles.creditth}>Outstanding</th>
               <th>Status</th>
               <th>Due Date</th>
-              <th>View</th>
+              <th className={styles.creditth}>View</th>
             </tr>
           </thead>
 
           <tbody>
             {filteredAccounts.map((acc) => (
               <tr key={acc._id}>
-                <td>{acc.accountId}</td>
-                <td>{acc.accountName}</td>
-                <td>{acc.companyName}</td>
-                <td>{acc.phoneNo}</td>
-                <td>{acc.aadhaarNo}</td>
-                <td>{acc.panNo}</td>
-                <td>{acc.creditLimit}</td>
-                <td
+                <td className={styles.credittd}>{acc.accountId}</td>
+                <td className={styles.credittd}>{acc.accountName}</td>
+                <td className={styles.credittd}>{acc.companyName}</td>
+                <td className={styles.credittd}>{acc.phoneNo}</td>
+                <td className={styles.credittd}>{acc.aadhaarNo}</td>
+                <td className={styles.credittd}>{acc.panNo}</td>
+                <td className={styles.credittd}>{acc.creditLimit}</td>
+                <td className={styles.credittd}
                   style={{
                     color:
                       (acc.outstanding ?? 0) > (acc.creditLimit ?? 0)

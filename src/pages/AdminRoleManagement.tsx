@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "../style/adminrole.module.css";
+import FullScreenLoader from "../component/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
 
 type User = {
@@ -30,6 +31,7 @@ type Permissions = {
 const BASE_URL = "https://amarneerfuelstationbackend.onrender.com"; // keep your backend
 
 export default function AdminRoleManagement() {
+    // const [loading, setLoading] = useState<boolean>(true);
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(false);
@@ -108,6 +110,9 @@ useEffect(() => {
       setLogs(data);
     } catch (err: any) {
       console.error("Error fetching logs:", err);
+    }
+     finally {
+      setLoading(false); // hide loader when complete
     }
   };
 
@@ -314,6 +319,9 @@ useEffect(() => {
      JSX
      -------------------- */
   return (
+    <>
+     <FullScreenLoader loading={loading} />
+    
     <div className={styles.container}>
       <div className={styles.headerRow}>
   <h1>Admin & Role Management</h1>
@@ -389,10 +397,10 @@ useEffect(() => {
                 ) : (
                   filteredUsers.map((u) => (
                     <tr key={u._id}>
-                      <td>{u.username}</td>
-                      <td>{u.email}</td>
-                      <td>{u.role}</td>
-                      <td>{u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}</td>
+                      <td className={styles.admin_table}>{u.username}</td>
+                      <td className={styles.admin_table}>{u.email}</td>
+                      <td className={styles.admin_table}>{u.role}</td>
+                      <td className={styles.admin_table}>{u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}</td>
                       <td>
                         <div className={styles.permList}>
                           <span className={u.permissions?.manageUsers ? styles.permOn : styles.permOff}>MU</span>
@@ -436,10 +444,10 @@ useEffect(() => {
               <tbody>
                 {logs.map((log) => (
                   <tr key={log._id}>
-                    <td>{log.user}</td>
-                    <td>{log.role}</td>
-                    <td>{log.action}</td>
-                    <td>{new Date(log.timestamp).toLocaleString()}</td>
+                    <td className={styles.admin_table}>{log.user}</td>
+                    <td className={styles.admin_table}>{log.role}</td>
+                    <td className={styles.admin_table}>{log.action}</td>
+                    <td className={styles.admin_table}>{new Date(log.timestamp).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -564,5 +572,6 @@ useEffect(() => {
         </div>
       )}
     </div>
+    </>
   );
 }

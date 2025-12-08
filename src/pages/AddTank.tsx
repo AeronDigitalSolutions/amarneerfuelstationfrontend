@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import '../style/Addtank.css'
+// import FullScreenLoader from "../component/FullScreenLoader";
 interface Tank {
   _id?: string;
   tankId: string;
@@ -15,6 +16,7 @@ const BASE_URL =
     : "https://amarneerfuelstationbackend.onrender.com/api");
 
 export default function AddTank() {
+  //  const [loading, setLoading] = useState(true);
   const [tank, setTank] = useState<Tank>({
     tankId: "",
     fuelType: "Petrol",
@@ -59,9 +61,12 @@ export default function AddTank() {
     alert("Tank added successfully!");
     setTank({ tankId: "", fuelType: "Petrol", capacity: "" });
     fetchTanks();
+    
   };
 
   return (
+    <>
+    {/* <FullScreenLoader loading={loading} /> */}
     <div className="add_continer_backend" >
       {/* style={{ padding: 20 }}> */}
       <h1>Add Tank </h1>
@@ -144,5 +149,6 @@ export default function AddTank() {
         </tbody>
       </table>
     </div>
+    </>
   );
 }

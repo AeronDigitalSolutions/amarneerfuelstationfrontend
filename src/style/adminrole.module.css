@@ -1,7 +1,7 @@
 .container {
   padding: 2rem;
   font-family: "Poppins", sans-serif;
-  background: #f9fafb;
+  /* background: #f9fafb; */
   min-height: 100vh;
 }
 
@@ -47,7 +47,7 @@ h1 {
   padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
-  background: white;
+  /* background: white; */
   font-weight: 600;
   margin-top: 0px;
 }
@@ -134,7 +134,12 @@ h1 {
   font-size: 0.75rem;
   border: 1px solid #bbf7d0;
 }
-
+.admin_table{
+  color: #000000;
+}
+[data-theme="dark"] .admin_table {
+  color: #4b5563;
+}
 .permOff {
   background: #f1f5f9;
   color: #4b5563;

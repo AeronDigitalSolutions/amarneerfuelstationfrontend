@@ -1,4 +1,6 @@
 // ShiftTiming.tsx
+import FullScreenLoader from "../component/FullScreenLoader";
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "../style/shifttiming.module.css";
@@ -18,6 +20,7 @@ const BASE_URL =
     : "https://amarneerfuelstationbackend.onrender.com/api");
 
 export default function ShiftTiming() {
+  const [loading, setLoading] = useState<boolean>(true);
   const [shiftName, setShiftName] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -38,6 +41,9 @@ export default function ShiftTiming() {
     } catch (err) {
       console.error(err);
     }
+     finally {
+      setLoading(false); // hide loader when complete
+    }
   };
 
   const addShift = async () => {
@@ -48,6 +54,9 @@ export default function ShiftTiming() {
       fetchShifts();
       setShowAddModal(false);
     } catch (err) { console.error(err); alert("Failed to add"); }
+     finally {
+      setLoading(false); // hide loader when complete
+    }
   };
 
   const deleteShift = async (id?: string) => {
@@ -57,6 +66,9 @@ export default function ShiftTiming() {
       await axios.delete(`${BASE_URL}/shifts/${id}`);
       fetchShifts();
     } catch (err) { console.error(err); alert("Failed to delete"); }
+     finally {
+      setLoading(false); // hide loader when complete
+    }
   };
 
   const openEdit = (s: Shift) => {
@@ -72,6 +84,9 @@ export default function ShiftTiming() {
       fetchShifts();
       setShowEditModal(false);
     } catch (err) { console.error(err); alert("Failed to save"); }
+     finally {
+      setLoading(false); // hide loader when complete
+    }
   };
 
   const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -83,6 +98,8 @@ export default function ShiftTiming() {
   };
 
   return (
+    <>
+     <FullScreenLoader loading={loading} />
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
@@ -97,18 +114,18 @@ export default function ShiftTiming() {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Shift Name</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Actions</th>
+              <th className={styles.shiftth}>Shift Name</th>
+              <th className={styles.shiftth}>Start</th>
+              <th className={styles.shiftth}>End</th>
+              <th className={styles.shiftth}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {shifts.map((s) => (
               <tr key={s._id}>
-                <td>{s.shiftName}</td>
-                <td>{s.startTime}</td>
-                <td>{s.endTime}</td>
+                <td className={styles.shifttable}>{s.shiftName}</td>
+                <td className={styles.shifttable}>{s.startTime}</td>
+                <td className={styles.shifttable}>{s.endTime}</td>
                 <td style={{display:'flex' ,justifyContent:'center'}}>
                   <button className={styles.editBtn} onClick={() => openEdit(s)}><MdEdit /></button>
                   <button className={styles.deleteBtn} onClick={() => deleteShift(s._id)}><MdDelete /></button>
@@ -124,15 +141,15 @@ export default function ShiftTiming() {
         <div className={styles.modalBackdrop} onClick={handleBackdrop}>
           <div className={`${styles.modalForm} ${styles.modalScrollable}`} onClick={(e) => e.stopPropagation()}>
             <button className={styles.closeBtn} onClick={() => setShowAddModal(false)}>✖</button>
-            <h2>Add Shift</h2>
+            <h2 >Add Shift</h2>
 
-            <label>Shift Name</label>
+            <label className={styles.shiftth}>Shift Name</label>
             <input value={shiftName} onChange={(e) => setShiftName(e.target.value)} />
 
-            <label>Start Time</label>
+            <label className={styles.shiftth}>Start Time</label>
             <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
 
-            <label>End Time</label>
+            <label className={styles.shiftth}>End Time</label>
             <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
 
             <div className={styles.modalButtons}>
@@ -167,5 +184,6 @@ export default function ShiftTiming() {
         </div>
       )}
     </div>
+    </>
   );
 }
