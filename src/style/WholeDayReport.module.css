@@ -1,0 +1,222 @@
+/* ------------------ MAIN CONTAINER ------------------ */
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  color: #0f172a;
+}
+
+/* ------------------ HEADER FIX ------------------ */
+.header {
+  background: #f1f5f9;          /* LIGHT background so text becomes visible */
+  padding: 14px 18px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.headerLeft {
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 22px;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.metaRow {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #334155;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* ------------------ SHIFT BUTTONS ------------------ */
+.shiftButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.shiftBtn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #0b2436;
+  background: #e2e8f0;
+  color: #0b2436;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.shiftBtn.active {
+  background: #0b3450;
+  color: #fff;
+}
+
+.printBtn, .refreshBtn {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #0b3450;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* ------------------ TABLES ------------------ */
+.tableWrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.table thead th {
+  background: #081829;
+  color: #fff;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  border-bottom: 3px solid #0f172a;
+}
+
+.table tbody td {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Green underline like sample */
+.table tbody tr {
+  border-bottom: 1px solid #84cc16;  /* green */
+}
+
+.table tbody tr:hover {
+  background: #f8fff4;
+}
+
+/* ------------------ TITLES ------------------ */
+.sectionTitle {
+  font-size: 20px;
+  margin: 0 0 12px;
+  text-align: center;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* ------------------ MONEY GRID ------------------ */
+.moneyGrid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.moneyItem {
+  border: 1px solid #e2e8f0;
+  padding: 12px;
+  border-radius: 6px;
+  background: #fafafa;
+  display: flex;
+  justify-content: space-between;
+}
+
+.moneyLabel {
+  color: #334155;
+  font-weight: 600;
+}
+
+.moneyValue {
+  color: #0b3450;
+  font-weight: 700;
+}
+
+/* Highlight box */
+.moneyItem.highlight {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+/* ------------------ SUMMARY SECTION ------------------ */
+.sectionSummary {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.summaryLine {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 6px;
+  border-bottom: 1px dashed #cbd5e1;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.summaryLine.big {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.positive { color: #059669; }
+.negative { color: #dc2626; }
+
+/* ------------------ SIGNATURES ------------------ */
+.signatures {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.signatureBox {
+  flex: 1;
+  text-align: center;
+}
+
+.sigLine {
+  height: 2px;
+  background: #0b3450;
+  margin-bottom: 6px;
+  border-radius: 2px;
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ------------------ FOR PRINT (portrait) ------------------ */
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+
+  .shiftButtons,
+  .refreshBtn,
+  .printBtn {
+    display: none !important;
+  }
+
+  .container {
+    box-shadow: none !important;
+    padding: 0 !important;
+    width: 100%;
+  }
+
+  table { font-size: 12px !important; }
+}

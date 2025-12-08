@@ -20,7 +20,7 @@ import CreditLineManagement from "./pages/CreditLineManagement";
 import DashboardMain from "./pages/DashboardMain";
 import AddTank from "./pages/AddTank";
 import FuelRates from "./pages/FuelRates";
-import PumpNo from "./pages/PumpNo";
+import PumpNo from "./pages/Machine";
 import TestFuel from "./pages/TestFuel";
 import ShiftTiming from "./pages/ShiftTiming";
 import LivePayment from "./pages/LivePayment";
@@ -40,6 +40,7 @@ import AdminRoleManagement from "./pages/AdminRoleManagement";
 import AuthGuard from "./guards/AuthGuards";
 import AttendantSign from "./pages/AttendantSign";
 import AttendancePage from "./pages/AttendancePage";
+import WholeDayReport from "./pages/WholeDayReport";
 
 function App() {
   return (
@@ -111,6 +112,14 @@ function App() {
             </AuthGuard>
           }
         />
+<Route
+  path="/admin"
+  element={
+    <AuthGuard role="Admin">
+      <AdminRoleManagement />
+    </AuthGuard>
+  }
+/>
 
         {/* ========================
             OLD SYSTEM MODULE ROUTES 
@@ -131,8 +140,10 @@ function App() {
         <Route path="/payment" element={<LivePayment />} />
         <Route path="/paymentcomp" element={<PaymentComparison />} />
 
+                <Route path="/wholeday" element={<WholeDayReport/>} />
+
         {/* OPTIONAL OLD ADMIN PAGE */}
-        <Route path="/admin" element={<AdminRoleManagement />} />
+        {/* <Route path="/admin" element={<AdminRoleManagement />} /> */}
         <Route path="/dash" element={<Dashboard />} />
 <Route path="/attendant-login" element={<AttendantSign/>} />
 <Route path="/attendant-attendance" element={<AttendancePage/>} />

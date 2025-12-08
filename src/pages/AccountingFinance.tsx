@@ -7,9 +7,9 @@ type Finance = {
   entryType: string;
   category: string;
   description: string;
-  debit: number;
-  credit: number;
-  amount: number;
+  debit: number | "";
+  credit: number | "";
+  amount: number | "";
   modeOfPayment?: string;
   supplierName?: string;
   invoiceNo?: string;
@@ -31,13 +31,14 @@ export default function AccountingFinance() {
   const [entries, setEntries] = useState<Finance[]>([]);
   const [activeTable, setActiveTable] = useState<"ledger" | "daily">("ledger");
 
+  // ❌ Removed default prefilled 0
   const [entry, setEntry] = useState<Finance>({
     entryType: "Journal",
     category: "",
     description: "",
-    debit: 0,
-    credit: 0,
-    amount: 0,
+    debit: "",
+    credit: "",
+    amount: "",
   });
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -47,7 +48,7 @@ export default function AccountingFinance() {
 
   const [dailyExpense, setDailyExpense] = useState({
     userTimestamp: "",
-    amount: 0,
+    amount: "",
     description: "",
     name: "",
     attendantName: "",
@@ -89,19 +90,29 @@ export default function AccountingFinance() {
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    setEntry((prev) => ({ ...prev, [name]: value }));
+
+    setEntry((prev) => ({
+      ...prev,
+      [name]: value === "" ? "" : value, // keep empty instead of 0
+    }));
   };
 
+  // ✅ Add Entry
   const handleAddEntry = async () => {
     if (!entry.category || !entry.description)
       return alert("Fill all required fields");
 
     try {
       await axios.post(`${BASE_URL}/finance`, {
-        ...entry,
-        debit: Number(entry.debit),
-        credit: Number(entry.credit),
-        amount: Number(entry.amount),
+        entryType: entry.entryType,
+        category: entry.category,
+        description: entry.description,
+        debit: entry.debit === "" ? 0 : Number(entry.debit),
+        credit: entry.credit === "" ? 0 : Number(entry.credit),
+        amount: entry.amount === "" ? 0 : Number(entry.amount),
+        modeOfPayment: entry.modeOfPayment,
+        supplierName: entry.supplierName,
+        invoiceNo: entry.invoiceNo,
       });
 
       fetchEntries();
@@ -118,28 +129,39 @@ export default function AccountingFinance() {
       entryType: "Journal",
       category: "",
       description: "",
-      debit: 0,
-      credit: 0,
-      amount: 0,
+      debit: "",
+      credit: "",
+      amount: "",
+      modeOfPayment: "",
+      supplierName: "",
+      invoiceNo: "",
     });
   };
 
+  // 🟡 EDITING
   const handleEdit = (e: Finance) => {
     setEditEntry({ ...e });
     setIsEditing(true);
   };
 
   const handleEditChange = (ev: any) => {
-    if (!editEntry) return;
     const { name, value } = ev.target;
-    setEditEntry((prev) => prev ? { ...prev, [name]: value } : null);
+    setEditEntry((prev) =>
+      prev ? { ...prev, [name]: value === "" ? "" : value } : null
+    );
   };
 
   const handleSaveEdit = async () => {
     if (!editEntry?._id) return;
 
     try {
-      await axios.put(`${BASE_URL}/finance/${editEntry._id}`, editEntry);
+      await axios.put(`${BASE_URL}/finance/${editEntry._id}`, {
+        ...editEntry,
+        amount: editEntry.amount === "" ? 0 : Number(editEntry.amount),
+        debit: editEntry.debit === "" ? 0 : Number(editEntry.debit),
+        credit: editEntry.credit === "" ? 0 : Number(editEntry.credit),
+      });
+
       fetchEntries();
       fetchSummary();
       setIsEditing(false);
@@ -161,7 +183,7 @@ export default function AccountingFinance() {
     }
   };
 
-  // OPEN DAILY EXPENSE MODAL
+  // Daily Modal Setup
   const openDailyModal = () => {
     const now = new Date();
     const pad = (n: number) => String(n).padStart(2, "0");
@@ -172,7 +194,7 @@ export default function AccountingFinance() {
 
     setDailyExpense({
       userTimestamp: localDt,
-      amount: 0,
+      amount: "",
       description: "",
       name: "",
       attendantName: "",
@@ -186,12 +208,12 @@ export default function AccountingFinance() {
     const { name, value } = e.target;
     setDailyExpense((prev) => ({
       ...prev,
-      [name]: name === "amount" ? Number(value) : value,
+      [name]: value === "" ? "" : value,
     }));
   };
 
   const handleAddDailyExpense = async () => {
-    if (!dailyExpense.amount || !dailyExpense.description)
+    if (dailyExpense.amount === "" || !dailyExpense.description)
       return alert("Fill required fields");
 
     try {
@@ -199,8 +221,8 @@ export default function AccountingFinance() {
         entryType: "Expense",
         category: "Daily Expense",
         description: dailyExpense.description,
-        amount: dailyExpense.amount,
-        debit: dailyExpense.amount,
+        amount: Number(dailyExpense.amount),
+        debit: Number(dailyExpense.amount),
         credit: 0,
         name: dailyExpense.name,
         attendantName: dailyExpense.attendantName,
@@ -216,12 +238,11 @@ export default function AccountingFinance() {
     }
   };
 
-  // FILTERING LOGIC — SINGLE DATE MATCH
+  // Filter by date
   const matchesDate = (entry: Finance) => {
     if (!filterDate) return true;
 
     const day = filterDate;
-
     const datesToCheck = [
       entry.createdAt,
       entry.autoTimestamp,
@@ -242,12 +263,12 @@ export default function AccountingFinance() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}> Accounting & Finance</h1>
+      <h1 className={styles.title}>Accounting & Finance</h1>
 
       <div className={styles.buttonRow}>
         <div className={styles.leftButtons}>
           <button className={styles.openButton} onClick={() => setShowAddModal(true)}>
-            Add New Entry 
+            Add New Entry
           </button>
 
           <button className={styles.secondaryButton} onClick={openDailyModal}>
@@ -255,7 +276,6 @@ export default function AccountingFinance() {
           </button>
         </div>
 
-        {/* Table Tabs */}
         <div className={styles.tableSwitch}>
           <button
             className={`${styles.tabButton} ${
@@ -277,7 +297,6 @@ export default function AccountingFinance() {
         </div>
       </div>
 
-      {/* DATE FILTER */}
       <div className={styles.filterRow}>
         <input
           type="date"
@@ -290,7 +309,7 @@ export default function AccountingFinance() {
       <div className={styles.tableContainer}>
         {activeTable === "ledger" ? (
           <>
-            <h2 className={styles.sectionTitle}> Ledger Entries</h2>
+            <h2 className={styles.sectionTitle}>Ledger Entries</h2>
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -305,6 +324,7 @@ export default function AccountingFinance() {
                   <th>Actions</th>
                 </tr>
               </thead>
+
               <tbody>
                 {ledgerEntries.map((e) => (
                   <tr key={e._id}>
@@ -316,9 +336,9 @@ export default function AccountingFinance() {
                     <td>{e.credit}</td>
                     <td>{e.amount}</td>
                     <td>{e.supplierName || "-"}</td>
-                    <td className="act">
-                      <button onClick={() => handleEdit(e)} className={styles.editButton}>✏️</button>
-                      <button onClick={() => handleDelete(e._id)} className={styles.deleteButton}>🗑️</button>
+                    <td>
+                      <button className={styles.editButton} onClick={() => handleEdit(e)}>✏️</button>
+                      <button className={styles.deleteButton} onClick={() => handleDelete(e._id)}>🗑️</button>
                     </td>
                   </tr>
                 ))}
@@ -327,7 +347,7 @@ export default function AccountingFinance() {
           </>
         ) : (
           <>
-            <h2 className={styles.sectionTitle}>🧾 Daily Expenses</h2>
+            <h2 className={styles.sectionTitle}>Daily Expenses</h2>
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -340,6 +360,7 @@ export default function AccountingFinance() {
                   <th>Actions</th>
                 </tr>
               </thead>
+
               <tbody>
                 {dailyEntries.map((d) => (
                   <tr key={d._id}>
@@ -350,8 +371,8 @@ export default function AccountingFinance() {
                     <td>{d.name || "-"}</td>
                     <td>{d.attendantName || "-"}</td>
                     <td>
-                      <button onClick={() => handleEdit(d)} className={styles.editButton}>✏️</button>
-                      <button onClick={() => handleDelete(d._id)} className={styles.deleteButton}>🗑️</button>
+                      <button className={styles.editButton} onClick={() => handleEdit(d)}>✏️</button>
+                      <button className={styles.deleteButton} onClick={() => handleDelete(d._id)}>🗑️</button>
                     </td>
                   </tr>
                 ))}
@@ -361,6 +382,7 @@ export default function AccountingFinance() {
         )}
       </div>
 
+      {/* Fixed summary */}
       <div className={styles.fixedSummary}>
         <span><strong>Purchase:</strong> ₹{summary.totalPurchase.toFixed(2)}</span>
         <span><strong>Expense:</strong> ₹{summary.totalExpense.toFixed(2)}</span>
@@ -373,6 +395,7 @@ export default function AccountingFinance() {
         <div className={styles.modalOverlay} onClick={() => setShowAddModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <h3>Add New Entry</h3>
+
             <div className={styles.formGrid}>
               <select name="entryType" value={entry.entryType} onChange={handleChange}>
                 <option value="Journal">Journal Entry</option>
@@ -383,17 +406,19 @@ export default function AccountingFinance() {
 
               <input name="category" placeholder="Category" value={entry.category} onChange={handleChange} />
               <input name="description" placeholder="Description" value={entry.description} onChange={handleChange} />
+
               <input name="debit" type="number" placeholder="Debit" value={entry.debit} onChange={handleChange} />
               <input name="credit" type="number" placeholder="Credit" value={entry.credit} onChange={handleChange} />
               <input name="amount" type="number" placeholder="Amount" value={entry.amount} onChange={handleChange} />
+
               <input name="modeOfPayment" placeholder="Mode of Payment" value={entry.modeOfPayment || ""} onChange={handleChange} />
               <input name="supplierName" placeholder="Supplier Name" value={entry.supplierName || ""} onChange={handleChange} />
               <input name="invoiceNo" placeholder="Invoice No" value={entry.invoiceNo || ""} onChange={handleChange} />
             </div>
 
             <div className={styles.modalButtons}>
-              <button onClick={handleAddEntry} className={styles.saveButton}>Save</button>
-              <button onClick={() => setShowAddModal(false)} className={styles.cancelButton}>Cancel</button>
+              <button className={styles.saveButton} onClick={handleAddEntry}>Save</button>
+              <button className={styles.cancelButton} onClick={() => setShowAddModal(false)}>Cancel</button>
             </div>
           </div>
         </div>
@@ -406,10 +431,7 @@ export default function AccountingFinance() {
             <h3>Add Daily Expense</h3>
 
             <div className={styles.formGrid}>
-              <input
-                readOnly
-                value={new Date(dailyExpense.autoTimestamp).toLocaleString()}
-              />
+              <input readOnly value={new Date(dailyExpense.autoTimestamp).toLocaleString()} />
 
               <input
                 name="userTimestamp"
@@ -449,8 +471,8 @@ export default function AccountingFinance() {
             </div>
 
             <div className={styles.modalButtons}>
-              <button onClick={handleAddDailyExpense} className={styles.saveButton}>Submit</button>
-              <button onClick={() => setShowDailyModal(false)} className={styles.cancelButton}>Cancel</button>
+              <button className={styles.saveButton} onClick={handleAddDailyExpense}>Submit</button>
+              <button className={styles.cancelButton} onClick={() => setShowDailyModal(false)}>Cancel</button>
             </div>
           </div>
         </div>
@@ -471,18 +493,21 @@ export default function AccountingFinance() {
             <input
               name="amount"
               type="number"
+              placeholder="Amount"
               value={editEntry.amount}
               onChange={handleEditChange}
             />
             <input
               name="debit"
               type="number"
+              placeholder="Debit"
               value={editEntry.debit}
               onChange={handleEditChange}
             />
             <input
               name="credit"
               type="number"
+              placeholder="Credit"
               value={editEntry.credit}
               onChange={handleEditChange}
             />
@@ -494,8 +519,8 @@ export default function AccountingFinance() {
             />
 
             <div className={styles.modalButtons}>
-              <button onClick={handleSaveEdit} className={styles.saveButton}>Save</button>
-              <button onClick={() => setIsEditing(false)} className={styles.cancelButton}>Cancel</button>
+              <button className={styles.saveButton} onClick={handleSaveEdit}>Save</button>
+              <button className={styles.cancelButton} onClick={() => setIsEditing(false)}>Cancel</button>
             </div>
           </div>
         </div>

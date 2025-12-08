@@ -1,9 +1,10 @@
-// SaleEntry.tsx — UPDATED WITH FILTERS + SORTING (Option A arrows)
+/** -------------- FULL UPDATED SaleEntry.tsx (DYNAMIC FUEL RATES) -------------- */
+
 import { useState, useEffect, type MouseEvent, type JSX } from "react";
 import axios from "axios";
 import { FaChevronUp } from "react-icons/fa6";
-import styles from "../style/saleentry.module.css";
 import { IoIosArrowDown } from "react-icons/io";
+import styles from "../style/saleentry.module.css";
 
 type PaymentMode = "Cash" | "UPI" | "Card" | "Credit";
 type Shift = string;
@@ -14,238 +15,280 @@ const BASE_URL =
     ? "http://localhost:5000/api"
     : "https://amarneerfuelstationbackend.onrender.com/api");
 
-interface Pump {
+/* ---------------------------------------------------------
+   Interfaces
+----------------------------------------------------------*/
+
+interface NozzleDef {
+  nozzleNo: number;
+  fuelType: string;        // dynamic fuel type
+  name?: string;
+}
+
+interface Machine {
   _id?: string;
-  pumpNo: string;
-  pumpName: string;
-  fuels: { type: string }[];
+  machineNo: string;
+  machineName: string;
+  nozzles: NozzleDef[];
 }
 
-interface FuelRates {
-  petrol: number;
-  diesel: number;
-  premiumPetrol: number;
-  cng: number;
-}
-
-interface FuelTest {
-  pumpId: string;
-  pumpNo: string;
-  pumpName: string;
+interface SaleEntryItem {
+  nozzleNo: number;
+  nozzleName?: string;
   fuelType: string;
-  liters: number;
-  startTime: string;
-  stopTime: string;
-  duration: number;
+  openingMeter: number;
+  closingMeter: number;
+  testFuel: number;
+  litres: number;
+  ratePerLitre: number;
+  amount: number;
+  attendant?: string;
 }
 
 interface Sale {
   _id?: string;
   saleId: string;
   date: string;
-  time: string;
+  time?: string;
   shift: string;
-  pumpNumber: string;
-  productType: string;
-  openingMeter?: number;
-  closingMeter?: number;
-  testFuel?: number;
-  litresSold: number;
-  ratePerLitre: number;
+  machineNo: string;
+  entries: SaleEntryItem[];
+  totalLitres: number;
   totalAmount: number;
   cashAmount?: number;
   upiAmount?: number;
   cardAmount?: number;
   totalPayment?: number;
-  paymentMode: PaymentMode;
-  attendant?: string;
+  paymentMode?: PaymentMode;
   creditParty?: string;
   remarks?: string;
+  attendant?: string;
   createdAt?: string;
 }
 
+
+/* =========================================================
+     MAIN COMPONENT
+=========================================================== */
 export default function SaleEntry(): JSX.Element {
+
+  /* ---------------- State ---------------- */
+
   const [sales, setSales] = useState<Sale[]>([]);
-  const [pumps, setPumps] = useState<Pump[]>([]);
-  const [rates, setRates] = useState<FuelRates>({
-    petrol: 0,
-    diesel: 0,
-    premiumPetrol: 0,
-    cng: 0,
-  });
+  const [machines, setMachines] = useState<Machine[]>([]);
 
-  const [search, setSearch] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editSale, setEditSale] = useState<Sale | null>(null);
-
-  const [saleId, setSaleId] = useState(() => "SALE-" + Date.now());
-  const [date] = useState(() => new Date().toISOString().split("T")[0]);
-  const [shift, setShift] = useState<Shift>("");
+  // ⭐ Dynamic Fuel Rates (e.g. {Petrol: 110, Diesel: 95})
+  const [rates, setRates] = useState<Record<string, number>>({});
 
   const [shiftList, setShiftList] = useState<
     { _id: string; shiftName: string; startTime: string; endTime: string }[]
   >([]);
 
-  const [pumpNumber, setPumpNumber] = useState("");
-  const [productType, setProductType] = useState("Petrol");
-  const [openingMeter, setOpeningMeter] = useState<number>(0);
-  const [closingMeter, setClosingMeter] = useState<number>(0);
-  const [testFuel, setTestFuel] = useState<number>(0);
-  const [ratePerLitre, setRatePerLitre] = useState<number>(0);
-  const [litresSold, setLitresSold] = useState<number>(0);
-  const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [search, setSearch] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [nozzleModalOpen, setNozzleModalOpen] = useState(false);
+  const [editSale, setEditSale] = useState<Sale | null>(null);
 
-  const [cashAmount, setCashAmount] = useState<number>(0);
-  const [upiAmount, setUpiAmount] = useState<number>(0);
-  const [cardAmount, setCardAmount] = useState<number>(0);
-  const [totalPayment, setTotalPayment] = useState<number>(0);
+  const [saleId, setSaleId] = useState("SALE-" + Date.now());
+  const [date] = useState(() => new Date().toISOString().split("T")[0]);
+  const [shift, setShift] = useState<Shift>("");
 
+  const [machineNo, setMachineNo] = useState("");
+  const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
+
+  const [entries, setEntries] = useState<SaleEntryItem[]>([]);
+  const [totalLitres, setTotalLitres] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  const [cashAmount, setCashAmount] = useState(0);
+  const [upiAmount, setUpiAmount] = useState(0);
+  const [cardAmount, setCardAmount] = useState(0);
+  const [totalPayment, setTotalPayment] = useState(0);
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("Cash");
+
   const [creditParty, setCreditParty] = useState("");
   const [remarks, setRemarks] = useState("");
   const [attendant, setAttendant] = useState("");
 
-  // NEW: Filters state
-  const [filterFrom, setFilterFrom] = useState<string>("");
-  const [filterTo, setFilterTo] = useState<string>("");
-  const [filterFuelType, setFilterFuelType] = useState<string>("All");
-  const [filterPump, setFilterPump] = useState<string>("All");
+  const [filterFrom, setFilterFrom] = useState("");
+  const [filterTo, setFilterTo] = useState("");
+  const [filterFuelType, setFilterFuelType] = useState("All");
+  const [filterMachine, setFilterMachine] = useState("All");
 
-  // NEW: Sorting state
-  type SortBy = "none" | "litres" | "testFuel" | "total" | "received";
+  type SortBy = "none" | "litres" | "total" | "received";
   const [sortBy, setSortBy] = useState<SortBy>("none");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
+  const [activeNozzle, setActiveNozzle] = useState<NozzleDef | null>(null);
+  const [nozzleOpening, setNozzleOpening] = useState(0);
+  const [nozzleClosing, setNozzleClosing] = useState(0);
+  const [nozzleTestFuel, setNozzleTestFuel] = useState(0);
+  const [nozzleRate, setNozzleRate] = useState(0);
+  const [nozzleAttendant, setNozzleAttendant] = useState("");
+
+  /* ---------------------------------------------------------
+        INITIAL LOAD
+  ----------------------------------------------------------*/
   useEffect(() => {
-    void fetchSales();
-    void fetchPumps();
-    void fetchFuelRates();
-    void fetchShifts(); // ⭐ ADDED
+    fetchSales();
+    fetchMachines();
+    fetchFuelRates();
+    fetchShifts();
   }, []);
+
+  /* -------------------- helpers ------------------------ */
+  const safe = (n: any) => (n == null ? 0 : Number(n));
+
+  /* -------------------- fetchers ------------------------ */
 
   const fetchSales = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/sales`);
-      setSales(res.data);
-    } catch (err) {
-      console.error("❌ Failed to fetch sales:", err);
-    }
+      const r = await axios.get(`${BASE_URL}/sales`);
+      setSales(r.data || []);
+    } catch {}
   };
 
-  const fetchPumps = async () => {
+  const fetchMachines = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/pumps`);
-      setPumps(res.data);
-    } catch (err) {
-      console.error("❌ Failed to fetch pumps:", err);
-    }
+      const r = await axios.get(`${BASE_URL}/machines`);
+      setMachines(r.data || []);
+    } catch {}
   };
 
+  // ⭐ Dynamic fuel rates fetcher
   const fetchFuelRates = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/fuel-rates`);
-      setRates(res.data);
-      setRatePerLitre(res.data?.petrol ?? 0);
-    } catch (err) {
-      console.error("❌ Failed to fetch fuel rates:", err);
-    }
+      const r = await axios.get(`${BASE_URL}/fuel-rates`);
+      if (r.data?.rates) {
+        setRates(r.data.rates);
+      }
+    } catch {}
   };
 
-  // ⭐ FETCH SHIFTS (NEW)
   const fetchShifts = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/shifts`);
-      setShiftList(res.data);
-    } catch (err) {
-      console.error("❌ Failed to fetch shifts:", err);
-    }
+      const r = await axios.get(`${BASE_URL}/shifts`);
+      setShiftList(r.data || []);
+    } catch {}
   };
 
-  // Rest of your existing code remains **unchanged**
-  // --------------------------------------------------
-  // AUTO CALCULATE, AUTO RATE, AUTO PAYMENT, AUTO TEST FUEL
-  // --------------------------------------------------
+
+  /* ---------------- machine selected ---------------- */
+  useEffect(() => {
+    const m = machines.find((x) => x.machineNo === machineNo);
+    setSelectedMachine(m || null);
+    setEntries([]);
+  }, [machineNo, machines]);
+
+
+  /* ---------------- totals update ---------------- */
+  useEffect(() => {
+    const tl = entries.reduce((a, e) => a + safe(e.litres), 0);
+    const ta = entries.reduce((a, e) => a + safe(e.amount), 0);
+    setTotalLitres(Number(tl.toFixed(2)));
+    setTotalAmount(Number(ta.toFixed(2)));
+  }, [entries]);
 
   useEffect(() => {
-    const litresRaw =
-      Number(closingMeter || 0) - Number(openingMeter || 0) - Number(testFuel || 0);
-
-    const litres = litresRaw > 0 ? litresRaw : 0;
-    setLitresSold(litres);
-
-    const total = litres * Number(ratePerLitre || 0);
-    setTotalAmount(Number(total.toFixed(2)));
-  }, [openingMeter, closingMeter, testFuel, ratePerLitre]);
-
-  useEffect(() => {
-    const map: Record<string, number> = {
-      Petrol: rates.petrol,
-      Diesel: rates.diesel,
-      "Premium Petrol": rates.premiumPetrol,
-      CNG: rates.cng,
-    };
-    setRatePerLitre(map[productType] ?? 0);
-  }, [productType, rates]);
-
-  useEffect(() => {
-    setTotalPayment(
-      Number(((cashAmount || 0) + (upiAmount || 0) + (cardAmount || 0)).toFixed(2))
-    );
+    setTotalPayment(safe(cashAmount) + safe(upiAmount) + safe(cardAmount));
   }, [cashAmount, upiAmount, cardAmount]);
 
-  useEffect(() => {
-    const loadTestFuel = async () => {
-      if (!pumpNumber) return;
 
-      const pump = pumps.find((p) => p.pumpNo === pumpNumber);
-      if (!pump) return;
+  /* =====================================================
+           OPEN NOZZLE MODAL  (Dynamic fuel rates)
+  ======================================================*/
+  const openNozzleModal = async (nozzle: NozzleDef) => {
+    setActiveNozzle(nozzle);
 
-      try {
-        const res = await axios.get(
-          `${BASE_URL}/fueltest/by-date?pumpId=${pump._id}&date=${date}`
+    try {
+      const res = await axios.get(`${BASE_URL}/fuel-rates`);
+      const latestRates = res.data?.rates || {};
+      setRates(latestRates);
+      setNozzleRate(latestRates[nozzle.fuelType] ?? 0);
+    } catch {
+      setNozzleRate(rates[nozzle.fuelType] ?? 0);
+    }
+
+    // auto test fuel
+    try {
+      if (selectedMachine?._id) {
+        const r = await axios.get(
+          `${BASE_URL}/fueltest/by-date?machineId=${selectedMachine._id}&nozzleNo=${nozzle.nozzleNo}&date=${date}`
         );
-
-        const total = res.data.reduce(
-          (sum: number, t: FuelTest) => sum + (t.liters || 0),
-          0
-        );
-
-        setTestFuel(total);
-      } catch (err) {
-        console.error("❌ Failed to load test fuel:", err);
+        const sum = Array.isArray(r.data)
+          ? r.data.reduce((acc: number, t: any) => acc + safe(t.liters), 0)
+          : 0;
+        setNozzleTestFuel(sum);
       }
+    } catch {
+      setNozzleTestFuel(0);
+    }
+
+    setNozzleOpening(0);
+    setNozzleClosing(0);
+    setNozzleAttendant("");
+    setNozzleModalOpen(true);
+  };
+
+
+  /* ---------------- add nozzle entry ---------------- */
+  const addNozzleEntryToSale = () => {
+    if (!activeNozzle) return;
+
+    const opening = safe(nozzleOpening);
+    const closing = safe(nozzleClosing);
+    if (closing < opening) {
+      alert("Closing meter cannot be less than opening meter");
+      return;
+    }
+
+    let litres = closing - opening - safe(nozzleTestFuel);
+    litres = litres < 0 ? 0 : litres;
+
+    const entry: SaleEntryItem = {
+      nozzleNo: activeNozzle.nozzleNo,
+      nozzleName: activeNozzle.name || `Nozzle ${activeNozzle.nozzleNo}`,
+      fuelType: activeNozzle.fuelType,
+      openingMeter: opening,
+      closingMeter: closing,
+      testFuel: safe(nozzleTestFuel),
+      litres: Number(litres.toFixed(2)),
+      ratePerLitre: nozzleRate,
+      amount: Number((litres * nozzleRate).toFixed(2)),
+      attendant: nozzleAttendant,
     };
 
-    loadTestFuel();
-  }, [pumpNumber, pumps, date]);
+    setEntries((prev) => {
+      const i = prev.findIndex((p) => p.nozzleNo === entry.nozzleNo);
+      if (i >= 0) {
+        const copy = [...prev];
+        copy[i] = entry;
+        return copy;
+      }
+      return [...prev, entry];
+    });
 
-  // ---------------- SAVE, DELETE, EDIT ---------------------
+    setNozzleModalOpen(false);
+    setActiveNozzle(null);
+  };
 
+
+  /* ---------------- save sale ---------------- */
   const handleSave = async () => {
-    if (!pumpNumber) {
-      alert("⚠️ Please select a pump number");
-      return;
-    }
-
-    if (!shift) {
-      alert("⚠️ Please select shift");
-      return;
-    }
+    if (!machineNo) return alert("Select machine");
+    if (!shift) return alert("Select shift");
+    if (entries.length === 0) return alert("Add at least one nozzle entry");
 
     const now = new Date();
 
-    const saleData: Partial<Sale> = {
+    const payload: Partial<Sale> = {
       saleId,
       date,
       time: now.toLocaleTimeString(),
       shift,
-      pumpNumber,
-      productType,
-      openingMeter,
-      closingMeter,
-      testFuel,
-      litresSold,
-      ratePerLitre,
+      machineNo,
+      entries,
+      totalLitres,
       totalAmount,
       cashAmount,
       upiAmount,
@@ -260,219 +303,165 @@ export default function SaleEntry(): JSX.Element {
 
     try {
       if (editSale && editSale._id) {
-        await axios.put(`${BASE_URL}/sales/${editSale._id}`, saleData);
-        alert("✅ Sale updated successfully!");
+        await axios.put(`${BASE_URL}/sales/${editSale._id}`, payload);
+        alert("Sale updated");
       } else {
-        await axios.post(`${BASE_URL}/sales`, saleData);
-        alert("✅ Sale added successfully!");
+        await axios.post(`${BASE_URL}/sales`, payload);
+        alert("Sale added");
       }
-
-      await fetchSales();
+      fetchSales();
       resetForm();
       setModalOpen(false);
-    } catch (err) {
-      console.error("❌ Failed to save sale:", err);
-      alert("❌ Failed to save sale!");
+    } catch {
+      alert("Save failed");
     }
   };
 
-  const handleDelete = async (id?: string) => {
-    if (!id) return;
-    if (!window.confirm("Are you sure you want to delete this sale?")) return;
 
-    try {
-      await axios.delete(`${BASE_URL}/sales/${id}`);
-      await fetchSales();
-      alert("🗑️ Sale deleted successfully!");
-    } catch (err) {
-      console.error("❌ Delete failed:", err);
-      alert("❌ Failed to delete sale!");
-    }
-  };
-
-  const handleEdit = (sale: Sale) => {
-    setEditSale(sale);
-    setModalOpen(true);
-
-    setSaleId(sale.saleId);
-    setShift(sale.shift);
-    setPumpNumber(sale.pumpNumber);
-    setProductType(sale.productType);
-    setOpeningMeter(sale.openingMeter ?? 0);
-    setClosingMeter(sale.closingMeter ?? 0);
-    setTestFuel((sale as any).testFuel ?? 0);
-    setRatePerLitre(sale.ratePerLitre ?? 0);
-    setCashAmount(sale.cashAmount ?? 0);
-    setUpiAmount(sale.upiAmount ?? 0);
-    setCardAmount(sale.cardAmount ?? 0);
-    setRemarks(sale.remarks ?? "");
-    setAttendant(sale.attendant ?? "");
-  };
-
+  /* ---------------- reset ---------------- */
   const resetForm = () => {
     setEditSale(null);
     setSaleId("SALE-" + Date.now());
     setShift("");
-    setPumpNumber("");
-    setProductType("Petrol");
-    setOpeningMeter(0);
-    setClosingMeter(0);
-    setTestFuel(0);
-    setRatePerLitre(rates.petrol ?? 0);
-    setLitresSold(0);
+    setMachineNo("");
+    setEntries([]);
+    setTotalLitres(0);
     setTotalAmount(0);
     setCashAmount(0);
     setUpiAmount(0);
     setCardAmount(0);
     setTotalPayment(0);
-    setPaymentMode("Cash");
-    setCreditParty("");
     setRemarks("");
     setAttendant("");
+    setPaymentMode("Cash");
   };
 
-  // ---------------- FILTER, TABLE, TOTALS ---------------------
 
-  // Helper to parse sale-date (use createdAt if present, else date)
-  const getSaleDateString = (s: Sale) =>
+  /* ---------------- delete ---------------- */
+  const handleDelete = async (id?: string) => {
+    if (!id) return;
+    if (!confirm("Delete this sale?")) return;
+    try {
+      await axios.delete(`${BASE_URL}/sales/${id}`);
+      fetchSales();
+    } catch {}
+  };
+
+
+  /* ---------------- edit ---------------- */
+  const handleEdit = (s: Sale) => {
+    setEditSale(s);
+    setModalOpen(true);
+
+    setSaleId(s.saleId);
+    setShift(s.shift);
+    setMachineNo(s.machineNo);
+    setEntries(s.entries);
+    setTotalLitres(s.totalLitres);
+    setTotalAmount(s.totalAmount);
+    setCashAmount(s.cashAmount || 0);
+    setUpiAmount(s.upiAmount || 0);
+    setCardAmount(s.cardAmount || 0);
+    setTotalPayment(
+      safe(s.cashAmount) + safe(s.upiAmount) + safe(s.cardAmount)
+    );
+
+    setRemarks(s.remarks || "");
+    setAttendant(s.attendant || "");
+  };
+
+
+  /* =====================================================
+        FILTER + SORT
+  ======================================================*/
+
+  const getSaleDate = (s: Sale) =>
     (s.createdAt || s.date || "").split("T")[0];
 
-  // Apply filters: date range, fuel type, pump, search text
   const afterFilter = sales.filter((s) => {
     const combined =
       [
-        s.productType,
-        s.pumpNumber,
+        s.machineNo,
+        s.entries.map((e) => e.fuelType).join(" "),
         s.saleId,
         s.attendant,
-        s.paymentMode,
       ]
         .join(" ")
-        .toLowerCase() || "";
+        .toLowerCase();
 
-    // Text search
     if (search && !combined.includes(search.toLowerCase())) return false;
 
-    // Fuel type
-    if (filterFuelType !== "All" && s.productType !== filterFuelType) return false;
-
-    // Pump filter
-    if (filterPump !== "All" && s.pumpNumber !== filterPump) return false;
-
-    // Date filter
-    const saleDateStr = getSaleDateString(s);
-    if (filterFrom) {
-      if (!saleDateStr || saleDateStr < filterFrom) return false;
+    if (filterFuelType !== "All") {
+      if (!s.entries.some((e) => e.fuelType === filterFuelType)) return false;
     }
-    if (filterTo) {
-      if (!saleDateStr || saleDateStr > filterTo) return false;
-    }
+
+    if (filterMachine !== "All" && s.machineNo !== filterMachine) return false;
+
+    const d = getSaleDate(s);
+    if (filterFrom && d < filterFrom) return false;
+    if (filterTo && d > filterTo) return false;
 
     return true;
   });
 
-  // Sorting: sorts the filtered array copy
   const sortedSales = [...afterFilter].sort((a, b) => {
     if (sortBy === "none") return 0;
-
-    const safeNum = (n: any) => (n === null || n === undefined ? 0 : Number(n));
-
-    const aLitres = safeNum(a.litresSold);
-    const bLitres = safeNum(b.litresSold);
-
-    const aTest = safeNum((a as any).testFuel || 0);
-    const bTest = safeNum((b as any).testFuel || 0);
-
-    const aTotal = safeNum(a.totalAmount);
-    const bTotal = safeNum(b.totalAmount);
-
-    const aReceived =
-      safeNum(a.cashAmount) + safeNum(a.upiAmount) + safeNum(a.cardAmount);
-    const bReceived =
-      safeNum(b.cashAmount) + safeNum(b.upiAmount) + safeNum(b.cardAmount);
-
     let diff = 0;
-    switch (sortBy) {
-      case "litres":
-        diff = aLitres - bLitres;
-        break;
-      case "testFuel":
-        diff = aTest - bTest;
-        break;
-      case "total":
-        diff = aTotal - bTotal;
-        break;
-      case "received":
-        diff = aReceived - bReceived;
-        break;
-      default:
-        diff = 0;
+    if (sortBy === "litres") diff = safe(a.totalLitres) - safe(b.totalLitres);
+    if (sortBy === "total") diff = safe(a.totalAmount) - safe(b.totalAmount);
+    if (sortBy === "received") {
+      diff =
+        safe(a.cashAmount) +
+        safe(a.upiAmount) +
+        safe(a.cardAmount) -
+        (safe(b.cashAmount) +
+          safe(b.upiAmount) +
+          safe(b.cardAmount));
     }
-
     return sortDir === "asc" ? diff : -diff;
   });
 
-  const totalCash = sales.reduce((acc, s) => acc + (s.cashAmount || 0), 0);
-  const totalUpi = sales.reduce((acc, s) => acc + (s.upiAmount || 0), 0);
-  const totalCard = sales.reduce((acc, s) => acc + (s.cardAmount || 0), 0);
-  const grandTotal = sales.reduce((acc, s) => acc + (s.totalAmount || 0), 0);
 
-  const totalTestFuel = sales.reduce(
-    (acc, s) => acc + ((s as any).testFuel || 0),
-    0
-  );
-
+  const totalCash = sales.reduce((a, s) => a + safe(s.cashAmount), 0);
+  const totalUpi = sales.reduce((a, s) => a + safe(s.upiAmount), 0);
+  const totalCard = sales.reduce((a, s) => a + safe(s.cardAmount), 0);
+  const grandTotal = sales.reduce((a, s) => a + safe(s.totalAmount), 0);
   const totalReceivedFromSales = sales.reduce(
-    (acc, s) =>
-      acc +
-      ((s.cashAmount || 0) +
-        (s.upiAmount || 0) +
-        (s.cardAmount || 0)),
+    (a, s) => a + safe(s.cashAmount) + safe(s.upiAmount) + safe(s.cardAmount),
     0
   );
+
+  const amountsMatch = (a: number, b: number) =>
+    Math.abs(a - b) < 0.01;
 
   const handleBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
     if ((e.target as HTMLElement).classList.contains(styles.modalBackdrop)) {
       setModalOpen(false);
+      setNozzleModalOpen(false);
     }
   };
 
-  const amountsMatch = (a: number, b: number, eps = 0.01) =>
-    Math.abs(a - b) <= eps;
 
-  // NEW: set this month filter
-  const applyThisMonth = () => {
-    const now = new Date();
-    const first = new Date(now.getFullYear(), now.getMonth(), 1);
-    const to = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    setFilterFrom(first.toISOString().split("T")[0]);
-    setFilterTo(to.toISOString().split("T")[0]);
-  };
-
-  // NEW: sort helpers
-  const setSort = (col: SortBy, dir: "asc" | "desc") => {
-    setSortBy(col);
-    setSortDir(dir);
-  };
-
-  // ---------------- UI RENDER ---------------------
+  /* =====================================================
+               RENDER
+  ======================================================*/
 
   return (
     <div className={styles.container}>
+
       <div className={styles.header}>
         <h1 className={styles.title}>Fuel Sale Records</h1>
       </div>
-      {/* <button className={styles.addButton} onClick={() => setModalOpen(true)}>
-          ➕ Add Sale Entry
-        </button> */}
-<div className={styles.btnWrapper}>
-  <button className={styles.addButton} onClick={() => setModalOpen(true)}>
-    ➕ Add Sale Entry
-  </button>
-</div>
 
-      {/* ===== FILTER BAR (NEW) ===== */}
+      <div className={styles.btnWrapper}>
+        <button className={styles.addButton} onClick={() => setModalOpen(true)}>
+          ➕ Add Sale Entry
+        </button>
+      </div>
+
+      {/* ---------------- FILTER BAR ---------------- */}
       <div className={styles.filterBar}>
+
         <div className={styles.filterGroup}>
           <label className={styles.filterLabel}>From</label>
           <input
@@ -507,13 +496,6 @@ export default function SaleEntry(): JSX.Element {
         </div>
 
         <div className={styles.filterGroup}>
-          <label className={styles.filterLabel}>&nbsp;</label>
-          <button className={styles.smallBtnPrimary} onClick={applyThisMonth}>
-            This Month
-          </button>
-        </div>
-
-        <div className={styles.filterGroup}>
           <label className={styles.filterLabel}>Fuel</label>
           <select
             className={styles.filterInput}
@@ -521,155 +503,81 @@ export default function SaleEntry(): JSX.Element {
             onChange={(e) => setFilterFuelType(e.target.value)}
           >
             <option value="All">All</option>
-            <option value="Petrol">Petrol</option>
-            <option value="Diesel">Diesel</option>
-            <option value="Premium Petrol">Premium Petrol</option>
-            <option value="CNG">CNG</option>
-          </select>
-        </div>
 
-        <div className={styles.filterGroup}>
-          <label className={styles.filterLabel}>Pump</label>
-          <select
-            className={styles.filterInput}
-            value={filterPump}
-            onChange={(e) => setFilterPump(e.target.value)}
-          >
-            <option value="All">All</option>
-            {pumps.map((p) => (
-              <option key={p._id} value={p.pumpNo}>
-                {p.pumpNo}
+            {/* ⭐ Dynamic fuel types */}
+            {Object.keys(rates).map((fuel) => (
+              <option key={fuel} value={fuel}>
+                {fuel}
               </option>
             ))}
           </select>
         </div>
 
-<div className={styles.searchGroup}>
-    <label className={styles.filterLabel}>Search</label>
-    <input
-      type="text"
-      placeholder="Search…"
-      className={styles.searchInline}
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-    />
-  </div>
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel}>Machine</label>
+          <select
+            className={styles.filterInput}
+            value={filterMachine}
+            onChange={(e) => setFilterMachine(e.target.value)}
+          >
+            <option value="All">All</option>
+            {machines.map((m) => (
+              <option key={m._id} value={m.machineNo}>
+                {m.machineNo}
+              </option>
+            ))}
+          </select>
+        </div>
 
+        <div className={styles.searchGroup}>
+          <label className={styles.filterLabel}>Search</label>
+          <input
+            className={styles.searchInline}
+            placeholder="Search…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
       </div>
 
-      {/* TABLE SECTION */}
-      <div className={styles.tableSection}>
-        <input
-          type="text"
-          placeholder="Search..."
-          className={styles.search}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
 
+      {/* ---------------- TABLE ---------------- */}
+      <div className={styles.tableSection}>
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
+
             <thead>
               <tr>
                 <th>Date</th>
                 <th>Sale ID</th>
-                <th>Pump</th>
-                <th>Product</th>
-                <th>Rate</th>
-
+                <th>Machine</th>
+                <th>Products</th>
                 <th>
                   Litres
                   <span className={styles.sortArrows}>
                     <button
                       className={styles.sortBtn}
-                      title="Sort litres asc"
-                      onClick={() => setSort("litres", "asc")}
+                      onClick={() => {
+                        setSortBy("litres");
+                        setSortDir("asc");
+                      }}
                     >
-                      {/* 🔼 */}
-                      <FaChevronUp style={{color:'black', fontSize:'9px'
-                      }} />
+                      <FaChevronUp style={{ fontSize: 9 }} />
                     </button>
                     <button
                       className={styles.sortBtn}
-                      title="Sort litres desc"
-                      onClick={() => setSort("litres", "desc")}
+                      onClick={() => {
+                        setSortBy("litres");
+                        setSortDir("desc");
+                      }}
                     >
-                      {/* 🔽 */}
-                      <IoIosArrowDown style={{color:'black'}} />
+                      <IoIosArrowDown />
                     </button>
                   </span>
                 </th>
-
-                <th>
-                  Test Fuel
-                  <span className={styles.sortArrows}>
-                    <button
-                      className={styles.sortBtn}
-                      title="Sort test fuel asc"
-                      onClick={() => setSort("testFuel", "asc")}
-                    >
-                      {/* 🔼 */}
-                       <FaChevronUp style={{color:'black', fontSize:'9px'
-                      }} />
-                    </button>
-                    <button
-                      className={styles.sortBtn}
-                      title="Sort test fuel desc"
-                      onClick={() => setSort("testFuel", "desc")}
-                    >
-                      {/* 🔽 */}
-                       <IoIosArrowDown style={{color:'black'}} />
-                    </button>
-                  </span>
-                </th>
-
-                <th>
-                  Total
-                  <span className={styles.sortArrows}>
-                    <button
-                      className={styles.sortBtn}
-                      title="Sort total asc"
-                      onClick={() => setSort("total", "asc")}
-                    >
-                      {/* 🔼 */}
-                      <FaChevronUp style={{color:'black', fontSize:'9px'
-                      }} />
-                    </button>
-                    <button
-                      className={styles.sortBtn}
-                      title="Sort total desc"
-                      onClick={() => setSort("total", "desc")}
-                    >
-                      {/* 🔽 */}
-                          <IoIosArrowDown style={{color:'black'}} />
-                    </button>
-                  </span>
-                </th>
-
-                <th>
-                  Total Received
-                  <span className={styles.sortArrows}>
-                    <button
-                      className={styles.sortBtn}
-                      title="Sort received asc"
-                      onClick={() => setSort("received", "asc")}
-                    >
-                      {/* 🔼 */}
-                        <FaChevronUp style={{color:'black', fontSize:'9px'
-                      }} />
-                    </button>
-                    <button
-                      className={styles.sortBtn}
-                      title="Sort received desc"
-                      onClick={() => setSort("received", "desc")}
-                    >
-                      {/* 🔽 */}
-                          <IoIosArrowDown style={{color:'black'}} />
-                    </button>
-                  </span>
-                </th>
-
+                <th>Total</th>
+                <th>Received</th>
                 <th>Cash</th>
                 <th>UPI</th>
                 <th>Card</th>
@@ -679,35 +587,39 @@ export default function SaleEntry(): JSX.Element {
             </thead>
 
             <tbody>
-              {sortedSales.length > 0 ? (
+              {sortedSales.length ? (
                 sortedSales.map((s) => (
                   <tr key={s._id}>
                     <td>{new Date(s.createdAt || s.date).toLocaleString("en-IN")}</td>
                     <td>{s.saleId}</td>
-                    <td>{s.pumpNumber}</td>
-                    <td>{s.productType}</td>
-                    <td>{s.ratePerLitre}</td>
-                    <td>{(s.litresSold || 0).toFixed(2)}</td>
-                    <td>{((s as any).testFuel ?? 0).toFixed(2)}</td>
-                    <td>{(s.totalAmount || 0).toFixed(2)}</td>
+                    <td>{s.machineNo}</td>
                     <td>
-                      {(
-                        (s.cashAmount || 0) +
-                        (s.upiAmount || 0) +
-                        (s.cardAmount || 0)
-                      ).toFixed(2)}
+                      {s.entries
+                        .map((e) => `${e.nozzleName} (${e.fuelType})`)
+                        .join(", ")}
                     </td>
-                    <td>{s.cashAmount || 0}</td>
-                    <td>{s.upiAmount || 0}</td>
-                    <td>{s.cardAmount || 0}</td>
-                    <td>{s.attendant || "-"}</td>
+                    <td>{safe(s.totalLitres).toFixed(2)}</td>
+                    <td>{safe(s.totalAmount).toFixed(2)}</td>
                     <td>
-                      <button className={styles.editBtn} onClick={() => handleEdit(s)}>
+                      {(safe(s.cashAmount) +
+                        safe(s.upiAmount) +
+                        safe(s.cardAmount)).toFixed(2)}
+                    </td>
+                    <td>{safe(s.cashAmount).toFixed(2)}</td>
+                    <td>{safe(s.upiAmount).toFixed(2)}</td>
+                    <td>{safe(s.cardAmount).toFixed(2)}</td>
+                    <td>{s.attendant || "-"}</td>
+
+                    <td>
+                      <button
+                        className={styles.editBtn}
+                        onClick={() => handleEdit(s)}
+                      >
                         ✏️
                       </button>
                       <button
                         className={styles.deleteBtn}
-                        onClick={() => handleDelete(s._id!)}
+                        onClick={() => handleDelete(s._id)}
                       >
                         🗑️
                       </button>
@@ -716,130 +628,146 @@ export default function SaleEntry(): JSX.Element {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={14}>No records found</td>
+                  <td colSpan={12}>No records</td>
                 </tr>
               )}
             </tbody>
 
             <tfoot>
               <tr>
-                <td colSpan={6} style={{ textAlign: "right", fontWeight: "bold" }}>
+                <td colSpan={4} style={{ textAlign: "right", fontWeight: "bold" }}>
                   Totals:
                 </td>
-                <td style={{ fontWeight: "bold" }}>{totalTestFuel.toFixed(2)}</td>
-                <td style={{ fontWeight: "bold" }}>{grandTotal.toFixed(2)}</td>
-                <td style={{ fontWeight: "bold" }}>
-                  {totalReceivedFromSales.toFixed(2)}
-                </td>
+                <td>{sales.reduce((a, s) => a + safe(s.totalLitres), 0).toFixed(2)}</td>
+                <td>{grandTotal.toFixed(2)}</td>
+                <td>{totalReceivedFromSales.toFixed(2)}</td>
                 <td>{totalCash.toFixed(2)}</td>
                 <td>{totalUpi.toFixed(2)}</td>
                 <td>{totalCard.toFixed(2)}</td>
-                <td colSpan={2} />
+                <td colSpan={2}></td>
               </tr>
             </tfoot>
+
           </table>
         </div>
       </div>
 
-      {/* MODAL */}
+
+      {/* =====================================================
+               MAIN SALE MODAL
+      ======================================================*/}
       {modalOpen && (
         <div className={styles.modalBackdrop} onClick={handleBackdropClick}>
-          <div className={styles.modal}>
-            <h2>{editSale ? "✏️ Edit Sale Entry" : "Add Sale Entry"}</h2>
-            <button className={styles.closeBtn} onClick={() => setModalOpen(false)}>
-              ✖
-            </button>
-            <div className={styles.form}>
-              <label>Sale ID</label>
-              <input value={saleId} disabled />
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
 
-              <label>Shift</label>
-              <select value={shift} onChange={(e) => setShift(e.target.value)}>
-                <option value="">Select Shift</option>
-                {shiftList.map((s) => (
-                  <option key={s._id} value={s.shiftName}>
-                    {s.shiftName} ({s.startTime} - {s.endTime})
-                  </option>
-                ))}
-              </select>
+            <div className={styles.modalHeader}>
+              <h2>{editSale ? "✏️ Edit Sale Entry" : "➕ Add Sale Entry"}</h2>
+              <button
+                className={styles.closeBtn}
+                onClick={() => setModalOpen(false)}
+              >
+                ✖
+              </button>
+            </div>
 
-              <label>Pump</label>
-              <select value={pumpNumber} onChange={(e) => setPumpNumber(e.target.value)}>
-                <option value="">Select Pump</option>
-                {pumps.map((p) => (
-                  <option key={p._id} value={p.pumpNo}>
-                    {p.pumpNo} - {p.pumpName}
-                  </option>
-                ))}
-              </select>
+            <div className={styles.modalContent}>
+              <div className={styles.form}>
 
-              <label>Product</label>
-              <select value={productType} onChange={(e) => setProductType(e.target.value)}>
-                <option>Petrol</option>
-                <option>Diesel</option>
-                <option>Premium Petrol</option>
-                <option>CNG</option>
-              </select>
+                <label>Sale ID</label>
+                <input value={saleId} disabled />
 
-              <label>Rate per Litre ₹</label>
-              <input type="number" value={ratePerLitre} readOnly />
+                <label>Shift</label>
+                <select value={shift} onChange={(e) => setShift(e.target.value)}>
+                  <option value="">Select Shift</option>
+                  {shiftList.map((s) => (
+                    <option key={s._id} value={s.shiftName}>
+                      {s.shiftName} ({s.startTime} – {s.endTime})
+                    </option>
+                  ))}
+                </select>
 
-              <label>Opening Meter</label>
-              <input
-                type="number"
-                value={openingMeter}
-                onChange={(e) => setOpeningMeter(Number(e.target.value))}
-              />
+                <label>Machine</label>
+                <select
+                  value={machineNo}
+                  onChange={(e) => setMachineNo(e.target.value)}
+                >
+                  <option value="">Select Machine</option>
+                  {machines.map((m) => (
+                    <option key={m._id} value={m.machineNo}>
+                      {m.machineNo} – {m.machineName}
+                    </option>
+                  ))}
+                </select>
 
-              <label>Closing Meter</label>
-              <input
-                type="number"
-                value={closingMeter}
-                onChange={(e) => setClosingMeter(Number(e.target.value))}
-              />
+                {/* -------- nozzle list -------- */}
+                <label>Nozzles</label>
+                <div className={styles.nozzleList}>
+                  {selectedMachine ? (
+                    selectedMachine.nozzles.map((n) => {
+                      const ex = entries.find((e) => e.nozzleNo === n.nozzleNo);
 
-              <label>Test Fuel (Auto)</label>
-              <input type="number" value={testFuel} readOnly />
+                      return (
+                        <div key={n.nozzleNo} className={styles.nozzleItem}>
+                          <div>
+                            <strong>{n.name || `Nozzle ${n.nozzleNo}`}</strong>
+                            <div className={styles.nozzleMeta}>
+                              #{n.nozzleNo} • {n.fuelType}
+                            </div>
+                          </div>
 
-              <label>Cash ₹</label>
-              <input
-                type="number"
-                value={cashAmount}
-                onChange={(e) => setCashAmount(Number(e.target.value))}
-              />
+                          <div style={{ display: "flex", gap: 10 }}>
+                            <button
+                              className={styles.nozzleBtn}
+                              onClick={() => {
+                                if (ex) {
+                                  setActiveNozzle(n);
+                                  setNozzleOpening(ex.openingMeter);
+                                  setNozzleClosing(ex.closingMeter);
+                                  setNozzleTestFuel(ex.testFuel);
+                                  setNozzleRate(ex.ratePerLitre);
+                                  setNozzleAttendant(ex.attendant || "");
+                                  setNozzleModalOpen(true);
+                                } else {
+                                  openNozzleModal(n);
+                                }
+                              }}
+                            >
+                              Nozzle Entry
+                            </button>
 
-              <label>UPI ₹</label>
-              <input
-                type="number"
-                value={upiAmount}
-                onChange={(e) => setUpiAmount(Number(e.target.value))}
-              />
+                            {ex ? (
+                              <div className={styles.entrySummary}>
+                                <span>{ex.litres} L</span>
+                                <span>₹{ex.amount}</span>
+                                <button
+                                  className={styles.smallDanger}
+                                  onClick={() =>
+                                    setEntries((prev) =>
+                                      prev.filter((e) => e.nozzleNo !== n.nozzleNo)
+                                    )
+                                  }
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            ) : (
+                              <div className={styles.entryEmpty}>No entry</div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className={styles.noData}>
+                      Select a machine to view nozzles
+                    </div>
+                  )}
+                </div>
 
-              <label>Card ₹</label>
-              <input
-                type="number"
-                value={cardAmount}
-                onChange={(e) => setCardAmount(Number(e.target.value))}
-              />
-
-              <label>Attendant</label>
-              <input
-                type="text"
-                value={attendant}
-                onChange={(e) => setAttendant(e.target.value)}
-              />
-
-              <label>Remarks</label>
-              <input
-                type="text"
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-              />
-
-              <div className={styles.modalSummary}>
+                <label>Totals</label>
                 <div className={styles.summaryRow}>
-                  <label>Total Litres (L)</label>
-                  <input value={litresSold.toFixed(2)} readOnly />
+                  <label>Total Litres</label>
+                  <input value={totalLitres.toFixed(2)} readOnly />
                 </div>
 
                 <div className={styles.summaryRow}>
@@ -847,9 +775,51 @@ export default function SaleEntry(): JSX.Element {
                   <input value={totalAmount.toFixed(2)} readOnly />
                 </div>
 
-                <div className={styles.summaryRow}>
-                  <label>Total Received ₹</label>
-                  <input value={totalPayment.toFixed(2)} readOnly />
+
+                {/* payments */}
+                <label>Payments</label>
+                <div className={styles.row}>
+                  <div className={styles.col}>
+                    <label>Cash</label>
+                    <input
+                      type="number"
+                      value={cashAmount}
+                      onChange={(e) => setCashAmount(safe(e.target.value))}
+                    />
+                  </div>
+                  <div className={styles.col}>
+                    <label>UPI</label>
+                    <input
+                      type="number"
+                      value={upiAmount}
+                      onChange={(e) => setUpiAmount(safe(e.target.value))}
+                    />
+                  </div>
+                  <div className={styles.col}>
+                    <label>Card</label>
+                    <input
+                      type="number"
+                      value={cardAmount}
+                      onChange={(e) => setCardAmount(safe(e.target.value))}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.row}>
+                  <div className={styles.col}>
+                    <label>Attendant</label>
+                    <input
+                      value={attendant}
+                      onChange={(e) => setAttendant(e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.col}>
+                    <label>Remarks</label>
+                    <input
+                      value={remarks}
+                      onChange={(e) => setRemarks(e.target.value)}
+                    />
+                  </div>
                 </div>
 
                 <div
@@ -860,23 +830,124 @@ export default function SaleEntry(): JSX.Element {
                   }
                 >
                   {amountsMatch(totalAmount, totalPayment) ? (
-                    <strong>OK — Received equals total</strong>
+                    <strong>✔ Amounts Match</strong>
                   ) : (
                     <strong>
-                      MISMATCH — Difference ₹
-                      {(totalAmount - totalPayment).toFixed(2)}
+                      ❌ Difference ₹ {(totalAmount - totalPayment).toFixed(2)}
                     </strong>
                   )}
                 </div>
-              </div>
 
-              <button className={styles.saveBtn} onClick={handleSave}>
-                💾 {editSale ? "Update" : "Save"}
-              </button>
+                <button className={styles.saveBtn} onClick={handleSave}>
+                  💾 {editSale ? "Update" : "Save"}
+                </button>
+              </div>
             </div>
+
           </div>
         </div>
       )}
+
+      {/* ---------------- NOZZLE MODAL ---------------- */}
+      {nozzleModalOpen && activeNozzle && (
+        <div className={styles.modalBackdrop} onClick={handleBackdropClick}>
+          <div
+            className={styles.nozzleModal}
+            onClick={(e) => e.stopPropagation()}
+          >
+
+            <div className={styles.modalHeader}>
+              <h2>Nozzle — {activeNozzle.name}</h2>
+              <button
+                className={styles.closeBtn}
+                onClick={() => setNozzleModalOpen(false)}
+              >
+                ✖
+              </button>
+            </div>
+
+            <div className={styles.modalContent}>
+              <div className={styles.form}>
+
+                <div className={styles.summaryRow}>
+                  <label>Fuel Type</label>
+                  <input value={activeNozzle.fuelType} readOnly />
+                </div>
+
+                <div className={styles.summaryRow}>
+                  <label>Rate per Litre ₹</label>
+                  <input
+                    type="number"
+                    value={nozzleRate}
+                    onChange={(e) => setNozzleRate(safe(e.target.value))}
+                  />
+                </div>
+
+                <div className={styles.row}>
+                  <div className={styles.col}>
+                    <label>Opening Meter</label>
+                    <input
+                      type="number"
+                      value={nozzleOpening}
+                      onChange={(e) => setNozzleOpening(safe(e.target.value))}
+                    />
+                  </div>
+                  <div className={styles.col}>
+                    <label>Closing Meter</label>
+                    <input
+                      type="number"
+                      value={nozzleClosing}
+                      onChange={(e) => setNozzleClosing(safe(e.target.value))}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.summaryRow}>
+                  <label>Test Fuel (Auto)</label>
+                  <input value={nozzleTestFuel} readOnly />
+                </div>
+
+                <div className={styles.summaryRow}>
+                  <label>Attendant</label>
+                  <input
+                    value={nozzleAttendant}
+                    onChange={(e) => setNozzleAttendant(e.target.value)}
+                  />
+                </div>
+
+                <div className={styles.summaryRow}>
+                  <label>Preview Litres</label>
+                  <input
+                    value={Math.max(
+                      0,
+                      nozzleClosing - nozzleOpening - nozzleTestFuel
+                    ).toFixed(2)}
+                    readOnly
+                  />
+                </div>
+
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button className={styles.saveBtn} onClick={addNozzleEntryToSale}>
+                    Save Nozzle
+                  </button>
+                  <button
+                    className={styles.cancelBtn}
+                    onClick={() => setNozzleModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
+
+/** ---------------- END OF FILE ---------------- */
+

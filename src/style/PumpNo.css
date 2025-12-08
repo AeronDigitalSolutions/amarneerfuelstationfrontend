@@ -1,112 +1,239 @@
-.heading_pump {
-    text-align: center;
-    color: rgb(54, 52, 52);
-    margin-bottom: 25px;
-    font-size: 1.8rem;
-    font-weight: 600;
+/* GLOBAL RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-
-.pump_container {
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
-    background: #f9fafc;
-    min-height: 100vh;
-    font-family: Inter, sans-serif;
+.container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+  background: #f7f8fa;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
-.conatiner_pump {
-    background-color: #fff;
-    width: 100%;
-    max-width: 650px;
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+.card {
+  width: 100%;
+  max-width: 1100px;
+  background: #fff;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
-.pump_form_conatiner {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    flex-direction: column;
-    /* grid-column-gap: 12px; */
-    /* gap: 12px; */
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
 }
 
-.pump_form_conatiner label {
-    font-weight: 500;
-    margin-bottom: 10px;
+.header h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #333;
 }
 
-.input-pump {
-    width: 92%;
-    padding: 10px;
-    border: 1px solid #d2d6dc;
-    border-radius: 8px;
-    margin-top: 10px;
-    font-size: 1rem;
+/* Buttons */
+.primaryBtn {
+  background: #007bff;
+  border: none;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.2s;
 }
 
-.select_fuel_conatiner {
-    margin-top: 20px;
-    margin-bottom: 20px;
+.primaryBtn:hover {
+  background: #005fcc;
 }
 
-.select_label {
-    font-weight: bold;
-    display: flex;
-    margin-bottom: 20px;
-    font-size: 1.3rem;
-    justify-content: center;
-    width: 100%;
-    color: #000;
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
 }
 
-.option_pump {
-    /* display: flex; */
-    /* gap: 10px; */
-    /* flex-wrap: wrap; */
+.table th {
+  text-align: left;
+  background: #f0f0f0;
+  color: #333;
+  padding: 12px;
+  font-size: 15px;
 }
 
-.pump_button_Save {
-    background-color: #28408f;
-    color: #fff;
-    font-size: 1rem;
-    padding: 12px;
-    border: none;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    border-radius: 8px;
-    margin-top: 15px;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid #e6e6e6;
+  color: #444;
 }
 
-.table_pump {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
+.noData {
+  font-size: 16px;
+  color: #777;
+  text-align: center;
+  margin-top: 20px;
 }
 
-.tr_pump {
-    background: #fff;
+/* Modal */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 10, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  z-index: 999;
 }
 
-.tr_pump:hover {
-    background-color: #e2e3e6;
+.modalForm {
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-.th_pump {
-    padding: 10px;
-    border: 1px solid #cbd5e1;
-    text-align: center;
+/* Close Button */
+.closeBtn {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  background: #eee;
+  border: none;
+  padding: 5px 9px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: 0.2s;
 }
 
+.closeBtn:hover {
+  background: #d5d5d5;
+}
 
-@media(max-width:420px){
-    .modalButtons{
-       display: flex;
-    justify-content: center;
-    }
+.modalForm h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Inputs */
+.modalForm label {
+  display: block;
+  font-weight: 600;
+  margin: 10px 0 5px;
+  color: #333;
+}
+
+.modalForm input,
+.modalForm select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.modalForm input:focus,
+.modalForm select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+/* Nozzle Rows */
+.nozzleBox {
+  margin-top: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.nozzleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.nozzleRow span {
+  font-weight: 600;
+  color: #444;
+}
+
+.nozzleRow select {
+  width: 52%;
+  padding: 8px;
+}
+
+/* Save/Cancel Buttons */
+.saveBtn {
+  width: 100%;
+  background: #28a745;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.2s;
+}
+
+.saveBtn:hover {
+  background: #1d8f3c;
+}
+
+.cancelBtn {
+  width: 100%;
+  background: #dc3545;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.2s;
+}
+
+.cancelBtn:hover {
+  background: #bb2333;
+}
+
+/* Fade Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

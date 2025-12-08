@@ -37,7 +37,7 @@ export default function DashboardMain() {
             <p className='services_desc_dash'>Manage users, roles, permissions, and system settings securely.</p>
           </div>
         </Link>
-
+{/* 
         <Link to='/dashboard' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
           <div className="top-tab_dash">
             <img src={top} alt='top' />
@@ -49,7 +49,7 @@ export default function DashboardMain() {
             <h3 className='services_para_dash'>DashBoard</h3>
             <p className='services_desc_dash'>View live sales, stock, credit, and operations in one place.</p>
           </div>
-        </Link>
+        </Link> */}
 
 
  <Link to='/shift' className="service-box_dash" data-aos="fade-up"   data-aos-anchor-placement="bottom-bottom">
@@ -187,6 +187,25 @@ export default function DashboardMain() {
             <p className='services_desc_dash'>Handle expenses, cash flow, and accounting summaries with ease.</p>
           </div>
         </Link>
+
+
+
+
+ <Link to='/wholeday' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
+          <div className="top-tab_dash">
+            <img src={top} alt='top' />
+          </div>
+          <div className="box_grid_services_dash">
+            <div className="icon_dash">
+              <img className='img_services_img_dash' src={graphic} alt="icon" />
+            </div>
+            <h3 className='services_para_dash'>Whole Day Report</h3>
+            <p className='services_desc_dash'>Handle expenses, cash flow, and accounting summaries with ease.</p>
+          </div>
+        </Link>
+
+
+
       </main>
       </div>
       <Footer/>

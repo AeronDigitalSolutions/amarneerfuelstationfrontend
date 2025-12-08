@@ -287,3 +287,90 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+/* Testing Density / Chamber UI */
+.testingDensity {
+  border: 1px dashed #e6e6e6;
+  padding: 10px;
+  border-radius: 8px;
+  background: #fbfbfd;
+  margin-top: 8px;
+}
+
+.testingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.addChamberBtn {
+  background: #0ea5e9;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.addChamberBtn:hover { opacity: 0.95; }
+
+.chamberList { display: flex; flex-direction: column; gap: 8px; }
+
+.chamberRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: white;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #f1f1f1;
+}
+
+.chamberName {
+  flex: 1 0 35%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.chamberDensity {
+  flex: 1 0 35%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.removeChamberBtn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.removeChamberBtn:hover { opacity: 0.95; }
+
+/* small layout tweaks to modal form grid to accommodate new fields */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* ensure long modals scroll well */
+.modal {
+  width: 900px;
+  max-width: 98%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 18px;
+  background: white;
+  border-radius: 10px;
+}
+
+/* mobile fallback */
+@media (max-width: 760px) {
+  .formGrid { grid-template-columns: 1fr; }
+  .chamberRow { flex-direction: column; align-items: stretch; }
+}

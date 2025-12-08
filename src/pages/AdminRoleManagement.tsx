@@ -44,6 +44,15 @@ const handleLogout = () => {
   navigate("/sign");
 };
 
+useEffect(() => {
+  const role = localStorage.getItem("userRole");
+  const token = localStorage.getItem("token");
+
+  if (!token || role !== "Admin") {
+    navigate("/sign");
+  }
+}, []);
+
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);

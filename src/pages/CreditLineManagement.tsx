@@ -32,6 +32,9 @@ type Account = {
   totalSales?: number;
   totalPayments?: number;
   outstanding?: number;
+  dueDate?: string | null;
+  status?: "normal" | "overLimit" | "dueSoon" | "overdue";
+  lastReminderSent?: string | null;
 };
 
 export default function CreditLineManagement() {
@@ -48,10 +51,8 @@ export default function CreditLineManagement() {
 
   const [showBillModal, setShowBillModal] = useState(false);
 
-  const openViewModal = (acc: Account) => {
-    setSelectedAcc(acc);
-    setShowViewModal(true);
-  };
+  const [emailSending, setEmailSending] = useState(false);
+  const [reminderSending, setReminderSending] = useState(false);
 
   const [newAccount, setNewAccount] = useState<Account>({
     accountId: "",
@@ -75,6 +76,8 @@ export default function CreditLineManagement() {
     rate: 0,
     volume: 0,
     amount: 0,
+      dueDays: 15,   // ⭐ NEW FIELD
+
   });
 
   const [paymentData, setPaymentData] = useState({
@@ -97,14 +100,23 @@ export default function CreditLineManagement() {
   const fetchAccounts = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/credit`);
-      setAccounts(res.data);
+      // normalize returned accounts to ensure types for frontend
+      setAccounts(
+        (res.data || []).map((a: any) => ({
+          ...a,
+          outstanding: Number(a.outstanding ?? 0),
+          creditLimit: Number(a.creditLimit ?? 0),
+          dueDate: a.dueDate ?? null,
+          status: a.status ?? "normal",
+          lastReminderSent: a.lastReminderSent ?? null,
+        }))
+      );
     } catch (err) {
       console.error("❌ Failed to fetch accounts:", err);
     }
   };
 
   /* ---------- PDF GENERATION ---------- */
-
   const generatePDF = () => {
     if (!selectedAcc) return;
     const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -140,7 +152,7 @@ export default function CreditLineManagement() {
         ["PAN", selectedAcc.panNo],
       ],
       theme: "grid",
-      headStyles: { fillColor: [40, 64, 143], textColor: 255 }
+      headStyles: { fillColor: [40, 64, 143], textColor: 255 },
     });
 
     const summaryStart = (doc as any).lastAutoTable.finalY + 10;
@@ -149,9 +161,9 @@ export default function CreditLineManagement() {
       head: [["Description", "Amount"]],
       body: [
         ["Credit Limit", `₹${clean(selectedAcc.creditLimit)}`],
-        ["Outstanding", `₹${clean(selectedAcc.outstanding)}`]
+        ["Outstanding", `₹${clean(selectedAcc.outstanding)}`],
       ],
-      theme: "grid"
+      theme: "grid",
     });
 
     const gstStart = (doc as any).lastAutoTable.finalY + 10;
@@ -166,7 +178,7 @@ export default function CreditLineManagement() {
       body: [
         ["Subtotal", `₹${subTotal}`],
         [`GST (${gstRate}%)`, `₹${gstAmount.toFixed(2)}`],
-        ["Total Payable", `₹${total.toFixed(2)}`]
+        ["Total Payable", `₹${total.toFixed(2)}`],
       ],
       theme: "grid",
     });
@@ -175,7 +187,7 @@ export default function CreditLineManagement() {
     autoTable(doc, {
       startY: vehiclesStart,
       head: [["Vehicle Number", "Fuel Type"]],
-      body: selectedAcc.vehicles.map(v => [v.vehicleNo, v.fuelType]),
+      body: selectedAcc.vehicles.map((v) => [v.vehicleNo, v.fuelType]),
       theme: "grid",
     });
 
@@ -193,22 +205,98 @@ export default function CreditLineManagement() {
     URL.revokeObjectURL(url);
   };
 
-  /* ---------- HANDLERS ---------- */
+  /* ---------- EMAIL (NEW) ---------- */
+  const sendEmailWithPdf = async () => {
+    try {
+      if (!selectedAcc) {
+        alert("No account selected");
+        return;
+      }
+      const outstanding = Number(selectedAcc.outstanding ?? 0);
+      const creditLimit = Number(selectedAcc.creditLimit ?? 0);
 
+      if (outstanding <= creditLimit) {
+        alert("Email is sent only when account is over the credit limit.");
+        return;
+      }
+
+      setEmailSending(true);
+
+      const pdfBlob = generatePDF();
+      if (!pdfBlob) {
+        alert("PDF generation failed");
+        setEmailSending(false);
+        return;
+      }
+
+      const base64PDF: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(String(reader.result));
+        };
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(pdfBlob);
+      });
+
+      const payload = {
+        email: selectedAcc.email,
+        accountId: selectedAcc.accountId,
+        pdfBase64: base64PDF,
+      };
+
+      const res = await axios.post(`${BASE_URL}/credit/send-email`, payload);
+
+      if (res?.data?.success) {
+        alert("📧 Email sent successfully!");
+        // optionally update lastReminderSent or similar fields locally after send
+      } else {
+        console.warn("Email API response:", res?.data);
+        alert("Failed to send email. Check server logs or API route.");
+      }
+    } catch (error) {
+      console.error("Email sending failed:", error);
+      alert("Email sending failed! See console for details.");
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
+  /* ---------- REMINDER (NEW) ---------- */
+  const sendReminder = async (accountId: string) => {
+    try {
+      setReminderSending(true);
+      const res = await axios.post(`${BASE_URL}/credit/send-reminder`, {
+        accountId,
+      });
+      if (res?.data?.success) {
+        alert("🔔 Reminder sent!");
+        fetchAccounts();
+      } else {
+        console.warn("Reminder API response:", res?.data);
+        alert("Failed to send reminder.");
+      }
+    } catch (err) {
+      console.error("Reminder error:", err);
+      alert("Reminder sending failed. See console.");
+    } finally {
+      setReminderSending(false);
+    }
+  };
+
+  /* ---------- HANDLERS ---------- */
   const handleAccountChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setNewAccount(prev => ({ ...prev, [name]: value }));
+    setNewAccount((prev) => ({ ...prev, [name]: value } as Account));
   };
 
   const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onloadend = () => {
-      setNewAccount(prev => ({ ...prev, document: reader.result as string }));
+      setNewAccount((prev) => ({ ...prev, document: reader.result as string }));
     };
     reader.readAsDataURL(file);
   };
@@ -218,7 +306,7 @@ export default function CreditLineManagement() {
       alert("Enter vehicle number");
       return;
     }
-    setNewAccount(prev => ({
+    setNewAccount((prev) => ({
       ...prev,
       vehicles: [...prev.vehicles, vehicleForm],
     }));
@@ -226,9 +314,9 @@ export default function CreditLineManagement() {
   };
 
   const removeVehicle = (vehicleNo: string) => {
-    setNewAccount(prev => ({
+    setNewAccount((prev) => ({
       ...prev,
-      vehicles: prev.vehicles.filter(v => v.vehicleNo !== vehicleNo),
+      vehicles: prev.vehicles.filter((v) => v.vehicleNo !== vehicleNo),
     }));
   };
 
@@ -237,13 +325,11 @@ export default function CreditLineManagement() {
       alert("Please fill Account ID & Account Name");
       return;
     }
-
     try {
       const payload = { ...newAccount };
       const res = await axios.post(`${BASE_URL}/credit`, payload);
-      setAccounts(prev => [res.data, ...prev]);
+      setAccounts((prev) => [res.data, ...prev]);
       setShowCreditModal(false);
-
       setNewAccount({
         accountId: "",
         accountName: "",
@@ -268,14 +354,17 @@ export default function CreditLineManagement() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setSaleData(prev => {
-      const updated: any = { ...prev, [name]: value };
+    const numeric = ["rate", "volume", "amount", "dueDays"]; // 👈 include dueDays
+
+    setSaleData((prev) => {
+const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) : value };
       const rate = Number(updated.rate);
       const volume = Number(updated.volume);
       const amount = Number(updated.amount);
 
       if (name === "volume") updated.amount = rate * volume;
-      else if (name === "amount") updated.volume = rate > 0 ? amount / rate : 0;
+      else if (name === "amount")
+        updated.volume = rate > 0 ? amount / rate : 0;
       else if (name === "rate") updated.amount = rate * volume;
 
       return updated;
@@ -287,12 +376,11 @@ export default function CreditLineManagement() {
       alert("Select Account & Vehicle");
       return;
     }
-
-    const payload = { ...saleData, type: "Sale" };
-
+    const payload = { ...saleData, type: "Sale",   dueDays: saleData.dueDays   // ⭐ SEND TO BACKEND
+ };
     try {
       await axios.post(`${BASE_URL}/credit/transaction`, payload);
-      fetchAccounts();
+      await fetchAccounts();
       setShowSaleModal(false);
     } catch (err) {
       console.error(err);
@@ -315,49 +403,48 @@ export default function CreditLineManagement() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setPaymentData(prev => ({
+    setPaymentData((prev) => ({
       ...prev,
       [name]: name === "amountPaid" ? Number(value) : value,
     }));
   };
 
   const selectedPaymentAccount = accounts.find(
-    a => a.accountId === paymentData.accountId
+    (a) => a.accountId === paymentData.accountId
   );
 
   useEffect(() => {
     if (selectedPaymentAccount) {
-      setPaymentData(prev => ({
+      setPaymentData((prev) => ({
         ...prev,
         creditLimit: selectedPaymentAccount.creditLimit,
         outstanding: selectedPaymentAccount.outstanding ?? 0,
       }));
     }
-  }, [paymentData.accountId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentData.accountId, selectedPaymentAccount]);
 
   const savePayment = async () => {
     if (!paymentData.accountId || paymentData.amountPaid <= 0) {
       alert("Select account & valid amount");
       return;
     }
-
     const payload = {
       accountId: paymentData.accountId,
       type: "Payment",
       amount: paymentData.amountPaid,
       paymentMode: paymentData.paymentMode,
     };
-
     try {
       await axios.post(`${BASE_URL}/credit/transaction`, payload);
-      fetchAccounts();
+      await fetchAccounts();
       setShowPaymentModal(false);
     } catch (err) {
       alert("Payment failed");
     }
   };
 
-  const filteredAccounts = accounts.filter(acc => {
+  const filteredAccounts = accounts.filter((acc) => {
     const query = search.toLowerCase();
     return (
       acc.accountId.toLowerCase().includes(query) ||
@@ -367,37 +454,59 @@ export default function CreditLineManagement() {
       acc.companyName.toLowerCase().includes(query) ||
       acc.aadhaarNo.toLowerCase().includes(query) ||
       acc.panNo.toLowerCase().includes(query) ||
-      acc.vehicles.some(v => v.vehicleNo.toLowerCase().includes(query))
+      acc.vehicles.some((v) => v.vehicleNo.toLowerCase().includes(query))
     );
   });
+
+  const formatDate = (d?: string | null) =>
+    d ? new Date(d).toLocaleDateString() : "-";
+
+  const renderStatusBadge = (acc: Account) => {
+    const status = acc.status ?? "normal";
+    const cls =
+      status === "normal"
+        ? `${styles.statusBadge} ${styles.statusNormal}`
+        : status === "overLimit"
+        ? `${styles.statusBadge} ${styles.statusOverLimit}`
+        : status === "dueSoon"
+        ? `${styles.statusBadge} ${styles.statusDueSoon}`
+        : `${styles.statusBadge} ${styles.statusOverdue}`;
+    const text =
+      status === "normal"
+        ? "Normal"
+        : status === "overLimit"
+        ? "Over Limit"
+        : status === "dueSoon"
+        ? "Due Soon"
+        : "Overdue";
+    return (
+      <span className={cls} title={`Due Date: ${formatDate(acc.dueDate)}`}>
+        {text}
+      </span>
+    );
+  };
 
   return (
     <div className={styles.container}>
       <h1>Credit Line System</h1>
 
-      {/* SEARCH + TOP BUTTONS */}
       <div className={styles.topBar}>
-        
+        <div className={styles.topButtons}>
+          <input
+            type="text"
+            className={styles.searchBar}
+            placeholder="Search accounts (ID, Name, Phone, Aadhaar, PAN, Vehicle...)"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button onClick={() => setShowCreditModal(true)}>
+            Add Credit Account
+          </button>
+          <button onClick={() => setShowSaleModal(true)}>Update Sale</button>
+          <button onClick={openPaymentModal}>Update Payment</button>
+        </div>
+      </div>
 
-
-  <div className={styles.topButtons}>
-
-<input
-          type="text"
-          className={styles.searchBar}
-          placeholder="Search accounts (ID, Name, Phone, Aadhaar, PAN, Vehicle...)"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-    
-    <button onClick={() => setShowCreditModal(true)}>Add Credit Account</button>
-    <button onClick={() => setShowSaleModal(true)}>Update Sale</button>
-    <button onClick={openPaymentModal}>Update Payment</button>
-  </div>
-</div>
-
-
-      {/* TABLE */}
       <h2>Accounts List</h2>
       <div className={styles.tableContainer}>
         <table className={styles.table}>
@@ -411,12 +520,14 @@ export default function CreditLineManagement() {
               <th>PAN</th>
               <th>Credit Limit</th>
               <th>Outstanding</th>
+              <th>Status</th>
+              <th>Due Date</th>
               <th>View</th>
             </tr>
           </thead>
 
           <tbody>
-            {filteredAccounts.map(acc => (
+            {filteredAccounts.map((acc) => (
               <tr key={acc._id}>
                 <td>{acc.accountId}</td>
                 <td>{acc.accountName}</td>
@@ -435,11 +546,15 @@ export default function CreditLineManagement() {
                 >
                   {acc.outstanding}
                 </td>
-
+                <td>{renderStatusBadge(acc)}</td>
+                <td>{formatDate(acc.dueDate)}</td>
                 <td>
                   <button
                     className={styles.viewBtn}
-                    onClick={() => openViewModal(acc)}
+                    onClick={() => {
+                      setSelectedAcc(acc);
+                      setShowViewModal(true);
+                    }}
                   >
                     View Account
                   </button>
@@ -450,7 +565,7 @@ export default function CreditLineManagement() {
         </table>
       </div>
 
-      {/* ====================== VIEW MODAL ====================== */}
+      {/* VIEW MODAL */}
       {showViewModal && selectedAcc && (
         <div
           className={styles.modalBackdrop}
@@ -469,15 +584,31 @@ export default function CreditLineManagement() {
 
             <h2>Account Details</h2>
 
-            <p><b>ID:</b> {selectedAcc.accountId}</p>
-            <p><b>Name:</b> {selectedAcc.accountName}</p>
-            <p><b>Company:</b> {selectedAcc.companyName}</p>
-            <p><b>Phone:</b> {selectedAcc.phoneNo}</p>
-            <p><b>Email:</b> {selectedAcc.email}</p>
-            <p><b>Aadhaar:</b> {selectedAcc.aadhaarNo}</p>
-            <p><b>PAN:</b> {selectedAcc.panNo}</p>
+            <p>
+              <b>ID:</b> {selectedAcc.accountId}
+            </p>
+            <p>
+              <b>Name:</b> {selectedAcc.accountName}
+            </p>
+            <p>
+              <b>Company:</b> {selectedAcc.companyName}
+            </p>
+            <p>
+              <b>Phone:</b> {selectedAcc.phoneNo}
+            </p>
+            <p>
+              <b>Email:</b> {selectedAcc.email}
+            </p>
+            <p>
+              <b>Aadhaar:</b> {selectedAcc.aadhaarNo}
+            </p>
+            <p>
+              <b>PAN:</b> {selectedAcc.panNo}
+            </p>
 
-            <p><b>Credit Limit:</b> ₹{selectedAcc.creditLimit}</p>
+            <p>
+              <b>Credit Limit:</b> ₹{selectedAcc.creditLimit}
+            </p>
 
             <p>
               <b>Outstanding:</b>{" "}
@@ -494,14 +625,30 @@ export default function CreditLineManagement() {
               </span>
             </p>
 
+            <p>
+              <b>Status:</b> {renderStatusBadge(selectedAcc)}
+            </p>
+
+            <p>
+              <b>Due Date:</b> {formatDate(selectedAcc.dueDate)}
+            </p>
+
+            <p>
+              <b>Last Reminder:</b>{" "}
+              {selectedAcc.lastReminderSent
+                ? new Date(selectedAcc.lastReminderSent).toLocaleString()
+                : "-"}
+            </p>
+
             <h3>Vehicles</h3>
-            {selectedAcc.vehicles?.map(v => (
+            {selectedAcc.vehicles?.map((v) => (
               <p key={v.vehicleNo}>
                 {v.vehicleNo} ({v.fuelType})
               </p>
             ))}
 
-            {(selectedAcc.outstanding ?? 0) > (selectedAcc.creditLimit ?? 0) && (
+            {(selectedAcc.outstanding ?? 0) >
+              (selectedAcc.creditLimit ?? 0) && (
               <>
                 <hr />
                 <button
@@ -510,13 +657,22 @@ export default function CreditLineManagement() {
                 >
                   Generate Bill
                 </button>
+                <button
+                  className={styles.billBtn}
+                  style={{ marginLeft: 10 }}
+                  onClick={() => sendReminder(selectedAcc.accountId)}
+                  disabled={reminderSending}
+                  title="Send reminder email for this account"
+                >
+                  {reminderSending ? "Sending..." : "🔔 Send Reminder"}
+                </button>
               </>
             )}
           </div>
         </div>
       )}
 
-      {/* ====================== BILL MODAL ====================== */}
+      {/* BILL MODAL */}
       {showBillModal && selectedAcc && (
         <div
           className={styles.modalBackdrop}
@@ -535,12 +691,24 @@ export default function CreditLineManagement() {
 
             <h2>Bill Summary</h2>
 
-            <p><b>Bill Date:</b> {new Date().toLocaleDateString()}</p>
-            <p><b>Account ID:</b> {selectedAcc.accountId}</p>
-            <p><b>Name:</b> {selectedAcc.accountName}</p>
-            <p><b>Company:</b> {selectedAcc.companyName}</p>
-            <p><b>Phone:</b> {selectedAcc.phoneNo}</p>
-            <p><b>Email:</b> {selectedAcc.email}</p>
+            <p>
+              <b>Bill Date:</b> {new Date().toLocaleDateString()}
+            </p>
+            <p>
+              <b>Account ID:</b> {selectedAcc.accountId}
+            </p>
+            <p>
+              <b>Name:</b> {selectedAcc.accountName}
+            </p>
+            <p>
+              <b>Company:</b> {selectedAcc.companyName}
+            </p>
+            <p>
+              <b>Phone:</b> {selectedAcc.phoneNo}
+            </p>
+            <p>
+              <b>Email:</b> {selectedAcc.email}
+            </p>
 
             <table className={styles.billTable}>
               <thead>
@@ -580,8 +748,12 @@ export default function CreditLineManagement() {
                         <td>₹{gstAmount.toFixed(2)}</td>
                       </tr>
                       <tr>
-                        <td><b>Total Payable</b></td>
-                        <td><b>₹{total.toFixed(2)}</b></td>
+                        <td>
+                          <b>Total Payable</b>
+                        </td>
+                        <td>
+                          <b>₹{total.toFixed(2)}</b>
+                        </td>
                       </tr>
                     </>
                   );
@@ -599,7 +771,7 @@ export default function CreditLineManagement() {
               </thead>
 
               <tbody>
-                {selectedAcc.vehicles.map(v => (
+                {selectedAcc.vehicles.map((v) => (
                   <tr key={v.vehicleNo}>
                     <td>{v.vehicleNo}</td>
                     <td>{v.fuelType}</td>
@@ -614,14 +786,20 @@ export default function CreditLineManagement() {
               ⬇ Download PDF
             </button>
 
-            <button className={styles.billBtn} disabled>
-              📧 Send Email (Coming Soon)
+            <button
+              className={styles.billBtn}
+              onClick={sendEmailWithPdf}
+              disabled={emailSending}
+              title="Send PDF to registered email (only when outstanding > credit limit)"
+              style={{ marginLeft: 10 }}
+            >
+              {emailSending ? "Sending..." : "📧 Send Email"}
             </button>
           </div>
         </div>
       )}
 
-      {/* ====================== ADD ACCOUNT MODAL ====================== */}
+      {/* ADD ACCOUNT MODAL */}
       {showCreditModal && (
         <div
           className={styles.modalBackdrop}
@@ -641,31 +819,67 @@ export default function CreditLineManagement() {
             <h2>Add Credit Account</h2>
 
             <label>Account ID</label>
-            <input name="accountId" value={newAccount.accountId} onChange={handleAccountChange} />
+            <input
+              name="accountId"
+              value={newAccount.accountId}
+              onChange={handleAccountChange}
+            />
 
             <label>Account Name</label>
-            <input name="accountName" value={newAccount.accountName} onChange={handleAccountChange} />
+            <input
+              name="accountName"
+              value={newAccount.accountName}
+              onChange={handleAccountChange}
+            />
 
             <label>Phone</label>
-            <input name="phoneNo" value={newAccount.phoneNo} onChange={handleAccountChange} />
+            <input
+              name="phoneNo"
+              value={newAccount.phoneNo}
+              onChange={handleAccountChange}
+            />
 
             <label>Email</label>
-            <input name="email" value={newAccount.email} onChange={handleAccountChange} />
+            <input
+              name="email"
+              value={newAccount.email}
+              onChange={handleAccountChange}
+            />
 
             <label>Company Name</label>
-            <input name="companyName" value={newAccount.companyName} onChange={handleAccountChange} />
+            <input
+              name="companyName"
+              value={newAccount.companyName}
+              onChange={handleAccountChange}
+            />
 
             <label>Aadhaar No</label>
-            <input name="aadhaarNo" value={newAccount.aadhaarNo} onChange={handleAccountChange} />
+            <input
+              name="aadhaarNo"
+              value={newAccount.aadhaarNo}
+              onChange={handleAccountChange}
+            />
 
             <label>PAN No</label>
-            <input name="panNo" value={newAccount.panNo} onChange={handleAccountChange} />
+            <input
+              name="panNo"
+              value={newAccount.panNo}
+              onChange={handleAccountChange}
+            />
 
             <label>Upload Document</label>
-            <input type="file" onChange={handleDocumentUpload} className={styles.fullRow} />
+            <input
+              type="file"
+              onChange={handleDocumentUpload}
+              className={styles.fullRow}
+            />
 
             <label>Fuel Type</label>
-            <select name="fuelType" value={newAccount.fuelType} onChange={handleAccountChange}>
+            <select
+              name="fuelType"
+              value={newAccount.fuelType}
+              onChange={handleAccountChange}
+            >
               <option>Petrol</option>
               <option>Diesel</option>
             </select>
@@ -679,14 +893,21 @@ export default function CreditLineManagement() {
             />
 
             <label>Contact Person</label>
-            <input name="contactPerson" value={newAccount.contactPerson} onChange={handleAccountChange} />
+            <input
+              name="contactPerson"
+              value={newAccount.contactPerson}
+              onChange={handleAccountChange}
+            />
 
-            <button className={styles.addVehicleBtn} onClick={() => setShowVehicleModal(true)}>
+            <button
+              className={styles.addVehicleBtn}
+              onClick={() => setShowVehicleModal(true)}
+            >
               + Add Vehicle
             </button>
 
             <div className={styles.vehicleList}>
-              {newAccount.vehicles.map(v => (
+              {newAccount.vehicles.map((v) => (
                 <p key={v.vehicleNo}>
                   {v.vehicleNo} ({v.fuelType})
                   <button
@@ -706,7 +927,7 @@ export default function CreditLineManagement() {
         </div>
       )}
 
-      {/* ====================== SALE MODAL ====================== */}
+      {/* SALE MODAL */}
       {showSaleModal && (
         <div
           className={styles.modalBackdrop}
@@ -732,7 +953,7 @@ export default function CreditLineManagement() {
               onChange={handleSaleChange}
             >
               <option value="">Select Account</option>
-              {accounts.map(acc => (
+              {accounts.map((acc) => (
                 <option key={acc._id} value={acc.accountId}>
                   {acc.accountId} — {acc.accountName}
                 </option>
@@ -747,26 +968,38 @@ export default function CreditLineManagement() {
             >
               <option value="">Select Vehicle</option>
               {accounts
-                .find(a => a.accountId === saleData.accountId)
-                ?.vehicles.map(v => (
+                .find((a) => a.accountId === saleData.accountId)
+                ?.vehicles.map((v) => (
                   <option key={v.vehicleNo} value={v.vehicleNo}>
                     {v.vehicleNo}
                   </option>
                 ))}
             </select>
 
-            <button className={styles.addVehicleBtn} onClick={() => setShowVehicleModal(true)}>
+            <button
+              className={styles.addVehicleBtn}
+              onClick={() => setShowVehicleModal(true)}
+            >
               + Add Vehicle
             </button>
 
             <label>Fuel Type</label>
-            <select name="fuelType" value={saleData.fuelType} onChange={handleSaleChange}>
+            <select
+              name="fuelType"
+              value={saleData.fuelType}
+              onChange={handleSaleChange}
+            >
               <option>Petrol</option>
               <option>Diesel</option>
             </select>
 
             <label>Rate</label>
-            <input name="rate" type="number" value={saleData.rate} onChange={handleSaleChange} />
+            <input
+              name="rate"
+              type="number"
+              value={saleData.rate}
+              onChange={handleSaleChange}
+            />
 
             <label>Volume (L)</label>
             <input
@@ -784,6 +1017,14 @@ export default function CreditLineManagement() {
               onChange={handleSaleChange}
             />
 
+<label>Due Days</label>
+<input
+  name="dueDays"
+  type="number"
+  value={saleData.dueDays}
+  onChange={handleSaleChange}
+/>
+
             <button className={styles.submitBtn} onClick={saveSale}>
               Submit Sale
             </button>
@@ -791,7 +1032,7 @@ export default function CreditLineManagement() {
         </div>
       )}
 
-      {/* ====================== PAYMENT MODAL ====================== */}
+      {/* PAYMENT MODAL */}
       {showPaymentModal && (
         <div
           className={styles.modalBackdrop}
@@ -817,7 +1058,7 @@ export default function CreditLineManagement() {
               onChange={handlePaymentChange}
             >
               <option value="">Select Account</option>
-              {accounts.map(acc => (
+              {accounts.map((acc) => (
                 <option key={acc._id} value={acc.accountId}>
                   {acc.accountId} — {acc.accountName}
                 </option>
@@ -851,9 +1092,7 @@ export default function CreditLineManagement() {
 
             <label>New Outstanding</label>
             <input
-              value={
-                (paymentData.outstanding ?? 0) - (paymentData.amountPaid ?? 0)
-              }
+              value={(paymentData.outstanding ?? 0) - (paymentData.amountPaid ?? 0)}
               disabled
               className={
                 paymentData.amountPaid >= (paymentData.outstanding ?? 0)
@@ -869,49 +1108,26 @@ export default function CreditLineManagement() {
         </div>
       )}
 
-      {/* ====================== ADD VEHICLE MODAL ====================== */}
+      {/* ADD VEHICLE MODAL */}
       {showVehicleModal && (
-        <div
-          className={styles.modalBackdrop}
-          onClick={() => setShowVehicleModal(false)}
-        >
-          <div
-            className={`${styles.modal} ${styles.modalScrollable}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className={styles.closeBtn}
-              onClick={() => setShowVehicleModal(false)}
-            >
-              ✖
-            </button>
+        <div className={styles.modalBackdrop} onClick={() => setShowVehicleModal(false)}>
+          <div className={`${styles.modal} ${styles.modalScrollable}`} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.closeBtn} onClick={() => setShowVehicleModal(false)}>✖</button>
 
             <h3>Add Vehicle</h3>
 
             <label>Vehicle Number</label>
-            <input
-              value={vehicleForm.vehicleNo}
-              onChange={(e) =>
-                setVehicleForm({ ...vehicleForm, vehicleNo: e.target.value })
-              }
-            />
+            <input value={vehicleForm.vehicleNo} onChange={(e) => setVehicleForm({ ...vehicleForm, vehicleNo: e.target.value })} />
 
             <label>Fuel Type</label>
-            <select
-              value={vehicleForm.fuelType}
-              onChange={(e) =>
-                setVehicleForm({
-                  ...vehicleForm,
-                  fuelType: e.target.value as "Petrol" | "Diesel",
-                })
-              }
-            >
+            <select value={vehicleForm.fuelType} onChange={(e) => setVehicleForm({ ...vehicleForm, fuelType: e.target.value as "Petrol" | "Diesel" })}>
               <option>Petrol</option>
               <option>Diesel</option>
             </select>
 
-            <button  style={{padding:'10px 11px', display:'flex',justifyContent:'center' ,marginTop:'10px' }} onClick={addVehicle}>Add</button>
-           
+            <button style={{ padding: "10px 11px", display: "flex", justifyContent: "center", marginTop: "10px" }} onClick={addVehicle}>
+              Add
+            </button>
           </div>
         </div>
       )}

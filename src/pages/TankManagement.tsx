@@ -1,6 +1,11 @@
-// TankManagement.tsx — Modal form + Filters (Date / Tank ID / Fuel) + Full-width table
+// TankManagement.tsx
 import { useState, useEffect } from "react";
 import styles from "../style/tankmanagement.module.css";
+
+type Chamber = {
+  chamberName: string;
+  fuelDensity: number | ""; // allow empty input while editing
+};
 
 type Tank = {
   _id?: string;
@@ -20,6 +25,8 @@ type Tank = {
   totalAmount: number;
   dateTime?: string;
   createdAt?: string;
+  invoiceDensity?: number | "";
+  chambers?: Chamber[];
 };
 
 type TankMaster = {
@@ -71,6 +78,8 @@ export default function TankManagement() {
     closingStock: 0,
     totalAmount: 0,
     dateTime: "",
+    invoiceDensity: "",
+    chambers: [],
   });
 
   // ---- Filters state (placed between Add button and table) ----
@@ -175,6 +184,8 @@ export default function TankManagement() {
       updated.soldQuantity = "";
       setIsUpdating(false);
       setEditId("");
+      updated.invoiceDensity = "";
+      updated.chambers = [];
     } else {
       const last = prevEntries[0];
       updated.openingStock = last.closingStock;
@@ -187,6 +198,15 @@ export default function TankManagement() {
 
       const sold = calculateSoldLitres(startIso, endIso, tm.fuelType);
       updated.soldQuantity = sold;
+
+      // if returning to edit flow, preserve invoiceDensity/chambers if present
+      updated.invoiceDensity = last.invoiceDensity ?? "";
+      updated.chambers = Array.isArray(last.chambers)
+        ? last.chambers.map((c: any) => ({
+            chamberName: c.chamberName,
+            fuelDensity: c.fuelDensity === "" || c.fuelDensity == null ? "" : Number(c.fuelDensity) || ""
+          }))
+        : [];
     }
 
     setTank(updated);
@@ -208,12 +228,46 @@ export default function TankManagement() {
     setTank(updated);
   };
 
+  // ------ chambers helpers ------
+  const addChamber = () => {
+    const next = (tank.chambers?.length ?? 0) + 1;
+    const newChamber: Chamber = { chamberName: `Chamber ${next}`, fuelDensity: "" };
+    setTank((prev) => ({ ...prev, chambers: [...(prev.chambers || []), newChamber] }));
+  };
+
+  const updateChamber = (index: number, field: keyof Chamber, value: string) => {
+    setTank((prev) => {
+      const copy = [...(prev.chambers || [])];
+      const target = { ...(copy[index] || { chamberName: `Chamber ${index + 1}`, fuelDensity: "" }) };
+      if (field === "fuelDensity") {
+        target.fuelDensity = value === "" ? "" : Number(value);
+      } else {
+        target.chamberName = value;
+      }
+      copy[index] = target;
+      return { ...prev, chambers: copy };
+    });
+  };
+
+  const removeChamber = (index: number) => {
+    setTank((prev) => {
+      const copy = [...(prev.chambers || [])];
+      copy.splice(index, 1);
+      // renumber names
+      const renumbered: Chamber[] = copy.map((c, i) => ({
+        chamberName: c.chamberName || `Chamber ${i + 1}`,
+        fuelDensity: c.fuelDensity === "" ? "" : Number(c.fuelDensity),
+      }));
+      return { ...prev, chambers: renumbered };
+    });
+  };
+
+  // submit
   const handleSubmit = async () => {
     if (!tank.tankId) return alert("Select Tank ID");
 
-    const payload = {
+    const payload: any = {
       ...tank,
-      dateTime: tank.dateTime,
       openingStock: num(tank.openingStock),
       quantityReceived: num(tank.quantityReceived),
       soldQuantity: num(tank.soldQuantity),
@@ -221,6 +275,12 @@ export default function TankManagement() {
       ratePerLitre: num(tank.ratePerLitre),
       closingStock: num(tank.closingStock),
       totalAmount: num(tank.totalAmount),
+      invoiceDensity: tank.invoiceDensity === "" ? undefined : Number(tank.invoiceDensity),
+      chambers: (tank.chambers || []).map((c) => ({
+        chamberName: c.chamberName,
+        fuelDensity: c.fuelDensity === "" ? 0 : Number(c.fuelDensity),
+      })),
+      dateTime: tank.dateTime,
     };
 
     try {
@@ -272,6 +332,8 @@ export default function TankManagement() {
       closingStock: 0,
       totalAmount: 0,
       dateTime: "",
+      invoiceDensity: "",
+      chambers: [],
     });
 
     setIsUpdating(false);
@@ -291,18 +353,12 @@ export default function TankManagement() {
   };
 
   const getTankTimestamp = (t: Tank) => {
-    // prefer createdAt then dateTime
     return toEpoch(t.createdAt || t.dateTime);
   };
 
   const filteredTanks = tanks.filter((t) => {
-    // Tank ID filter
     if (filterTankId !== "All" && t.tankId !== filterTankId) return false;
-
-    // Fuel filter
     if (filterFuel !== "All" && t.productType !== filterFuel) return false;
-
-    // Date filter
     if (filterFrom || filterTo) {
       const ts = getTankTimestamp(t);
       if (isNaN(ts)) return false;
@@ -315,7 +371,6 @@ export default function TankManagement() {
         if (!isNaN(toMs) && ts > toMs) return false;
       }
     }
-
     return true;
   });
 
@@ -327,10 +382,11 @@ export default function TankManagement() {
 
       {/* ADD NEW BUTTON */}
       <div className={styles.btn_tank}>
-      <button className={styles.addButton} onClick={() => setModalOpen(true)}>
-        Add Tank Entry ➕ 
-      </button>
-</div>
+        <button className={styles.addButton} onClick={() => { resetForm(); setModalOpen(true); }}>
+          Add Tank Entry ➕
+        </button>
+      </div>
+
       {/* ===== FILTER BAR (between Add button and table) ===== */}
       <div className={styles.filterBar}>
         <div className={styles.filterGroup}>
@@ -377,7 +433,6 @@ export default function TankManagement() {
             onChange={(e) => setFilterFuel(e.target.value)}
           >
             <option value="All">All</option>
-            {/* derive fuel types from master list to keep list consistent */}
             {Array.from(new Set(tankMasters.map((m) => m.fuelType))).map((f) => (
               <option key={f} value={f}>
                 {f}
@@ -417,7 +472,7 @@ export default function TankManagement() {
             </button>
 
             <div className={styles.formGrid}>
-              <select name="tankId" value={tank.tankId} onChange={handleChange}>
+              <select name="tankId" value={tank.tankId} onChange={(e) => { handleChange(e); }}>
                 <option value="">Select Tank ID</option>
                 {tankMasters.map((t) => (
                   <option key={t._id} value={t.tankId}>
@@ -491,15 +546,63 @@ export default function TankManagement() {
                 onChange={handleChange}
               />
 
+              {/* NEW: Invoice Density */}
+              <input
+                name="invoiceDensity"
+                placeholder="Invoice Density"
+                type="number"
+                value={tank.invoiceDensity === "" ? "" : (tank.invoiceDensity as number)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTank((prev) => ({ ...prev, invoiceDensity: v === "" ? "" : Number(v) }));
+                }}
+              />
+            </div>
+
+            {/* TESTING DENSITY / CHAMBERS (before remarks) */}
+            <div style={{ marginTop: 12, padding: 12, border: "1px dashed #e6e6e6", borderRadius: 8 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <strong>Testing Density</strong>
+                <button className={styles.smallBtnPrimary} onClick={addChamber}>+ Add Chamber</button>
+              </div>
+
+              <div style={{ marginTop: 12 }}>
+                {(tank.chambers || []).length === 0 ? (
+                  <div style={{ color: "#666" }}>No chambers added</div>
+                ) : (
+                  (tank.chambers || []).map((c, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
+                      <input
+                        value={c.chamberName}
+                        onChange={(e) => updateChamber(i, "chamberName", e.target.value)}
+                        style={{ minWidth: 160, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+                      />
+                      <input
+                        type="number"
+                        value={c.fuelDensity === "" ? "" : String(c.fuelDensity)}
+                        onChange={(e) => updateChamber(i, "fuelDensity", e.target.value)}
+                        placeholder="Fuel Density"
+                        style={{ width: 140, padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
+                      />
+                      <button className={styles.smallBtn} onClick={() => removeChamber(i)}>Remove</button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Remarks (after chambers) */}
+            <div style={{ marginTop: 12 }}>
               <input
                 name="remarks"
                 placeholder="Remarks"
                 value={tank.remarks}
                 onChange={handleChange}
+                style={{ width: "100%", padding: 8, borderRadius: 6, border: "1px solid #ccc" }}
               />
             </div>
 
-            <div className={styles.summaryBox}>
+            <div className={styles.summaryBox} style={{ marginTop: 12 }}>
               <p>
                 Closing Stock: <strong>{tank.closingStock} L</strong>
               </p>
@@ -508,9 +611,14 @@ export default function TankManagement() {
               </p>
             </div>
 
-            <button className={styles.saveButton} onClick={handleSubmit}>
-              {isUpdating ? "🔄 Update Tank Entry" : "💾 Save Tank Entry"}
-            </button>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className={styles.saveButton} onClick={handleSubmit}>
+                {isUpdating ? "🔄 Update Tank Entry" : "💾 Save Tank Entry"}
+              </button>
+              <button className={styles.smallBtn} onClick={() => { resetForm(); setModalOpen(false); }}>
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

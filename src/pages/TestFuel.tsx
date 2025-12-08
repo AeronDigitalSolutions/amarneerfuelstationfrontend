@@ -1,4 +1,3 @@
-// TestFuel.tsx
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import styles from "../style/testfuel.module.css";
@@ -9,16 +8,37 @@ const BASE_URL =
     ? "http://localhost:5000/api"
     : "https://amarneerfuelstationbackend.onrender.com/api");
 
-type Pump = { _id: string; pumpNo: string; pumpName: string; fuels: { type: string }[]; };
-type FuelTest = { _id?: string; pumpId?: string; pumpNo?: string; pumpName?: string; fuelType: string; liters: number; startTime?: string | Date; stopTime?: string | Date; duration?: number; };
+type Machine = {
+  _id: string;
+  machineNo: string;
+  machineName: string;
+  nozzles: { nozzleNo: number; fuelType: string }[];
+};
+
+type FuelTest = {
+  _id?: string;
+  machineId?: string;
+  machineNo?: string;
+  machineName?: string;
+  nozzleNo?: number;
+  fuelType: string;
+  liters: number;
+  startTime?: string | Date;
+  stopTime?: string | Date;
+  duration?: number;
+};
 
 export default function TestFuel() {
-  const [pumps, setPumps] = useState<Pump[]>([]);
-  const [fuelOptions, setFuelOptions] = useState<string[]>([]);
-  const [selectedPump, setSelectedPump] = useState("");
-  const [selectedFuel, setSelectedFuel] = useState("");
-  const [liters, setLiters] = useState("");
+  const [machines, setMachines] = useState<Machine[]>([]);
   const [tests, setTests] = useState<FuelTest[]>([]);
+
+  const [selectedMachine, setSelectedMachine] = useState("");
+  const [selectedNozzle, setSelectedNozzle] = useState("");
+  const [liters, setLiters] = useState("");
+
+  const [nozzleOptions, setNozzleOptions] = useState<
+    { nozzleNo: number; fuelType: string }[]
+  >([]);
 
   // timer & modal
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -28,7 +48,10 @@ export default function TestFuel() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/pumps`).then((res) => setPumps(res.data)).catch(()=>{});
+    axios.get(`${BASE_URL}/machines`)
+      .then(res => setMachines(res.data))
+      .catch(() => {});
+
     loadTests();
   }, []);
 
@@ -41,15 +64,15 @@ export default function TestFuel() {
     }
   };
 
-  const handlePumpChange = (pumpId: string) => {
-    setSelectedPump(pumpId);
-    const pump = pumps.find((p) => p._id === pumpId);
-    if (pump) setFuelOptions(pump.fuels.map((f) => f.type));
-    else setFuelOptions([]);
+  const handleMachineChange = (id: string) => {
+    setSelectedMachine(id);
+    const machine = machines.find((m) => m._id === id);
+    if (machine) setNozzleOptions(machine.nozzles);
+    else setNozzleOptions([]);
   };
 
   const startTest = () => {
-    if (!selectedPump || !selectedFuel || liters === "") {
+    if (!selectedMachine || !selectedNozzle || liters === "") {
       alert("Fill all fields before starting test");
       return;
     }
@@ -60,25 +83,34 @@ export default function TestFuel() {
   };
 
   const stopTest = async () => {
-    if (!startTime) {
-      alert("Start test first!");
-      return;
-    }
+    if (!startTime) return alert("Start test first");
+
     if (timerRef.current) window.clearInterval(timerRef.current);
+
     const stopTime = new Date();
+    const nozzle = nozzleOptions.find(n => n.nozzleNo === Number(selectedNozzle));
+
     try {
       setLoading(true);
       await axios.post(`${BASE_URL}/fueltest`, {
-        pumpId: selectedPump,
-        fuelType: selectedFuel,
+        machineId: selectedMachine,
+        nozzleNo: Number(selectedNozzle),
+        fuelType: nozzle?.fuelType || "",
         liters: Number(liters),
         startTime: startTime.toISOString(),
         stopTime: stopTime.toISOString(),
         duration: elapsed,
       });
+
       alert("Fuel Test Saved!");
-      setSelectedFuel(""); setLiters(""); setStartTime(null); setElapsed(0);
+
+      // reset modal
+      setSelectedNozzle("");
+      setLiters("");
+      setStartTime(null);
+      setElapsed(0);
       setShowModal(false);
+
       loadTests();
     } catch (err) {
       console.error(err);
@@ -96,7 +128,6 @@ export default function TestFuel() {
 
   const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
     if ((e.target as HTMLElement).classList.contains(styles.modalBackdrop)) {
-      // if running timer, prevent accidental close
       if (startTime) {
         if (!confirm("Test is running. Stop & close?")) return;
         if (timerRef.current) window.clearInterval(timerRef.current);
@@ -112,9 +143,9 @@ export default function TestFuel() {
       <div className={styles.card}>
         <div className={styles.header}>
           <h2>⛽ Fuel Test Entry</h2>
-          <div>
-            <button className={styles.primaryBtn} onClick={() => setShowModal(true)}>➕ New Test</button>
-          </div>
+          <button className={styles.primaryBtn} onClick={() => setShowModal(true)}>
+            ➕ New Test
+          </button>
         </div>
 
         {tests.length > 0 && (
@@ -122,18 +153,25 @@ export default function TestFuel() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Pump</th><th>Fuel</th><th>Liters</th><th>Start</th><th>Stop</th><th>Duration</th>
+                  <th>Machine</th>
+                  <th>Nozzle</th>
+                  <th>Fuel</th>
+                  <th>Liters</th>
+                  <th>Start</th>
+                  <th>Stop</th>
+                  <th>Duration</th>
                 </tr>
               </thead>
               <tbody>
                 {tests.map((t) => (
                   <tr key={t._id}>
-                    <td>{t.pumpNo} - {t.pumpName}</td>
+                    <td>{t.machineNo} - {t.machineName}</td>
+                    <td>Nozzle {t.nozzleNo}</td>
                     <td>{t.fuelType}</td>
                     <td>{t.liters}</td>
                     <td>{t.startTime ? new Date(t.startTime).toLocaleTimeString() : "-"}</td>
                     <td>{t.stopTime ? new Date(t.stopTime).toLocaleTimeString() : "-"}</td>
-                    <td>{t.duration ? formatTime(t.duration) : "-"}</td>
+                    <td>{formatTime(t.duration || 0)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -144,20 +182,29 @@ export default function TestFuel() {
 
       {showModal && (
         <div className={styles.modalBackdrop} onClick={handleBackdrop}>
-          <div className={`${styles.modalForm} ${styles.modalScrollable}`} onClick={(e) => e.stopPropagation()}>
+          <div className={styles.modalForm} onClick={(e) => e.stopPropagation()}>
             <button className={styles.closeBtn} onClick={() => setShowModal(false)}>✖</button>
+
             <h2>Fuel Test</h2>
 
-            <label>Pump</label>
-            <select value={selectedPump} onChange={(e) => handlePumpChange(e.target.value)}>
-              <option value="">Select Pump</option>
-              {pumps.map((p) => (<option key={p._id} value={p._id}>{p.pumpNo} - {p.pumpName}</option>))}
+            <label>Machine</label>
+            <select value={selectedMachine} onChange={(e) => handleMachineChange(e.target.value)}>
+              <option value="">Select Machine</option>
+              {machines.map((m) => (
+                <option key={m._id} value={m._id}>
+                  {m.machineNo} - {m.machineName}
+                </option>
+              ))}
             </select>
 
-            <label>Fuel Type</label>
-            <select value={selectedFuel} onChange={(e) => setSelectedFuel(e.target.value)}>
-              <option value="">Select Fuel</option>
-              {fuelOptions.map((f) => (<option key={f} value={f}>{f}</option>))}
+            <label>Nozzle</label>
+            <select value={selectedNozzle} onChange={(e) => setSelectedNozzle(e.target.value)}>
+              <option value="">Select Nozzle</option>
+              {nozzleOptions.map((n) => (
+                <option key={n.nozzleNo} value={n.nozzleNo}>
+                  Nozzle {n.nozzleNo} ({n.fuelType})
+                </option>
+              ))}
             </select>
 
             <label>Liters</label>
@@ -167,17 +214,28 @@ export default function TestFuel() {
 
             <div className={styles.modalButtons}>
               {!startTime ? (
-                <button className={styles.saveBtn} onClick={startTest}>▶ Start Test</button>
+                <button className={styles.saveBtn} onClick={startTest}>
+                  ▶ Start Test
+                </button>
               ) : (
-                <button className={styles.cancelBtn} onClick={stopTest} disabled={loading}>{loading ? "Saving..." : "⏹ Stop & Save"}</button>
+                <button className={styles.cancelBtn} onClick={stopTest} disabled={loading}>
+                  {loading ? "Saving..." : "⏹ Stop & Save"}
+                </button>
               )}
 
               <button className={styles.secondaryBtn} onClick={() => {
-                if (startTime) { if (!confirm("Test running — stop & close?")) return; }
+                if (startTime) {
+                  if (!confirm("Test running — stop & close?")) return;
+                }
                 if (timerRef.current) window.clearInterval(timerRef.current);
-                setStartTime(null); setElapsed(0); setShowModal(false);
-              }}>Close</button>
+                setStartTime(null);
+                setElapsed(0);
+                setShowModal(false);
+              }}>
+                Close
+              </button>
             </div>
+
           </div>
         </div>
       )}

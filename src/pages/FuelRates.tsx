@@ -1,4 +1,3 @@
-// FuelRates.tsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "../style/fuelrates.module.css";
@@ -9,27 +8,23 @@ const BASE_URL =
     ? "http://localhost:5000/api"
     : "https://amarneerfuelstationbackend.onrender.com/api");
 
-interface FuelRates {
-  petrol: number;
-  diesel: number;
-  premiumPetrol: number;
-  cng: number;
+interface FuelRatesData {
+  rates: Record<string, number>;
   updatedAt?: string;
 }
 
 export default function FuelRates() {
-  const [rates, setRates] = useState<FuelRates>({
-    petrol: 0,
-    diesel: 0,
-    premiumPetrol: 0,
-    cng: 0,
-  });
-
-  const [latestRates, setLatestRates] = useState<FuelRates | null>(null);
+  const [rates, setRates] = useState<Record<string, number>>({});
+  const [latestRates, setLatestRates] = useState<FuelRatesData | null>(null);
   const [loading, setLoading] = useState(false);
 
   // modal
   const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  // new fuel input
+  const [newFuelName, setNewFuelName] = useState("");
+  const [newFuelRate, setNewFuelRate] = useState<number>(0);
 
   useEffect(() => {
     fetchFuelRates();
@@ -39,43 +34,42 @@ export default function FuelRates() {
     try {
       const res = await axios.get(`${BASE_URL}/fuel-rates`);
       setLatestRates(res.data);
-      setRates({
-        petrol: res.data.petrol ?? 0,
-        diesel: res.data.diesel ?? 0,
-        premiumPetrol: res.data.premiumPetrol ?? 0,
-        cng: res.data.cng ?? 0,
-      });
+      setRates(res.data.rates || {});
     } catch {
-      // no existing rates
-      console.log("No existing fuel rates found yet.");
+      console.log("No fuel rates found yet.");
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setRates((prev) => ({ ...prev, [name]: Number(value) }));
   };
 
   const saveRates = async () => {
     try {
       setLoading(true);
-      await axios.post(`${BASE_URL}/fuel-rates`, rates);
-      alert("✅ Fuel rates saved successfully!");
+      await axios.post(`${BASE_URL}/fuel-rates`, { rates });
+      alert("Fuel rates saved successfully!");
       await fetchFuelRates();
       setShowModal(false);
     } catch (err) {
-      console.error("❌ Error saving rates:", err);
-      alert("Failed to save fuel rates.");
+      console.error(err);
+      alert("Error saving fuel rates");
     } finally {
       setLoading(false);
     }
   };
 
-  // close modal when clicking backdrop
-  const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).classList.contains(styles.modalBackdrop)) {
-      setShowModal(false);
+  const addNewFuel = () => {
+    if (!newFuelName.trim()) {
+      alert("Fuel name is required");
+      return;
     }
+
+    setRates((prev) => ({
+      ...prev,
+      [newFuelName]: newFuelRate,
+    }));
+
+    setNewFuelName("");
+    setNewFuelRate(0);
+    setShowAddModal(false);
+    setShowModal(true);
   };
 
   return (
@@ -83,19 +77,21 @@ export default function FuelRates() {
       <div className={styles.card}>
         <div className={styles.headerRow}>
           <h2 className={styles.heading}>⛽ Fuel Rates Management</h2>
-          <div>
-            <button
-              className={styles.primaryBtn}
-              onClick={() => setShowModal(true)}
-            >
-               Edit Rates ✏️
+
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button className={styles.secondaryBtn} onClick={() => setShowAddModal(true)}>
+              ➕ Add Fuel Type
+            </button>
+
+            <button className={styles.primaryBtn} onClick={() => setShowModal(true)}>
+              ✏️ Edit Rates
             </button>
           </div>
         </div>
 
         {latestRates ? (
           <div className={styles.tableSection}>
-            <h3 className={styles.latest}> Latest Fuel Rates</h3>
+            <h3 className={styles.latest}>Latest Fuel Rates</h3>
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -104,22 +100,12 @@ export default function FuelRates() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Petrol</td>
-                  <td>{latestRates.petrol}</td>
-                </tr>
-                <tr>
-                  <td>Diesel</td>
-                  <td>{latestRates.diesel}</td>
-                </tr>
-                <tr>
-                  <td>Premium Petrol</td>
-                  <td>{latestRates.premiumPetrol}</td>
-                </tr>
-                <tr>
-                  <td>CNG</td>
-                  <td>{latestRates.cng}</td>
-                </tr>
+                {Object.entries(rates).map(([name, rate]) => (
+                  <tr key={name}>
+                    <td>{name}</td>
+                    <td>{rate}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
 
@@ -131,50 +117,66 @@ export default function FuelRates() {
             </p>
           </div>
         ) : (
-          <p className={styles.noData}>No fuel rates found. Click "Edit Rates" to add.</p>
+          <p className={styles.noData}>Click “Add Fuel Type” to begin.</p>
         )}
       </div>
 
-      {showModal && (
-        <div className={styles.modalBackdrop} onClick={handleBackdrop}>
-          <div className={`${styles.modalForm} ${styles.modalScrollable}`} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeBtn} onClick={() => setShowModal(false)} aria-label="Close">
-              ✖
-            </button>
+      {/* Add Fuel Type Modal */}
+      {showAddModal && (
+        <div className={styles.modalBackdrop} onClick={() => setShowAddModal(false)}>
+          <div className={styles.modalForm} onClick={(e) => e.stopPropagation()}>
+            <h2>Add Fuel Type</h2>
 
+            <div className={styles.inputGroup}>
+              <label>Fuel Name</label>
+              <input
+                type="text"
+                value={newFuelName}
+                onChange={(e) => setNewFuelName(e.target.value)}
+              />
+            </div>
+
+            <div className={styles.inputGroup}>
+              <label>Rate (₹)</label>
+              <input
+                type="number"
+                value={newFuelRate}
+                onChange={(e) => setNewFuelRate(Number(e.target.value))}
+              />
+            </div>
+
+            <button className={styles.saveBtn} onClick={addNewFuel}>Add</button>
+            <button className={styles.cancelBtn} onClick={() => setShowAddModal(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT Fuel Rates Modal */}
+      {showModal && (
+        <div className={styles.modalBackdrop} onClick={() => setShowModal(false)}>
+          <div className={styles.modalForm} onClick={(e) => e.stopPropagation()}>
             <h2>Edit Fuel Rates</h2>
 
-            <div className={styles.formSection}>
-              <div className={styles.inputGroup}>
-                <label>Petrol Rate (₹)</label>
-                <input type="number" name="petrol" value={rates.petrol} onChange={handleChange} />
+            {Object.entries(rates).map(([name, rate]) => (
+              <div key={name} className={styles.inputGroup}>
+                <label>{name} (₹)</label>
+                <input
+                  type="number"
+                  value={rate}
+                  onChange={(e) =>
+                    setRates((prev) => ({
+                      ...prev,
+                      [name]: Number(e.target.value),
+                    }))
+                  }
+                />
               </div>
+            ))}
 
-              <div className={styles.inputGroup}>
-                <label>Diesel Rate (₹)</label>
-                <input type="number" name="diesel" value={rates.diesel} onChange={handleChange} />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label>Premium Petrol Rate (₹)</label>
-                <input type="number" name="premiumPetrol" value={rates.premiumPetrol} onChange={handleChange} />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label>CNG Rate (₹)</label>
-                <input type="number" name="cng" value={rates.cng} onChange={handleChange} />
-              </div>
-
-              <div className={styles.modalButtons}>
-                <button className={styles.saveBtn} onClick={saveRates} disabled={loading}>
-                  {loading ? "Saving..." : "Save Rates"}
-                </button>
-
-                <button className={styles.cancelBtn} onClick={() => setShowModal(false)}>
-                  Cancel
-                </button>
-              </div>
-            </div>
+            <button className={styles.saveBtn} onClick={saveRates}>
+              {loading ? "Saving..." : "Save Rates"}
+            </button>
+            <button className={styles.cancelBtn} onClick={() => setShowModal(false)}>Cancel</button>
           </div>
         </div>
       )}

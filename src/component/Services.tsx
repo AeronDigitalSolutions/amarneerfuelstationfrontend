@@ -109,6 +109,20 @@ const Services = () => {
             </div>
           </Link>
 
+          
+          <Link to='/wholeday' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
+            <div className="top-tab">
+              <img src={top} alt='top' />
+            </div>
+            <div className="box_grid_services">
+              <div className="iconS">
+                <img className='img_services_img' src={shape} alt="icon" />
+              </div>
+              <h3 className='services_para'>Whole Day Report</h3>
+              <p className='services_desc'>View live sales, stock, and performance in one smart panel.</p>
+            </div>
+          </Link>
+
 
 
 

@@ -169,7 +169,7 @@ export default function LivePayment() {
               <td
                 style={{
                   padding: "12px",
-                  borderBottom: "1px solid #e2e8f0",
+                  borderBottom: "1px solid #c0cddfff",
                   textAlign: "center",
                 }}
               >
