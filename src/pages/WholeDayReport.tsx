@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type JSX } from "react";
+import { useEffect,  useState, type JSX } from "react";
 import axios from "axios";
 import styles from "../style/WholeDayReport.module.css";
 import oil from "../assets/oil.png"
@@ -44,8 +44,8 @@ export default function WholeDayReport(): JSX.Element {
 
   const [selectedShift, setSelectedShift] = useState<"day" | "night">("day");
 
-  const today = useMemo(() => new Date(), []);
-  const todayStr = useMemo(() => today.toLocaleDateString("en-IN"), [today]);
+  // const today = useMemo(() => new Date(), []);
+  // const todayStr = useMemo(() => today.toLocaleDateString("en-IN"), [today]);
 
   useEffect(() => {
     void fetchAll();

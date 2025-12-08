@@ -106,7 +106,7 @@ export default function SaleEntry(): JSX.Element {
   const [totalPayment, setTotalPayment] = useState(0);
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("Cash");
 
-  const [creditParty, setCreditParty] = useState("");
+  // const [creditParty, setCreditParty] = useState("");
   const [remarks, setRemarks] = useState("");
   const [attendant, setAttendant] = useState("");
 
@@ -295,7 +295,7 @@ export default function SaleEntry(): JSX.Element {
       cardAmount,
       totalPayment,
       paymentMode,
-      creditParty,
+      // creditParty,
       remarks,
       attendant,
       createdAt: now.toISOString(),
