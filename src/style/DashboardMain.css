@@ -18,6 +18,7 @@
 
 .dash{
     padding: 15px 20px;
+    justify-items: center;
 }
 .dashbord_sub_tittle{
   font-size: 1.3rem;
@@ -46,11 +47,11 @@
     margin-top: 25px;
 }
 .grid_services_dash{
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4rem;
+    width: 81%;
     margin-bottom: 40px;
+    display: grid;
 }
 
 .service-box_dash {
