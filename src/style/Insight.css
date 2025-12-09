@@ -97,7 +97,9 @@
   color: #c1bdf8;
   opacity: 0.9;
 }
-
+.common,.meta{
+  color: #c1bdf8;
+}
 @media (max-width: 1024px) {
   .articles-grid {
     grid-template-columns: repeat(2, 1fr);
