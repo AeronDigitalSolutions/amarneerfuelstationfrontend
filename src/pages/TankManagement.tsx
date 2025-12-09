@@ -522,7 +522,7 @@ export default function TankManagement() {
                 type="number"
                 placeholder="Sold (L)"
                 value={tank.soldQuantity}
-                readOnly
+                
               />
 
               <input

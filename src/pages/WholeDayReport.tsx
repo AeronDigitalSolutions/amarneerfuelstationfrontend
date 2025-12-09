@@ -558,7 +558,7 @@ export default function WholeDayReport(): JSX.Element {
               <div>
                 <div className={styles.summaryLine}><span>Total Collection (B):</span><span>{fmtCurrency(totalCollection)}</span></div>
                 <div className={styles.summaryLine}><span>Daily Expenses:</span><span>{fmtCurrency(totalDailyExpenses)}</span></div>
-                <div className={`${styles.summaryLine} ${styles.big}`}><span>Short / Excess (B - A):</span><span className={shortExcess < 0 ? styles.negative : styles.positive}>{fmtCurrency(shortExcess)}</span></div>
+                <div className={`${styles.summaryLine} ${styles.big}`}><span>Credit (B - A):</span><span className={shortExcess < 0 ? styles.negative : styles.positive}>{fmtCurrency(shortExcess)}</span></div>
               </div>
 
               <div>
