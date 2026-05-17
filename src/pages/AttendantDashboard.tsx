@@ -5,10 +5,13 @@ import AttendanceSidebar from "../component/attendantdashboard/Attendance";
 import SalarySummarySidebar from "../component/attendantdashboard/SalarySummary";
 import ShiftSidebar from "../component/attendantdashboard/Shift";
 
-const BASE_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "https://amarneerfuelstationbackend.onrender.com";
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://localhost:5001/api"
+    : "https://amarneerfuelstationbackend.onrender.com/api");
+
+const BASE_URL = API_BASE.endsWith("/api") ? API_BASE.slice(0, -4) : API_BASE;
 
 export default function AttendantDashboard() {
   const [activeTab, setActiveTab] = useState<"attendance" | "salary" | "shift">(

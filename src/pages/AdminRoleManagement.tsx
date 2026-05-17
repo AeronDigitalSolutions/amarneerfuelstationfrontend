@@ -28,7 +28,13 @@ type Permissions = {
   manageTestFuel: boolean;
 };
 
-const BASE_URL = "https://amarneerfuelstationbackend.onrender.com"; // keep your backend
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://localhost:5001/api"
+    : "https://amarneerfuelstationbackend.onrender.com/api");
+
+const BASE_URL = API_BASE.endsWith("/api") ? API_BASE.slice(0, -4) : API_BASE;
 
 export default function AdminRoleManagement() {
     // const [loading, setLoading] = useState<boolean>(true);

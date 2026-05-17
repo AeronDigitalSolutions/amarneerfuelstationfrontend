@@ -11,11 +11,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// 🔥 Auto Switch Backend (Local + Live)
 const BASE_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000/api"
-    : "https://amarneerfuelstationbackend.onrender.com/api";
+  import.meta.env.VITE_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://localhost:5001/api"
+    : "https://amarneerfuelstationbackend.onrender.com/api");
 
 type DashboardData = {
   totalSales: number;

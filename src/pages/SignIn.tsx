@@ -9,11 +9,13 @@ import Footer from "../component/Footer";
 // import shape3 from "../assets/shape3.png";
 // import shape4 from "../assets/shape4.png";
 
-// 🔥 Auto Switch Backend (Local + Live)
-const BASE_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "https://amarneerfuelstationbackend.onrender.com";
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://localhost:5001/api"
+    : "https://amarneerfuelstationbackend.onrender.com/api");
+
+const BASE_URL = API_BASE.endsWith("/api") ? API_BASE.slice(0, -4) : API_BASE;
 
 export default function SignIn() {
   const navigate = useNavigate();

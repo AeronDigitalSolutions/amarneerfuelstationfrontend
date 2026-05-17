@@ -5,10 +5,13 @@ import "../pagecss/SignIn.css";
 import Header from "../component/Header";
 import Footer from "../component/Footer";
 
-const BASE_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "https://amarneerfuelstationbackend.onrender.com";
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://localhost:5001/api"
+    : "https://amarneerfuelstationbackend.onrender.com/api");
+
+const BASE_URL = API_BASE.endsWith("/api") ? API_BASE.slice(0, -4) : API_BASE;
 
 export default function AttendantSign() {
   const navigate = useNavigate();
