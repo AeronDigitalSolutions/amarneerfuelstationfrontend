@@ -1,214 +1,185 @@
 import { Link } from "react-router-dom";
-import '../style/DashboardMain.css'
-// import shape from '../assets/Shape-012.png';
-import graphic from '../assets/graphic.png';
-// import social from '../assets/social.png';
-// import brand from '../assets/brand.png';
-// import seo from '../assets/seo.png';
-import top from '../assets/servicestop.png'
+import { useEffect } from "react";
+import {
+  FaArrowRightLong,
+  FaChartLine,
+  FaClipboardList,
+  FaCreditCard,
+  FaDroplet,
+  FaGaugeHigh,
+  FaGasPump,
+  FaMoneyBillTrendUp,
+  FaShieldHalved,
+  FaUserCheck,
+  FaWarehouse,
+} from "react-icons/fa6";
 import Header from "../component/Header";
 import Footer from "../component/Footer";
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import AOS from "aos";
+import "aos/dist/aos.css";
+import "../style/DashboardMain.css";
+
+const modules = [
+  {
+    title: "Admin",
+    description: "Manage users, roles, and permission controls with secure operational governance.",
+    route: "/admin",
+    tag: "Control",
+    icon: FaShieldHalved,
+  },
+  {
+    title: "Shift",
+    description: "Track shift start, meter opening/closing, and handover checkpoints with clarity.",
+    route: "/shift",
+    tag: "Operations",
+    icon: FaGaugeHigh,
+  },
+  {
+    title: "Test Fuel",
+    description: "Record nozzle test fuel to maintain calibration confidence and reduce variance.",
+    route: "/testfuel",
+    tag: "Quality",
+    icon: FaDroplet,
+  },
+  {
+    title: "Fuel Rate",
+    description: "Update day-wise pricing quickly for all fuel products from one managed surface.",
+    route: "/fuelrate",
+    tag: "Pricing",
+    icon: FaChartLine,
+  },
+  {
+    title: "Pump Management",
+    description: "Configure pumps, nozzles, and machine mapping for cleaner sales operations.",
+    route: "/pump",
+    tag: "Infra",
+    icon: FaGasPump,
+  },
+  {
+    title: "Add Tank",
+    description: "Create and standardize tank master records with product and capacity definitions.",
+    route: "/addtank",
+    tag: "Master Data",
+    icon: FaWarehouse,
+  },
+  {
+    title: "Sale Entry",
+    description: "Capture shift-level sales entries faster with calculated totals and less manual effort.",
+    route: "/saleentry",
+    tag: "Sales",
+    icon: FaMoneyBillTrendUp,
+  },
+  {
+    title: "Tank Management",
+    description: "Monitor stock movement, dips, and receipts to keep inventory trustworthy.",
+    route: "/tanks",
+    tag: "Inventory",
+    icon: FaWarehouse,
+  },
+  {
+    title: "Attendance",
+    description: "Maintain staff attendance and day-level workforce visibility without spreadsheet drift.",
+    route: "/attendance",
+    tag: "Workforce",
+    icon: FaUserCheck,
+  },
+  {
+    title: "Credit Line",
+    description: "Track customer outstanding and payment patterns with cleaner credit discipline.",
+    route: "/creditline",
+    tag: "Receivables",
+    icon: FaCreditCard,
+  },
+  {
+    title: "Finance",
+    description: "Organize expenses and cash flow for better reporting confidence and closing control.",
+    route: "/finance",
+    tag: "Accounts",
+    icon: FaMoneyBillTrendUp,
+  },
+  {
+    title: "Whole Day Report",
+    description: "Generate a complete daily report across operations, payments, and performance.",
+    route: "/wholeday",
+    tag: "Reporting",
+    icon: FaClipboardList,
+  },
+];
+
 export default function DashboardMain() {
-   AOS.init({
-      duration: 1000,
-      offset: 120,
+  useEffect(() => {
+    AOS.init({
+      duration: 850,
+      offset: 70,
       once: true,
     });
+  }, []);
+
   return (
     <>
-    <Header/>
-    <h1 className="dashbord_heading"  data-aos="fade-in"  data-aos-anchor-placement="bottom-center">Petro Pump DashBoard</h1>
-    <p className="dashbord_sub_tittle"  data-aos="fade-in"  data-aos-anchor-placement="bottom-center">Welcome! Choose a section to begin.</p>
-   
-<div className="dash">
-      <main className='grid_services_dash'>
+      <Header />
 
-         <Link to='/admin' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
+      <section className="dashboard-hub">
+        <div className="dashboard-hub-orb dashboard-hub-orb-a" />
+        <div className="dashboard-hub-orb dashboard-hub-orb-b" />
+
+        <div className="dashboard-hub-inner">
+          <header className="dashboard-hub-hero" data-aos="fade-up">
+            <p className="dashboard-hub-eyebrow">Control Center</p>
+            <h1 className="dashboard-hub-title">Petrol Pump Dashboard</h1>
+            <p className="dashboard-hub-subtitle">
+              Choose a module to manage daily operations with speed, clarity, and audit-ready records.
+            </p>
+
+            <div className="dashboard-hub-stat-row">
+              <div className="dashboard-hub-stat-pill">
+                <span className="dashboard-hub-stat-value">12</span>
+                <span className="dashboard-hub-stat-label">Core Modules</span>
+              </div>
+              <div className="dashboard-hub-stat-pill">
+                <span className="dashboard-hub-stat-value">Role-Based</span>
+                <span className="dashboard-hub-stat-label">Access Routing</span>
+              </div>
+              <div className="dashboard-hub-stat-pill">
+                <span className="dashboard-hub-stat-value">Realtime</span>
+                <span className="dashboard-hub-stat-label">Operational Flow</span>
+              </div>
             </div>
-            <h3 className='services_para_dash'>Admin</h3>
-            <p className='services_desc_dash'>Manage users, roles, permissions, and system settings securely.</p>
-          </div>
-        </Link>
-{/* 
-        <Link to='/dashboard' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>DashBoard</h3>
-            <p className='services_desc_dash'>View live sales, stock, credit, and operations in one place.</p>
-          </div>
-        </Link> */}
+          </header>
 
+          <main className="dashboard-hub-grid">
+            {modules.map((module, index) => {
+              const Icon = module.icon;
 
- <Link to='/shift' className="service-box_dash" data-aos="fade-up"   data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>Shift</h3>
-            <p className='services_desc_dash'>Handle shift start, meter readings, sales entry, and closing totals.</p>
-          </div>
-        </Link> 
+              return (
+                <Link
+                  to={module.route}
+                  key={module.title}
+                  className="dashboard-hub-card"
+                  data-aos="fade-up"
+                  data-aos-delay={Math.min(index * 45, 220)}
+                >
+                  <div className="dashboard-hub-card-top">
+                    <span className="dashboard-hub-chip">{module.tag}</span>
+                    <span className="dashboard-hub-icon-wrap">
+                      <Icon className="dashboard-hub-icon" />
+                    </span>
+                  </div>
 
-  <Link to='/testfuel' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>Test Fuel</h3>
-            <p className='services_desc_dash'>Record and monitor test fuel usage for accurate meter calibration.</p>
-          </div>
-        </Link> 
-        
+                  <h3 className="dashboard-hub-card-title">{module.title}</h3>
+                  <p className="dashboard-hub-card-desc">{module.description}</p>
 
- <Link to='/fuelrate' className="service-box_dash" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>Fuel Rate</h3>
-            <p className='services_desc_dash'>Set and update daily fuel prices for all products instantly.</p>
-          </div>
-        </Link>
+                  <span className="dashboard-hub-card-link">
+                    Open Module <FaArrowRightLong />
+                  </span>
+                </Link>
+              );
+            })}
+          </main>
+        </div>
+      </section>
 
-
-   <Link to='/pump' className="service-box_dash" data-aos="fade-up"   data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>Pump Management</h3>
-            <p className='services_desc_dash'>Manage pump numbers, nozzles, meters, and operator assignments.</p>
-          </div>
-        </Link> 
-
-
-         <Link to='/addtank' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>Add Tank</h3>
-            <p className='services_desc_dash'>Add new tanks and define product type, capacity, and details.</p>
-          </div>
-        </Link> 
-        
-<Link to='/saleentry' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>SaleEntry</h3>
-            <p className='services_desc_dash'>Enter daily fuel sales with meter readings and automated totals.</p>
-          </div>
-        </Link>
-
-  <Link to='/tanks' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>Fuel Tank Management</h3>
-            <p className='services_desc_dash'>Track tank dips, stock levels, receipts, and fuel variance..</p>
-          </div>
-        </Link>
-
-<Link to='/attendance' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>Attendance</h3>
-            <p className='services_desc_dash'>Track staff attendance, shift timings, and daily work status.</p>
-          </div>
-        </Link>
-
-
-        <Link to='/creditline' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>CreditLine</h3>
-            <p className='services_desc_dash'>Manage supplier and customer credit with clear outstanding reports.</p>
-          </div>
-        </Link>
-
-        
-
- <Link to='/finance' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>Finance</h3>
-            <p className='services_desc_dash'>Handle expenses, cash flow, and accounting summaries with ease.</p>
-          </div>
-        </Link>
-
-
-
-
- <Link to='/wholeday' className="service-box_dash" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
-          <div className="top-tab_dash">
-            <img src={top} alt='top' />
-          </div>
-          <div className="box_grid_services_dash">
-            <div className="icon_dash">
-              <img className='img_services_img_dash' src={graphic} alt="icon" />
-            </div>
-            <h3 className='services_para_dash'>Whole Day Report</h3>
-            <p className='services_desc_dash'>Handle expenses, cash flow, and accounting summaries with ease.</p>
-          </div>
-        </Link>
-
-
-
-      </main>
-      </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }

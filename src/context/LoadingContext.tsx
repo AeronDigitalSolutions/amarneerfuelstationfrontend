@@ -1,5 +1,5 @@
 // src/context/LoadingContext.tsx
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
 type LoadingContextType = {
@@ -18,69 +18,42 @@ const LoadingContext = createContext<LoadingContextType>({
 
 export const useLoader = () => useContext(LoadingContext);
 
-export const LoadingProvider: React.FC<{ children: React.ReactNode; minShowMs?: number }> = ({
+export const LoadingProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
-  minShowMs = 300,
 }) => {
   const [activeCount, setActiveCount] = useState(0);
-  // ensure minimum visible time to avoid flicker
-  const lastShownAtRef = useRef<number | null>(null);
-  const showTimerRef = useRef<number | null>(null);
-
-  const inc = () => setActiveCount((c) => c + 1);
-  const dec = () => setActiveCount((c) => Math.max(0, c - 1));
+  const REQUEST_TIMEOUT_MS = 20000;
+  const startLoading = () => setActiveCount((count) => count + 1);
+  const stopLoading = () => setActiveCount((count) => Math.max(0, count - 1));
   const reset = () => setActiveCount(0);
-
-  const startLoading = () => {
-    // start and record timestamp
-    if (activeCount === 0) lastShownAtRef.current = Date.now();
-    inc();
-  };
-
-  const stopLoading = () => {
-    // ensure minimum show time
-    const finish = () => {
-      dec();
-      if (activeCount <= 1) lastShownAtRef.current = null;
-    };
-
-    const shownAt = lastShownAtRef.current;
-    if (!shownAt) {
-      // never recorded, just decrement immediately
-      finish();
-      return;
-    }
-    const elapsed = Date.now() - shownAt;
-    if (elapsed >= minShowMs) {
-      finish();
-    } else {
-      // wait remaining time
-      const remaining = minShowMs - elapsed;
-      if (showTimerRef.current) window.clearTimeout(showTimerRef.current);
-      showTimerRef.current = window.setTimeout(() => {
-        finish();
-        showTimerRef.current = null;
-      }, remaining);
-    }
-  };
 
   useEffect(() => {
     // Patch window.fetch
     const origFetch = window.fetch.bind(window);
     window.fetch = async (...args: Parameters<typeof fetch>) => {
+      const [input, init] = args as [RequestInfo | URL, RequestInit | undefined];
+      let timeoutId: number | null = null;
+      let finalInit = init;
+
+      if (!init?.signal) {
+        const controller = new AbortController();
+        finalInit = { ...init, signal: controller.signal };
+        timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+      }
+
       try {
         startLoading();
-        const res = await origFetch(...args);
-        stopLoading();
+        const res = await origFetch(input, finalInit);
         return res;
-      } catch (err) {
+      } finally {
+        if (timeoutId) window.clearTimeout(timeoutId);
         stopLoading();
-        throw err;
       }
     };
 
     // Add axios interceptors (if axios present)
     const reqInterceptor = axios.interceptors.request.use((cfg) => {
+      cfg.timeout = cfg.timeout ?? REQUEST_TIMEOUT_MS;
       startLoading();
       return cfg;
     }, (err) => {
@@ -102,7 +75,6 @@ export const LoadingProvider: React.FC<{ children: React.ReactNode; minShowMs?: 
       window.fetch = origFetch;
       axios.interceptors.request.eject(reqInterceptor);
       axios.interceptors.response.eject(resInterceptor);
-      if (showTimerRef.current) window.clearTimeout(showTimerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // run once

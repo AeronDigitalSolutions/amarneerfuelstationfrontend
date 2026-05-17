@@ -8,7 +8,7 @@ import Receipts from "../component/cashierdashboard/Receipts";
 // Backend API
 const BASE_URL =
   window.location.hostname === "localhost"
-    ? "http://localhost:5000/api"
+    ? "http://localhost:5001/api"
     : "https://amarneerfuelstationbackend.onrender.com/api";
 
 export default function CashierDashboard() {

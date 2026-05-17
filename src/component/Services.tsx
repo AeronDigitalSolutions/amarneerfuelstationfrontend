@@ -1,137 +1,141 @@
-// import React from 'react'
-import '../style/Services.css'
-import shape from '../assets/Shape-012.png';
-import graphic from '../assets/graphic.png';
-import social from '../assets/social.png';
-import brand from '../assets/brand.png';
-import seo from '../assets/seo.png';
-import { Link } from 'react-router-dom';
-import top from '../assets/servicestop.png'
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import "../style/Services.css";
+import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import {
+  FaArrowRightLong,
+  FaChartLine,
+  FaClock,
+  FaGaugeHigh,
+  FaMoneyBillTrendUp,
+  FaReceipt,
+  FaUserGear,
+  FaWarehouse,
+} from "react-icons/fa6";
+import AOS from "aos";
+import "aos/dist/aos.css";
+
+const serviceModules = [
+  {
+    title: "Fuel Sale Entry",
+    description: "Capture nozzle-wise meter sales with shift-level clarity and fewer manual errors.",
+    route: "/saleentry",
+    label: "Operations",
+    icon: FaReceipt,
+  },
+  {
+    title: "Tank Management",
+    description: "Track dip, refill, closing stock, and variance across all tanks in one place.",
+    route: "/tanks",
+    label: "Inventory",
+    icon: FaWarehouse,
+  },
+  {
+    title: "Attendance & Payroll",
+    description: "Manage staff attendance, shift timing, and payout records with audit-ready history.",
+    route: "/attendance",
+    label: "Workforce",
+    icon: FaUserGear,
+  },
+  {
+    title: "Accounting & Finance",
+    description: "Handle expenses, journals, and summaries with structured financial visibility.",
+    route: "/finance",
+    label: "Finance",
+    icon: FaMoneyBillTrendUp,
+  },
+  {
+    title: "Credit Line Control",
+    description: "Monitor customer balances, payment reminders, and outstanding exposure.",
+    route: "/creditline",
+    label: "Credit",
+    icon: FaChartLine,
+  },
+  {
+    title: "Live Dashboard",
+    description: "Watch sales, stock movement, and performance metrics update in near real-time.",
+    route: "/dashboard",
+    label: "Insights",
+    icon: FaGaugeHigh,
+  },
+  {
+    title: "Whole Day Report",
+    description: "Generate a complete operational view of daily sales, fuel tests, and collections.",
+    route: "/wholeday",
+    label: "Reporting",
+    icon: FaClock,
+  },
+];
+
 const Services = () => {
-  AOS.init({
-    duration: 1000,
-    offset: 120,
-    once: true,
-  });
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      offset: 80,
+      once: true,
+    });
+  }, []);
 
   return (
-    <>
-      <section className='services'>
-        <div className='services_container'>
-          <p className='services_para' data-aos="fade-in"  data-aos-anchor-placement="center-bottom">Services</p>
-          <p className='services_tittle'>DIGITAL SOLUTIONS THAT DRIVE REAL RESULTS.</p>
-        </div>
+    <section className="services-premium">
+      <div className="services-bg-orb services-bg-orb-a" />
+      <div className="services-bg-orb services-bg-orb-b" />
 
-        <main className='grid_services'>
-          <Link to='/saleentry' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
-            <div className="top-tab">
-              <img src={top} alt='top' />
+      <div className="services-premium-inner">
+        <header className="services-hero" data-aos="fade-up">
+          <p className="services-eyebrow">Services</p>
+          <h1 className="services-heading">Modern Petrol Pump Operations, Designed Like Enterprise Software</h1>
+          <p className="services-subheading">
+            Everything your station needs from entry to insights, structured for speed, clarity, and reliable day-to-day control.
+          </p>
+
+          <div className="services-stats">
+            <div className="services-stat-pill">
+              <span className="services-stat-value">7+</span>
+              <span className="services-stat-label">Core Modules</span>
             </div>
-            <div className="box_grid_services">
-              <div className="iconS">
-                <img className='img_services_img' src={graphic} alt="icon" />
-              </div>
-              <h3 className='services_para'>Sale Entry</h3>
-              <p className='services_desc'>Quick and accurate fuel sale recording with POS integration.</p>
+            <div className="services-stat-pill">
+              <span className="services-stat-value">Role-Based</span>
+              <span className="services-stat-label">Operational Access</span>
             </div>
-          </Link>
-
-
-          <Link to='/tanks' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom" >
-            <div className="top-tab">
-              <img src={top} alt='top' />
+            <div className="services-stat-pill">
+              <span className="services-stat-value">Realtime</span>
+              <span className="services-stat-label">Performance Visibility</span>
             </div>
-            <div className="box_grid_services">
-              <div className="iconS">
-                <img className='img_services_img' src={social} alt="icon" />
-              </div>
-              <h3 className='services_para'> Fuel Tank Management </h3>
-              <p className='services_desc'>Monitor tank stock, dips, and variances in real time.</p>
-            </div>
-          </Link>
+          </div>
+        </header>
 
+        <main className="services-grid">
+          {serviceModules.map((module, index) => {
+            const Icon = module.icon;
+            return (
+              <Link
+                to={module.route}
+                key={module.title}
+                className="service-card"
+                data-aos="fade-up"
+                data-aos-delay={Math.min(index * 60, 240)}
+              >
+                <div className="service-card-top">
+                  <span className="service-chip">{module.label}</span>
+                  <span className="service-icon-wrap">
+                    <Icon className="service-icon" />
+                  </span>
+                </div>
 
-          <Link to='/attendance' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom" >
-            <div className="top-tab">
-              <img src={top} alt='top' />
-            </div>
-            <div className="box_grid_services">
-              <div className="iconS">
-                <img className='img_services_img' src={brand} alt="icon" />
-              </div>
-              <h3 className='services_para'>Attendance</h3>
-              <p className='services_desc'>Track staff attendance and manage payroll effortlessly.</p>
-            </div>
-          </Link>
+                <h3 className="service-title">{module.title}</h3>
+                <p className="service-desc">{module.description}</p>
 
-
-          <Link to='/tanks' className="service-box" data-aos="fade-up"
-            data-aos-anchor-placement="bottom-bottom" >
-            <div className="top-tab">
-              <img src={top} alt='top' />
-            </div>
-            <div className="box_grid_services">
-              <div className="iconS">
-                <img className='img_services_img' src={seo} alt="icon" />
-              </div>
-              <h3 className='services_para'>Fuel Tank Management</h3>
-              <p className='services_desc'>Track tank stock, dips, and deliveries with real-time accuracy.</p>
-            </div>
-          </Link>
-
-
-          <Link to='/saleentry' className="service-box" data-aos="fade-up"  data-aos-anchor-placement="bottom-bottom">
-            <div className="top-tab">
-              <img src={top} alt='top' />
-            </div>
-            <div className="box_grid_services">
-              <div className="iconS">
-                <img className='img_services_img' src={seo} alt="icon" />
-              </div>
-              <h3 className='services_para'>Fuel Sale Entry</h3>
-              <p className='services_desc'>Record daily fuel sales quickly with an integrated POS.</p>
-            </div>
-          </Link>
-
-
-          <Link to='/dashboard' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
-            <div className="top-tab">
-              <img src={top} alt='top' />
-            </div>
-            <div className="box_grid_services">
-              <div className="iconS">
-                <img className='img_services_img' src={shape} alt="icon" />
-              </div>
-              <h3 className='services_para'>Dashboard</h3>
-              <p className='services_desc'>View live sales, stock, and performance in one smart panel.</p>
-            </div>
-          </Link>
-
-          
-          <Link to='/wholeday' className="service-box" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
-            <div className="top-tab">
-              <img src={top} alt='top' />
-            </div>
-            <div className="box_grid_services">
-              <div className="iconS">
-                <img className='img_services_img' src={shape} alt="icon" />
-              </div>
-              <h3 className='services_para'>Whole Day Report</h3>
-              <p className='services_desc'>View live sales, stock, and performance in one smart panel.</p>
-            </div>
-          </Link>
-
-
-
-
-
+                <div className="service-link-row">
+                  <span>Explore Module</span>
+                  <FaArrowRightLong />
+                </div>
+              </Link>
+            );
+          })}
         </main>
+      </div>
+    </section>
+  );
+};
 
-      </section>
-    </>
-  )
-}
-
-export default Services
+export default Services;
