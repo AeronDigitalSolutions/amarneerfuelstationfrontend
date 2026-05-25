@@ -1,15 +1,41 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "../style/adminrole.module.css";
 import FullScreenLoader from "../component/FullScreenLoader";
-import { useNavigate } from "react-router-dom";
+
+type PlatformRole = "Owner" | "SuperAdmin" | "Admin";
+
+type ModulePermissions = {
+  shift: boolean;
+  testFuel: boolean;
+  fuelRate: boolean;
+  pumpManagement: boolean;
+  addTank: boolean;
+  saleEntry: boolean;
+  tankManagement: boolean;
+  attendance: boolean;
+  creditLine: boolean;
+  finance: boolean;
+  wholeDayReport: boolean;
+  payment: boolean;
+  paymentComparison: boolean;
+};
 
 type User = {
   _id?: string;
   username: string;
   email: string;
-  role: string;
+  role: PlatformRole;
+  customRoleName?: string | null;
+  modulePermissions?: Partial<ModulePermissions>;
+  pumpIds?: string[];
   createdAt?: string;
-  permissions?: Permissions;
+};
+
+type Pump = {
+  _id: string;
+  name: string;
+  code: string;
 };
 
 type Log = {
@@ -17,15 +43,7 @@ type Log = {
   user: string;
   role: string;
   action: string;
-  timestamp: string;
-};
-
-type Permissions = {
-  manageUsers: boolean;
-  viewSales: boolean;
-  editSales: boolean;
-  managePumps: boolean;
-  manageTestFuel: boolean;
+  createdAt: string;
 };
 
 const API_BASE =
@@ -36,71 +54,145 @@ const API_BASE =
 
 const BASE_URL = API_BASE.endsWith("/api") ? API_BASE.slice(0, -4) : API_BASE;
 
+const defaultPermissions: ModulePermissions = {
+  shift: false,
+  testFuel: false,
+  fuelRate: false,
+  pumpManagement: false,
+  addTank: false,
+  saleEntry: false,
+  tankManagement: false,
+  attendance: false,
+  creditLine: false,
+  finance: false,
+  wholeDayReport: false,
+  payment: false,
+  paymentComparison: false,
+};
+
+const permissionFields: Array<{ key: keyof ModulePermissions; label: string }> = [
+  { key: "shift", label: "Shift" },
+  { key: "testFuel", label: "Test Fuel" },
+  { key: "fuelRate", label: "Fuel Rate" },
+  { key: "pumpManagement", label: "Pump Management" },
+  { key: "addTank", label: "Add Tank" },
+  { key: "saleEntry", label: "Sale Entry" },
+  { key: "tankManagement", label: "Tank Management" },
+  { key: "attendance", label: "Attendance" },
+  { key: "creditLine", label: "Credit Line" },
+  { key: "finance", label: "Finance" },
+  { key: "wholeDayReport", label: "Generate Report" },
+  { key: "payment", label: "Live Payment" },
+  { key: "paymentComparison", label: "Payment Comparison" },
+];
+
+const canCreateRole = (requesterRole: PlatformRole, targetRole: PlatformRole): boolean => {
+  if (requesterRole === "Owner") return targetRole === "SuperAdmin" || targetRole === "Admin";
+  if (requesterRole === "SuperAdmin") return targetRole === "Admin";
+  return false;
+};
+
+const countEnabledPermissions = (modulePermissions?: Partial<ModulePermissions>) =>
+  Object.values(modulePermissions || {}).filter(Boolean).length;
+
 export default function AdminRoleManagement() {
-    // const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
+  const requesterRole = (localStorage.getItem("userRole") || "") as PlatformRole;
+  const requesterName = localStorage.getItem("username") || "System";
+  const requesterUserId = localStorage.getItem("userId") || "";
+
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(false);
-const navigate = useNavigate();
+  const [pumps, setPumps] = useState<Pump[]>([]);
 
-const handleLogout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("userRole");
-  localStorage.removeItem("username");
-
-  // redirect to login
-  navigate("/sign");
-};
-
-useEffect(() => {
-  const role = localStorage.getItem("userRole");
-  const token = localStorage.getItem("token");
-
-  if (!token || role !== "Admin") {
-    navigate("/sign");
-  }
-}, []);
-
-  // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-
-  // Search + filter (small conveniences)
   const [searchText, setSearchText] = useState("");
   const [filterRole, setFilterRole] = useState<string>("All");
 
-  // Form for create
-  const [newUser, setNewUser] = useState({
+  const [newUser, setNewUser] = useState<{
+    username: string;
+    email: string;
+    password: string;
+    role: PlatformRole;
+    customRoleName: string;
+    modulePermissions: ModulePermissions;
+    pumpIds: string[];
+  }>({
     username: "",
     email: "",
     password: "",
-    role: "Attendant",
-    permissions: {
-      manageUsers: false,
-      viewSales: false,
-      editSales: false,
-      managePumps: false,
-      manageTestFuel: false,
-    } as Permissions,
+    role: requesterRole === "Owner" ? "SuperAdmin" : "Admin",
+    customRoleName: "",
+    modulePermissions: { ...defaultPermissions },
+    pumpIds: [],
   });
 
-  // Form for edit
   const [editUser, setEditUser] = useState<User | null>(null);
-  const [editPassword, setEditPassword] = useState(""); // optional password change
+  const [editPassword, setEditPassword] = useState("");
+
+  const creatableRoles = useMemo(() => {
+    const options: PlatformRole[] = [];
+    if (requesterRole === "Owner") {
+      options.push("SuperAdmin", "Admin");
+    } else if (requesterRole === "SuperAdmin") {
+      options.push("Admin");
+    }
+    return options;
+  }, [requesterRole]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("username");
+    localStorage.removeItem("modulePermissions");
+    localStorage.removeItem("customRoleName");
+    localStorage.removeItem("selectedPumpId");
+    navigate("/sign");
+  };
 
   useEffect(() => {
+    if (requesterRole !== "Owner" && requesterRole !== "SuperAdmin") {
+      navigate("/sign");
+      return;
+    }
+    if (!requesterUserId) {
+      navigate("/sign");
+      return;
+    }
+    fetchPumps();
     fetchUsers();
     fetchLogs();
   }, []);
 
+  const fetchPumps = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/pumps`);
+      if (!res.ok) throw new Error("Failed to fetch pumps");
+      const data = await res.json();
+      setPumps(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching pumps:", err);
+      setPumps([]);
+    }
+  };
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${BASE_URL}/api/admin/users`);
+      const res = await fetch(`${BASE_URL}/api/admin/users?requesterRole=${requesterRole}`, {
+        headers: {
+          "x-requester-role": requesterRole,
+          "x-requester-name": requesterName,
+          "x-requester-user-id": requesterUserId,
+        },
+      });
       if (!res.ok) throw new Error("Failed to fetch users");
       const data = await res.json();
       setUsers(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching users:", err);
       alert("Failed to load users");
     } finally {
@@ -110,54 +202,61 @@ useEffect(() => {
 
   const fetchLogs = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/api/admin/logs`);
+      const res = await fetch(`${BASE_URL}/api/admin/logs?requesterRole=${requesterRole}`, {
+        headers: {
+          "x-requester-role": requesterRole,
+          "x-requester-name": requesterName,
+          "x-requester-user-id": requesterUserId,
+        },
+      });
       if (!res.ok) throw new Error("Failed to fetch logs");
       const data = await res.json();
       setLogs(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching logs:", err);
-    }
-     finally {
-      setLoading(false); // hide loader when complete
     }
   };
 
-  /* --------------------
-     CREATE USER HANDLERS
-     -------------------- */
   const openCreateModal = () => {
     setNewUser({
       username: "",
       email: "",
       password: "",
-      role: "Attendant",
-      permissions: {
-        manageUsers: false,
-        viewSales: false,
-        editSales: false,
-        managePumps: false,
-        manageTestFuel: false,
-      },
+      role: requesterRole === "Owner" ? "SuperAdmin" : "Admin",
+      customRoleName: "",
+      modulePermissions: { ...defaultPermissions },
+      pumpIds: [],
     });
     setShowCreateModal(true);
   };
 
-  const handleNewChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value, type } = e.target as HTMLInputElement;
+  const handleNewChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
     if (name.startsWith("perm_")) {
-      const permKey = name.replace("perm_", "") as keyof Permissions;
+      const key = name.replace("perm_", "") as keyof ModulePermissions;
       setNewUser((prev) => ({
         ...prev,
-        permissions: {
-          ...(prev.permissions as Permissions),
-          [permKey]: (e.target as HTMLInputElement).checked,
+        modulePermissions: {
+          ...prev.modulePermissions,
+          [key]: (e.target as HTMLInputElement).checked,
         },
       }));
-    } else {
-      setNewUser((prev) => ({ ...prev, [name]: type === "select-one" ? value : value }));
+      return;
     }
+    if (name.startsWith("pump_")) {
+      const pumpId = name.replace("pump_", "");
+      setNewUser((prev) => ({
+        ...prev,
+        pumpIds: (e.target as HTMLInputElement).checked
+          ? Array.from(new Set([...prev.pumpIds, pumpId]))
+          : prev.pumpIds.filter((id) => id !== pumpId),
+      }));
+      return;
+    }
+    setNewUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const createUser = async () => {
@@ -165,99 +264,153 @@ useEffect(() => {
       alert("Please fill username, email and password.");
       return;
     }
+    if (!canCreateRole(requesterRole, newUser.role)) {
+      alert(`You cannot create ${newUser.role} users.`);
+      return;
+    }
+    if (newUser.role === "Admin" && !newUser.customRoleName.trim()) {
+      alert("Please provide custom role title for Admin (for example: Manager).");
+      return;
+    }
 
     try {
       setLoading(true);
       const payload = {
+        requesterRole,
+        requesterUserId,
+        performedBy: requesterName,
         username: newUser.username,
         email: newUser.email,
         password: newUser.password,
         role: newUser.role,
-        permissions: newUser.permissions,
-        performedBy: "Admin",
+        customRoleName: newUser.role === "Admin" ? newUser.customRoleName.trim() : null,
+        modulePermissions: newUser.role === "Admin" ? newUser.modulePermissions : {},
+        pumpIds: newUser.pumpIds,
       };
 
       const res = await fetch(`${BASE_URL}/api/admin/user`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-requester-role": requesterRole,
+          "x-requester-name": requesterName,
+          "x-requester-user-id": requesterUserId,
+        },
         body: JSON.stringify(payload),
       });
 
+      const data = await res.json();
       if (!res.ok) {
-        const txt = await res.text();
-        throw new Error(txt || "Failed to create user");
+        throw new Error(data.message || "Failed to create user");
       }
 
-      alert("✅ User added successfully!");
+      alert("User created successfully.");
       setShowCreateModal(false);
       await fetchUsers();
       await fetchLogs();
     } catch (err: any) {
-      console.error("Error adding user:", err);
-      alert("Failed to create user: " + (err.message || err));
+      console.error("Error creating user:", err);
+      alert(err.message || "Failed to create user");
     } finally {
       setLoading(false);
     }
   };
 
-  /* --------------------
-     EDIT USER HANDLERS
-     -------------------- */
   const openEditModal = (u: User) => {
+    if (!canCreateRole(requesterRole, u.role)) {
+      alert(`You cannot edit ${u.role} users.`);
+      return;
+    }
     setEditUser({
       ...u,
-      permissions: {
-        manageUsers: !!u.permissions?.manageUsers,
-        viewSales: !!u.permissions?.viewSales,
-        editSales: !!u.permissions?.editSales,
-        managePumps: !!u.permissions?.managePumps,
-        manageTestFuel: !!u.permissions?.manageTestFuel,
-      } as Permissions,
+      pumpIds: Array.isArray(u.pumpIds) ? u.pumpIds : [],
+      modulePermissions: {
+        ...defaultPermissions,
+        ...(u.modulePermissions || {}),
+      },
     });
     setEditPassword("");
     setShowEditModal(true);
   };
 
-  const handleEditChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (!editUser) return;
-    const { name, value, type } = e.target as HTMLInputElement;
-
+    const { name, value } = e.target;
     if (name.startsWith("perm_")) {
-      const permKey = name.replace("perm_", "") as keyof Permissions;
+      const key = name.replace("perm_", "") as keyof ModulePermissions;
       setEditUser((prev) =>
-        prev ? { ...prev, permissions: { ...(prev.permissions as Permissions), [permKey]: (e.target as HTMLInputElement).checked } } : prev
+        prev
+          ? {
+              ...prev,
+              modulePermissions: {
+                ...defaultPermissions,
+                ...(prev.modulePermissions || {}),
+                [key]: (e.target as HTMLInputElement).checked,
+              },
+            }
+          : prev
       );
-    } else {
-      setEditUser((prev) => (prev ? { ...prev, [name]: type === "select-one" ? value : value } : prev));
+      return;
     }
+    if (name.startsWith("pump_")) {
+      const pumpId = name.replace("pump_", "");
+      setEditUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              pumpIds: (e.target as HTMLInputElement).checked
+                ? Array.from(new Set([...(prev.pumpIds || []), pumpId]))
+                : (prev.pumpIds || []).filter((id) => id !== pumpId),
+            }
+          : prev
+      );
+      return;
+    }
+    setEditUser((prev) => (prev ? { ...prev, [name]: value } : prev));
   };
 
   const saveEditUser = async () => {
     if (!editUser || !editUser._id) return;
+    if (!canCreateRole(requesterRole, editUser.role)) {
+      alert(`You cannot update this user role (${editUser.role}).`);
+      return;
+    }
+    if (editUser.role === "Admin" && !(editUser.customRoleName || "").trim()) {
+      alert("Please provide custom role title for Admin.");
+      return;
+    }
+
     try {
       setLoading(true);
       const payload: any = {
+        requesterRole,
+        requesterUserId,
+        performedBy: requesterName,
         username: editUser.username,
         email: editUser.email,
         role: editUser.role,
-        permissions: editUser.permissions ?? {},
+        customRoleName: editUser.role === "Admin" ? (editUser.customRoleName || "").trim() : null,
+        modulePermissions: editUser.role === "Admin" ? editUser.modulePermissions || {} : {},
+        pumpIds: editUser.pumpIds || [],
       };
-      if (editPassword) payload.password = editPassword;
+      if (editPassword.trim()) payload.password = editPassword.trim();
 
       const res = await fetch(`${BASE_URL}/api/admin/user/${editUser._id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-requester-role": requesterRole,
+          "x-requester-name": requesterName,
+          "x-requester-user-id": requesterUserId,
+        },
         body: JSON.stringify(payload),
       });
-
+      const data = await res.json();
       if (!res.ok) {
-        const txt = await res.text();
-        throw new Error(txt || "Failed to update user");
+        throw new Error(data.message || "Failed to update user");
       }
 
-      alert("✅ User updated!");
+      alert("User updated.");
       setShowEditModal(false);
       setEditUser(null);
       setEditPassword("");
@@ -265,7 +418,7 @@ useEffect(() => {
       await fetchLogs();
     } catch (err: any) {
       console.error("Error updating user:", err);
-      alert("Failed to update user: " + (err.message || err));
+      alert(err.message || "Failed to update user");
     } finally {
       setLoading(false);
     }
@@ -273,132 +426,103 @@ useEffect(() => {
 
   const deleteUser = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
-
     try {
       setLoading(true);
       const res = await fetch(`${BASE_URL}/api/admin/user/${id}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "x-requester-role": requesterRole,
+          "x-requester-name": requesterName,
+          "x-requester-user-id": requesterUserId,
+        },
+        body: JSON.stringify({
+          requesterRole,
+          requesterUserId,
+          performedBy: requesterName,
+        }),
       });
-
-      if (!res.ok) throw new Error("Failed to delete user");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to delete user");
       await fetchUsers();
       await fetchLogs();
     } catch (err: any) {
       console.error("Error deleting user:", err);
-      alert("Failed to delete user");
+      alert(err.message || "Failed to delete user");
     } finally {
       setLoading(false);
     }
   };
 
-  /* --------------------
-     UTILS: click outside to close modals
-     -------------------- */
-  const createBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).classList.contains(styles.modalBackdrop)) {
-      setShowCreateModal(false);
-    }
-  };
-
-  const editBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).classList.contains(styles.modalBackdrop)) {
-      setShowEditModal(false);
-      setEditUser(null);
-    }
-  };
-
-  /* --------------------
-     FILTER + SEARCH
-     -------------------- */
   const filteredUsers = users.filter((u) => {
     if (filterRole !== "All" && u.role !== filterRole) return false;
-    if (!searchText) return true;
-    const txt = searchText.toLowerCase();
+    if (!searchText.trim()) return true;
+    const q = searchText.toLowerCase();
     return (
-      (u.username || "").toLowerCase().includes(txt) ||
-      (u.email || "").toLowerCase().includes(txt) ||
-      (u.role || "").toLowerCase().includes(txt)
+      (u.username || "").toLowerCase().includes(q) ||
+      (u.email || "").toLowerCase().includes(q) ||
+      (u.role || "").toLowerCase().includes(q) ||
+      (u.customRoleName || "").toLowerCase().includes(q)
     );
   });
 
-  /* --------------------
-     JSX
-     -------------------- */
   return (
     <>
-     <FullScreenLoader loading={loading} />
-    
-    <div className={styles.container}>
-      <div className={styles.headerRow}>
-  <h1>Admin & Role Management</h1>
-
-  <button className={styles.logoutBtn} onClick={handleLogout}>
-    🔓 Logout
-  </button>
-</div>
-
-
-      <div className={styles.topRow}>
-         <div>
-          <input
-            className={styles.searchInput}
-            placeholder="Search users..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-        </div>
-        <div className={styles.leftControls}>
-          <button className={styles.primaryBtn} onClick={openCreateModal}>
-            ➕ Create User
+      <FullScreenLoader loading={loading} />
+      <div className={styles.container}>
+        <div className={styles.headerRow}>
+          <h1>User & Access Management</h1>
+          <button className={styles.logoutBtn} onClick={handleLogout}>
+            Logout
           </button>
-
-          <select
-            className={styles.smallSelect}
-            value={filterRole}
-            onChange={(e) => setFilterRole(e.target.value)}
-            title="Filter by role"
-          >
-            <option value="All">All Roles</option>
-            <option>Admin</option>
-            <option>Manager</option>
-            <option>Cashier</option>
-            <option>Accountant</option>
-            <option>Attendant</option>
-          </select>
         </div>
 
-        {/* <div>
-          <input
-            className={styles.searchInput}
-            placeholder="Search users..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-        </div> */}
-      </div>
+        <div className={styles.topRow}>
+          <div>
+            <input
+              className={styles.searchInput}
+              placeholder="Search users..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+          </div>
+          <div className={styles.leftControls}>
+            <button className={styles.primaryBtn} onClick={openCreateModal}>
+              Create User
+            </button>
+            <select
+              className={styles.smallSelect}
+              value={filterRole}
+              onChange={(e) => setFilterRole(e.target.value)}
+              title="Filter by role"
+            >
+              <option value="All">All Roles</option>
+              <option>Owner</option>
+              <option>SuperAdmin</option>
+              <option>Admin</option>
+            </select>
+          </div>
+        </div>
 
-      {/* === User Table === */}
-      <section className={styles.section}>
-        <h2>👥 User Accounts</h2>
-        {loading ? (
-          <p>Loading users...</p>
-        ) : (
+        <section className={styles.section}>
+          <h2>User Accounts</h2>
           <div className={styles.tableWrap}>
             <table className={styles.table}>
               <thead>
                 <tr>
                   <th>Username</th>
                   <th>Email</th>
-                  <th>Role</th>
+                  <th>System Role</th>
+                  <th>Custom Title</th>
                   <th>Created</th>
-                  <th>Permissions</th>
+                  <th>Modules</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={6}>No users found.</td>
+                    <td colSpan={7}>No users found.</td>
                   </tr>
                 ) : (
                   filteredUsers.map((u) => (
@@ -406,20 +530,29 @@ useEffect(() => {
                       <td className={styles.admin_table}>{u.username}</td>
                       <td className={styles.admin_table}>{u.email}</td>
                       <td className={styles.admin_table}>{u.role}</td>
-                      <td className={styles.admin_table}>{u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}</td>
-                      <td>
-                        <div className={styles.permList}>
-                          <span className={u.permissions?.manageUsers ? styles.permOn : styles.permOff}>MU</span>
-                          <span className={u.permissions?.viewSales ? styles.permOn : styles.permOff}>VS</span>
-                          <span className={u.permissions?.editSales ? styles.permOn : styles.permOff}>ES</span>
-                          <span className={u.permissions?.managePumps ? styles.permOn : styles.permOff}>MP</span>
-                          <span className={u.permissions?.manageTestFuel ? styles.permOn : styles.permOff}>TF</span>
-                        </div>
+                      <td className={styles.admin_table}>{u.customRoleName || "-"}</td>
+                      <td className={styles.admin_table}>
+                        {u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}
+                      </td>
+                      <td className={styles.admin_table}>
+                        {u.role === "Admin" ? `${countEnabledPermissions(u.modulePermissions)}/${permissionFields.length}` : "-"}
                       </td>
                       <td>
-                        <div className="td" style={{display:'flex',justifyContent:'center'}}>
-                        <button className={styles.rowBtn} onClick={() => openEditModal(u)}>Edit</button>
-                        <button className={styles.deleteButton} onClick={() => deleteUser(u._id!)} disabled={loading}>🗑️</button>
+                        <div style={{ display: "flex", justifyContent: "center" }}>
+                          <button
+                            className={styles.rowBtn}
+                            onClick={() => openEditModal(u)}
+                            disabled={!canCreateRole(requesterRole, u.role)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className={styles.deleteButton}
+                            onClick={() => deleteUser(u._id!)}
+                            disabled={!canCreateRole(requesterRole, u.role)}
+                          >
+                            Delete
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -428,15 +561,10 @@ useEffect(() => {
               </tbody>
             </table>
           </div>
-        )}
-      </section>
+        </section>
 
-      {/* === Action Logs === */}
-      <section className={styles.section}>
-        <h2>🧾 Action Logs</h2>
-        {logs.length === 0 ? (
-          <p>No logs yet.</p>
-        ) : (
+        <section className={styles.section}>
+          <h2>Action Logs</h2>
           <div className={styles.tableWrap}>
             <table className={styles.table}>
               <thead>
@@ -448,136 +576,181 @@ useEffect(() => {
                 </tr>
               </thead>
               <tbody>
-                {logs.map((log) => (
-                  <tr key={log._id}>
-                    <td className={styles.admin_table}>{log.user}</td>
-                    <td className={styles.admin_table}>{log.role}</td>
-                    <td className={styles.admin_table}>{log.action}</td>
-                    <td className={styles.admin_table}>{new Date(log.timestamp).toLocaleString()}</td>
+                {logs.length === 0 ? (
+                  <tr>
+                    <td colSpan={4}>No logs found.</td>
                   </tr>
-                ))}
+                ) : (
+                  logs.map((log) => (
+                    <tr key={log._id}>
+                      <td className={styles.admin_table}>{log.user}</td>
+                      <td className={styles.admin_table}>{log.role}</td>
+                      <td className={styles.admin_table}>{log.action}</td>
+                      <td className={styles.admin_table}>{new Date(log.createdAt).toLocaleString()}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
+        </section>
+
+        {showCreateModal && (
+          <div className={styles.modalBackdrop} onClick={() => setShowCreateModal(false)}>
+            <div className={styles.modalForm} onClick={(e) => e.stopPropagation()}>
+              <h3>Create New User</h3>
+              <div className={styles.formGrid}>
+                <input name="username" placeholder="Username" value={newUser.username} onChange={handleNewChange} />
+                <input name="email" placeholder="Email address" value={newUser.email} onChange={handleNewChange} />
+                <input name="password" type="password" placeholder="Password" value={newUser.password} onChange={handleNewChange} />
+                <select name="role" value={newUser.role} onChange={handleNewChange}>
+                  {creatableRoles.map((r) => (
+                    <option key={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+
+              {newUser.role === "Admin" && (
+                <>
+                  <div className={styles.formGrid}>
+                    <input
+                      name="customRoleName"
+                      placeholder="Custom admin title (e.g. Manager)"
+                      value={newUser.customRoleName}
+                      onChange={handleNewChange}
+                    />
+                  </div>
+                  <div className={styles.permGrid}>
+                    {permissionFields.map((perm) => (
+                      <label className={styles.permLabel} key={perm.key}>
+                        <input
+                          name={`perm_${perm.key}`}
+                          type="checkbox"
+                          checked={Boolean(newUser.modulePermissions[perm.key])}
+                          onChange={handleNewChange}
+                        />
+                        {perm.label}
+                      </label>
+                    ))}
+                  </div>
+                  <h4 style={{ marginTop: 12 }}>Pump Access</h4>
+                  <div className={styles.permGrid}>
+                    {pumps.length === 0 ? (
+                      <p>No pumps available to assign.</p>
+                    ) : (
+                      pumps.map((pump) => (
+                        <label className={styles.permLabel} key={pump._id}>
+                          <input
+                            name={`pump_${pump._id}`}
+                            type="checkbox"
+                            checked={newUser.pumpIds.includes(pump._id)}
+                            onChange={handleNewChange}
+                          />
+                          {pump.name} ({pump.code})
+                        </label>
+                      ))
+                    )}
+                  </div>
+                </>
+              )}
+
+              <div className={styles.modalButtons}>
+                <button className={styles.saveBtn} onClick={createUser}>
+                  Create User
+                </button>
+                <button className={styles.cancelBtn} onClick={() => setShowCreateModal(false)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
         )}
-      </section>
 
-      {/* ======================
-          CREATE USER MODAL
-         ====================== */}
-      {showCreateModal && (
-        <div className={styles.modalBackdrop} onClick={createBackdropClick}>
-          <div className={styles.modalForm} onClick={(e) => e.stopPropagation()}>
-            <h3>Create New User</h3>
+        {showEditModal && editUser && (
+          <div className={styles.modalBackdrop} onClick={() => setShowEditModal(false)}>
+            <div className={styles.modalForm} onClick={(e) => e.stopPropagation()}>
+              <h3>Edit User</h3>
+              <div className={styles.formGrid}>
+                <input name="username" placeholder="Username" value={editUser.username} onChange={handleEditChange} />
+                <input name="email" placeholder="Email address" value={editUser.email} onChange={handleEditChange} />
+                <input
+                  name="password"
+                  type="password"
+                  placeholder="New password (optional)"
+                  value={editPassword}
+                  onChange={(e) => setEditPassword(e.target.value)}
+                />
+                <select name="role" value={editUser.role} onChange={handleEditChange}>
+                  {creatableRoles
+                    .filter((r) => canCreateRole(requesterRole, r))
+                    .map((r) => (
+                      <option key={r}>{r}</option>
+                    ))}
+                </select>
+              </div>
 
-            <div className={styles.formGrid}>
-              <input name="username" placeholder="Username" value={newUser.username} onChange={handleNewChange} />
-              <input name="email" placeholder="Email address" value={newUser.email} onChange={handleNewChange} />
-              <input name="password" type="password" placeholder="Password" value={newUser.password} onChange={handleNewChange} />
-              <select name="role" value={String(newUser.role)} onChange={handleNewChange}>
-                <option>Admin</option>
-                <option>Manager</option>
-                <option>Cashier</option>
-                <option>Accountant</option>
-                <option>Attendant</option>
-              </select>
-            </div>
+              {editUser.role === "Admin" && (
+                <>
+                  <div className={styles.formGrid}>
+                    <input
+                      name="customRoleName"
+                      placeholder="Custom admin title (e.g. Manager)"
+                      value={editUser.customRoleName || ""}
+                      onChange={handleEditChange}
+                    />
+                  </div>
+                  <div className={styles.permGrid}>
+                    {permissionFields.map((perm) => (
+                      <label className={styles.permLabel} key={perm.key}>
+                        <input
+                          name={`perm_${perm.key}`}
+                          type="checkbox"
+                          checked={Boolean(editUser.modulePermissions?.[perm.key])}
+                          onChange={handleEditChange}
+                        />
+                        {perm.label}
+                      </label>
+                    ))}
+                  </div>
+                  <h4 style={{ marginTop: 12 }}>Pump Access</h4>
+                  <div className={styles.permGrid}>
+                    {pumps.length === 0 ? (
+                      <p>No pumps available to assign.</p>
+                    ) : (
+                      pumps.map((pump) => (
+                        <label className={styles.permLabel} key={pump._id}>
+                          <input
+                            name={`pump_${pump._id}`}
+                            type="checkbox"
+                            checked={Boolean(editUser.pumpIds?.includes(pump._id))}
+                            onChange={handleEditChange}
+                          />
+                          {pump.name} ({pump.code})
+                        </label>
+                      ))
+                    )}
+                  </div>
+                </>
+              )}
 
-            <div className={styles.permGrid}>
-              <label className={styles.permLabel}>
-                <input name="perm_manageUsers" type="checkbox" checked={newUser.permissions.manageUsers} onChange={handleNewChange} />
-                Manage Users
-              </label>
-
-              <label className={styles.permLabel}>
-                <input name="perm_viewSales" type="checkbox" checked={newUser.permissions.viewSales} onChange={handleNewChange} />
-                View Sales
-              </label>
-
-              <label className={styles.permLabel}>
-                <input name="perm_editSales" type="checkbox" checked={newUser.permissions.editSales} onChange={handleNewChange} />
-                Edit Sales
-              </label>
-
-              <label className={styles.permLabel}>
-                <input name="perm_managePumps" type="checkbox" checked={newUser.permissions.managePumps} onChange={handleNewChange} />
-                Manage Pumps
-              </label>
-
-              <label className={styles.permLabel}>
-                <input name="perm_manageTestFuel" type="checkbox" checked={newUser.permissions.manageTestFuel} onChange={handleNewChange} />
-                Manage Test Fuel
-              </label>
-            </div>
-
-            <div className={styles.modalButtons}>
-              <button className={styles.saveBtn} onClick={createUser} disabled={loading}>
-                {loading ? "Saving..." : "Create User"}
-              </button>
-              <button className={styles.cancelBtn} onClick={() => setShowCreateModal(false)}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ======================
-          EDIT USER MODAL
-         ====================== */}
-      {showEditModal && editUser && (
-        <div className={styles.modalBackdrop} onClick={editBackdropClick}>
-          <div className={styles.modalForm} onClick={(e) => e.stopPropagation()}>
-            <h3>Edit User</h3>
-
-            <div className={styles.formGrid}>
-              <input name="username" placeholder="Username" value={editUser.username} onChange={handleEditChange} />
-              <input name="email" placeholder="Email address" value={editUser.email} onChange={handleEditChange} />
-              <input name="password" type="password" placeholder="New Password (optional)" value={editPassword} onChange={(e) => setEditPassword(e.target.value)} />
-              <select name="role" value={editUser.role} onChange={handleEditChange}>
-                <option>Admin</option>
-                <option>Manager</option>
-                <option>Cashier</option>
-                <option>Accountant</option>
-                <option>Attendant</option>
-              </select>
-            </div>
-
-            <div className={styles.permGrid}>
-              <label className={styles.permLabel}>
-                <input name="perm_manageUsers" type="checkbox" checked={!!editUser.permissions?.manageUsers} onChange={handleEditChange} />
-                Manage Users
-              </label>
-
-              <label className={styles.permLabel}>
-                <input name="perm_viewSales" type="checkbox" checked={!!editUser.permissions?.viewSales} onChange={handleEditChange} />
-                View Sales
-              </label>
-
-              <label className={styles.permLabel}>
-                <input name="perm_editSales" type="checkbox" checked={!!editUser.permissions?.editSales} onChange={handleEditChange} />
-                Edit Sales
-              </label>
-
-              <label className={styles.permLabel}>
-                <input name="perm_managePumps" type="checkbox" checked={!!editUser.permissions?.managePumps} onChange={handleEditChange} />
-                Manage Pumps
-              </label>
-
-              <label className={styles.permLabel}>
-                <input name="perm_manageTestFuel" type="checkbox" checked={!!editUser.permissions?.manageTestFuel} onChange={handleEditChange} />
-                Manage Test Fuel
-              </label>
-            </div>
-
-            <div className={styles.modalButtons}>
-              <button className={styles.saveBtn} onClick={saveEditUser} disabled={loading}>
-                {loading ? "Saving..." : "Save Changes"}
-              </button>
-              <button className={styles.cancelBtn} onClick={() => { setShowEditModal(false); setEditUser(null); }}>Cancel</button>
+              <div className={styles.modalButtons}>
+                <button className={styles.saveBtn} onClick={saveEditUser}>
+                  Save Changes
+                </button>
+                <button
+                  className={styles.cancelBtn}
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditUser(null);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </>
   );
 }

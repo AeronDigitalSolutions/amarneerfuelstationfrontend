@@ -105,6 +105,28 @@ export default function PaymentComparison() {
   const diffCard = liveCard - saleCard;
 
   return (
+    <div className="module-page">
+      <section className="module-hero">
+        <div>
+          <p className="module-hero-tag">RECONCILIATION</p>
+          <h2>Payment Comparison Console</h2>
+          <p>Compare live payment stream with Sale Entry summaries shift-wise for faster mismatch detection.</p>
+        </div>
+      </section>
+      <section className="module-kpis">
+        <article className="module-kpi">
+          <span>Live UPI + Card</span>
+          <strong style={{ fontSize: "20px" }}>₹{(liveUPI + liveCard).toFixed(2)}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Sale UPI + Card</span>
+          <strong style={{ fontSize: "20px" }}>₹{(saleUPI + saleCard).toFixed(2)}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Total Difference</span>
+          <strong style={{ fontSize: "20px" }}>₹{(diffUPI + diffCard).toFixed(2)}</strong>
+        </article>
+      </section>
     <div style={styles.container}>
       <h1 style={styles.title}>💳 Payment Comparison</h1>
 
@@ -226,17 +248,19 @@ export default function PaymentComparison() {
         </tbody>
       </table>
     </div>
+    </div>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    width: "900px",
-    margin: "20px auto",
+    width: "100%",
+    margin: "0",
     padding: "20px",
-    background: "#f5f7fa",
-    borderRadius: "10px",
-    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+    background: "#ffffff",
+    borderRadius: "16px",
+    border: "1px solid #dbeafe",
+    boxShadow: "0 12px 28px rgba(2,6,23,0.06)",
   },
   title: {
     textAlign: "center",

@@ -54,15 +54,43 @@ export default function LivePayment() {
     }
   };
 
+  const totalAmount = payments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  const upiCount = payments.filter((p) => p.mode === "UPI").length;
+  const cardCount = payments.filter((p) => p.mode === "CARD").length;
+
   return (
+    <div className="module-page">
+      <section className="module-hero">
+        <div>
+          <p className="module-hero-tag">REALTIME PAYMENTS</p>
+          <h2>Live Payment Monitor</h2>
+          <p>Capture cashier-side UPI and card collections with timestamped records.</p>
+        </div>
+      </section>
+
+      <section className="module-kpis">
+        <article className="module-kpi">
+          <span>Transactions</span>
+          <strong>{payments.length}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Total Amount</span>
+          <strong style={{ fontSize: "22px" }}>₹{totalAmount.toFixed(2)}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>UPI / Card</span>
+          <strong style={{ fontSize: "20px" }}>{upiCount} / {cardCount}</strong>
+        </article>
+      </section>
     <div
       style={{
-        maxWidth: "800px",
-        margin: "30px auto",
+        maxWidth: "100%",
+        margin: "0",
         padding: "25px",
         background: "#ffffff",
-        borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+        borderRadius: "16px",
+        border: "1px solid #dbeafe",
+        boxShadow: "0 12px 28px rgba(2,6,23,0.06)",
         fontFamily: "Inter, sans-serif",
       }}
     >
@@ -304,6 +332,7 @@ export default function LivePayment() {
         }
       `}
       </style>
+    </div>
     </div>
   );
 }

@@ -80,17 +80,42 @@ export default function FuelRates() {
   return (
     <>
     <FullScreenLoader loading={loading} />
-    <div className={styles.container}>
-      <div className={styles.card}>
+    <div className={`${styles.container} module-page`}>
+      <section className="module-hero">
+        <div>
+          <p className="module-hero-tag">PRICING CONTROL</p>
+          <h2>Fuel Rate Command Center</h2>
+          <p>Maintain day-wise fuel prices from one clean surface across all modules.</p>
+        </div>
+      </section>
+
+      <section className="module-kpis">
+        <article className="module-kpi">
+          <span>Fuel Types</span>
+          <strong>{Object.keys(rates).length}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Latest Update</span>
+          <strong style={{ fontSize: "16px" }}>
+            {latestRates?.updatedAt ? new Date(latestRates.updatedAt).toLocaleString() : "Not Set"}
+          </strong>
+        </article>
+        <article className="module-kpi">
+          <span>Status</span>
+          <strong style={{ fontSize: "18px" }}>{latestRates ? "Active" : "Pending"}</strong>
+        </article>
+      </section>
+
+      <div className={`${styles.card} module-surface`}>
         <div className={styles.headerRow}>
           <h2 className={styles.heading}>⛽ Fuel Rates Management</h2>
 
           <div style={{ display: "flex", gap: "10px" }}>
-            <button className={styles.secondaryBtn} onClick={() => setShowAddModal(true)}>
+            <button className="module-btn-secondary" onClick={() => setShowAddModal(true)}>
               ➕ Add Fuel Type
             </button>
 
-            <button className={styles.primaryBtn} onClick={() => setShowModal(true)}>
+            <button className="module-btn" onClick={() => setShowModal(true)}>
               ✏️ Edit Rates
             </button>
           </div>

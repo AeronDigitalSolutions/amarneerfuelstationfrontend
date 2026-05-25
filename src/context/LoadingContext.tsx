@@ -18,6 +18,13 @@ const LoadingContext = createContext<LoadingContextType>({
 
 export const useLoader = () => useContext(LoadingContext);
 
+const API_HINTS = ["/api/", "localhost:5001", "amarneerfuelstationbackend.onrender.com"];
+
+const shouldAttachContext = (url?: string) => {
+  if (!url) return false;
+  return API_HINTS.some((hint) => url.includes(hint));
+};
+
 export const LoadingProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -54,6 +61,21 @@ export const LoadingProvider: React.FC<{ children: React.ReactNode }> = ({
     // Add axios interceptors (if axios present)
     const reqInterceptor = axios.interceptors.request.use((cfg) => {
       cfg.timeout = cfg.timeout ?? REQUEST_TIMEOUT_MS;
+      const requestUrl = cfg.baseURL ? `${cfg.baseURL}${cfg.url || ""}` : cfg.url || "";
+      if (shouldAttachContext(requestUrl)) {
+        cfg.headers = cfg.headers || {};
+        const role = localStorage.getItem("userRole") || "";
+        const userId = localStorage.getItem("userId") || "";
+        const username = localStorage.getItem("username") || "";
+        const selectedPumpId = localStorage.getItem("selectedPumpId") || "";
+        const token = localStorage.getItem("token") || "";
+
+        if (role) cfg.headers["x-user-role"] = role;
+        if (userId) cfg.headers["x-user-id"] = userId;
+        if (username) cfg.headers["x-user-name"] = username;
+        if (selectedPumpId) cfg.headers["x-pump-id"] = selectedPumpId;
+        if (token && !cfg.headers.Authorization) cfg.headers.Authorization = `Bearer ${token}`;
+      }
       startLoading();
       return cfg;
     }, (err) => {

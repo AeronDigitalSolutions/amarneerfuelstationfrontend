@@ -4,7 +4,7 @@ import styles from "../style/WholeDayReport.module.css";
 import oil from "../assets/oil.png"
 /* ================================
    WholeDayReport (Option B look) - simplified nozzle table (option A)
-   - Uses today's date
+   - Uses selected date
    - Shifts: Day (05:00-23:00) and Night (23:00-05:00)
    - Fetches endpoints: /sales, /fueltest, /credit/transaction, /payments, /finance, /tanks
    - Defensive in presence/absence of fields
@@ -33,6 +33,29 @@ function renderDate(iso?: string | null) {
   }
 }
 
+function todayInputValue() {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function dateLabelFromInput(ymd: string) {
+  const [year, month, day] = ymd.split("-").map(Number);
+  if (!year || !month || !day) return "-";
+  return new Date(year, month - 1, day).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function localMidnightFromInput(ymd: string) {
+  const [year, month, day] = ymd.split("-").map(Number);
+  return new Date(year, (month || 1) - 1, day || 1, 0, 0, 0, 0);
+}
+
 export default function WholeDayReport(): JSX.Element {
   const [loading, setLoading] = useState(false);
   const [sales, setSales] = useState<any[]>([]);
@@ -43,6 +66,7 @@ export default function WholeDayReport(): JSX.Element {
   const [tanks, setTanks] = useState<any[]>([]);
 
   const [selectedShift, setSelectedShift] = useState<"day" | "night">("day");
+  const [selectedDate, setSelectedDate] = useState<string>(todayInputValue());
 
   // const today = useMemo(() => new Date(), []);
   // const todayStr = useMemo(() => today.toLocaleDateString("en-IN"), [today]);
@@ -85,10 +109,8 @@ export default function WholeDayReport(): JSX.Element {
   };
 
   /* ---------- SHIFT RANGE ---------- */
-  const getShiftRange = (shift: "day" | "night") => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    const base = new Date(d);
+  const getShiftRange = (shift: "day" | "night", ymd: string) => {
+    const base = localMidnightFromInput(ymd);
 
     const toISO = (dt: Date) => dt.toISOString();
 
@@ -108,7 +130,7 @@ export default function WholeDayReport(): JSX.Element {
     }
   };
 
-  const shiftRange = getShiftRange(selectedShift);
+  const shiftRange = getShiftRange(selectedShift, selectedDate);
   const inRange = (iso?: string | null) => {
     if (!iso) return false;
     const t = new Date(iso).getTime();
@@ -270,38 +292,7 @@ export default function WholeDayReport(): JSX.Element {
 
   /* ---------- RENDER ---------- */
   return (
-    <div className={styles.container}>
-      {/* <header className={styles.header}>
-        <div className={styles.headerLeft}>
-          <h1 className={styles.title}>Shift Card — Whole Day Report</h1>
-          <div className={styles.metaRow}>
-            <div><strong>Date:</strong> {todayStr}</div>
-            <div><strong>View:</strong> {selectedShift === "day" ? "Day (05:00–23:00)" : "Night (23:00–05:00)"}</div>
-          </div>
-        </div>
-
-        <div className={styles.headerRight}>
-          <div className={styles.shiftButtons}>
-            <button
-              className={`${styles.shiftBtn} ${selectedShift === "day" ? styles.active : ""}`}
-              onClick={() => setSelectedShift("day")}
-            >
-              Day Shift
-            </button>
-            <button
-              className={`${styles.shiftBtn} ${selectedShift === "night" ? styles.active : ""}`}
-              onClick={() => setSelectedShift("night")}
-            >
-              Night Shift
-            </button>
-            <button className={styles.refreshBtn} onClick={fetchAll}>⟳ Refresh</button>
-            <button className={styles.printBtn} onClick={() => window.print()}>🖨 Print</button>
-          </div>
-        </div>
-      </header> */}
-
-
-
+    <div className={`${styles.container} module-page`}>
       <header className={styles.header}>
   {/* LEFT SECTION — LOGO + DETAILS */}
   <div className={styles.headerLeft} style={{ display: "flex", gap: "16px", alignItems: "center" }}>
@@ -316,11 +307,14 @@ export default function WholeDayReport(): JSX.Element {
     <div>
       {/* PETROL PUMP NAME */}
       <h1 className={styles.title} style={{ marginBottom: "4px" }}>
-        Amar Neer Fuel Station
+        Generate Report
       </h1>
 
       {/* SUB DETAILS */}
       <div className={styles.metaRow} style={{ flexDirection: "column", gap: "2px" }}>
+        <div><strong>Station:</strong> Amar Neer Fuel Station</div>
+        <div><strong>Report Date:</strong> {dateLabelFromInput(selectedDate)}</div>
+        <div><strong>View:</strong> {selectedShift === "day" ? "Day Shift (05:00-23:00)" : "Night Shift (23:00-05:00)"}</div>
         <div><strong>Address:</strong> Kanpur</div>
         <div><strong>Phone:</strong> ___________</div>
         <div><strong>GSTIN:</strong> 09ABCDE1234F1Z5</div>
@@ -335,6 +329,14 @@ export default function WholeDayReport(): JSX.Element {
 
   {/* RIGHT SECTION — SHIFT BUTTONS */}
   <div className={styles.headerRight}>
+    <label className={styles.dateFilter}>
+      <span>Select Date</span>
+      <input
+        type="date"
+        value={selectedDate}
+        onChange={(event) => setSelectedDate(event.target.value || todayInputValue())}
+      />
+    </label>
     <div className={styles.shiftButtons}>
       <button
         className={`${styles.shiftBtn} ${selectedShift === "day" ? styles.active : ""}`}

@@ -274,8 +274,15 @@ export default function AccountingFinance() {
 
   return (
     <>
-     <FullScreenLoader loading={loading} />
-    <div className={styles.container}>
+      <FullScreenLoader loading={loading} />
+    <div className={`${styles.container} module-page`}>
+      <section className="module-hero">
+        <div>
+          <p className="module-hero-tag">FINANCE CONTROL</p>
+          <h2>Accounts & Finance Console</h2>
+          <p>Capture journal and daily transactions with cleaner filtering and real-time summary visibility.</p>
+        </div>
+      </section>
       <h1 className={styles.title}>Accounting & Finance</h1>
 
       <div className={styles.buttonRow}>

@@ -1,0 +1,138 @@
+.ops-page {
+  display: grid;
+  gap: 16px;
+}
+
+.ops-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0b253f;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.ops-subtitle {
+  margin: 6px 0 0;
+  color: #4a6885;
+  font-size: 0.94rem;
+}
+
+[data-theme="dark"] .ops-title {
+  color: #e6f4ff;
+}
+
+[data-theme="dark"] .ops-subtitle {
+  color: #a4c4de;
+}
+
+.ops-card {
+  border: 1px solid #d5e6f4;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 12px 20px rgba(7, 58, 102, 0.08);
+}
+
+[data-theme="dark"] .ops-card {
+  background: rgba(13, 38, 63, 0.86);
+  border-color: #234c72;
+}
+
+.ops-card-title {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #12314f;
+}
+
+[data-theme="dark"] .ops-card-title {
+  color: #d6ecff;
+}
+
+.ops-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ops-form-grid input,
+.ops-form-grid select {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #c9deee;
+}
+
+.ops-form-grid .ops-button {
+  grid-column: 1 / -1;
+}
+
+.ops-button {
+  border: 1px solid #0f7fb0;
+  background: linear-gradient(135deg, #0b699d, #0fa2b9);
+  color: #f8fdff;
+  padding: 10px 13px;
+  font-weight: 700;
+  border-radius: 10px;
+}
+
+.ops-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.ops-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ops-item {
+  border: 1px solid #d2e5f4;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+[data-theme="dark"] .ops-item {
+  border-color: #2a547b;
+  background: rgba(12, 33, 55, 0.85);
+}
+
+.ops-item strong {
+  color: #0d2d4b;
+}
+
+[data-theme="dark"] .ops-item strong {
+  color: #d8edff;
+}
+
+.ops-muted {
+  color: #5a7996;
+  font-size: 0.88rem;
+}
+
+[data-theme="dark"] .ops-muted {
+  color: #9fc0db;
+}
+
+.ops-action-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ops-select {
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid #bfd7e9;
+  min-width: 220px;
+}
+
+@media (max-width: 900px) {
+  .ops-form-grid,
+  .ops-grid {
+    grid-template-columns: 1fr;
+  }
+}

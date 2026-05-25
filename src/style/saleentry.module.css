@@ -3,16 +3,18 @@
 =============================== */
 .container {
   width: 100%;
-  max-width: 95%;
+  max-width: 100%;
   margin: 2rem auto;
   padding: 2rem;
+  box-sizing: border-box;
   border-radius: 1rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   background: #fff;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
-  overflow-x: visible !important;
+  overflow-x: hidden;
+  min-width: 0;
 }
 
 /* ===============================
@@ -22,6 +24,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-width: 0;
 }
 
 .title {
@@ -51,6 +54,7 @@
 .btnWrapper {
   display: flex;
   justify-content: flex-end;
+  min-width: 0;
 }
 
 /* ===============================
@@ -60,8 +64,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 12px;
+  min-width: 0;
 }
 
 .filterGroup {
@@ -69,6 +74,14 @@
   flex-direction: column;
   gap: 4px;
   min-width: 150px;
+}
+
+.searchGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+  flex: 1 1 240px;
 }
 
 .filterLabel {
@@ -118,22 +131,41 @@
 =============================== */
 .tableSection {
   width: 100%;
+  min-width: 0;
 }
 
 .tableWrapper {
   width: 100%;
-  overflow-x: auto !important;
+  max-width: 100%;
+  overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #fff;
   padding-bottom: 8px;
+  min-width: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #e2e8f0;
+}
+
+.tableWrapper::-webkit-scrollbar {
+  height: 10px;
+}
+
+.tableWrapper::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 999px;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #64748b, #94a3b8);
+  border-radius: 999px;
 }
 
 .table {
-  width: max-content !important;
-  min-width: 1300px;
+  width: max-content;
+  min-width: 1650px;
   border-collapse: collapse;
 }
 
@@ -403,6 +435,47 @@
 
 .entrySummary { font-weight: 600; }
 
+.creditBreakdownWrap {
+  border: 1px solid #dbeafe;
+  background: #f8fbff;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.creditBreakdownTitle {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.creditBreakdownTableWrap {
+  overflow-x: auto;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.creditBreakdownTable {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+}
+
+.creditBreakdownTable th,
+.creditBreakdownTable td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 0.84rem;
+}
+
+.creditBreakdownTable th {
+  background: #eff6ff;
+  color: #1e293b;
+  font-weight: 700;
+}
+
 /* ===============================
    ANIMATIONS
 =============================== */
@@ -420,6 +493,12 @@
    RESPONSIVE
 =============================== */
 @media (max-width: 650px) {
+  .container {
+    max-width: 100%;
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+
   .modal,
   .nozzleModal {
     width: 95%;
@@ -428,5 +507,9 @@
 
   .row {
     flex-direction: column;
+  }
+
+  .searchGroup {
+    min-width: 100%;
   }
 }

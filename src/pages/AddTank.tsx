@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import '../style/Addtank.css'
 // import FullScreenLoader from "../component/FullScreenLoader";
 interface Tank {
@@ -6,6 +7,8 @@ interface Tank {
   tankId: string;
   fuelType: string;
   capacity: number | "";
+  name?: string;
+  productType?: string;
   createdAt?: string;
 }
 
@@ -26,9 +29,19 @@ export default function AddTank() {
   const [tanks, setTanks] = useState<Tank[]>([]);
 
   const fetchTanks = async () => {
-    const res = await fetch(`${BASE_URL}/tank-master`);
-    const data = await res.json();
-    setTanks(data);
+    try {
+      const res = await axios.get(`${BASE_URL}/tank-master`);
+      const normalized = Array.isArray(res.data)
+        ? res.data.map((row: any) => ({
+            ...row,
+            tankId: row?.tankId ?? row?.name ?? "",
+            fuelType: row?.fuelType ?? row?.productType ?? "",
+          }))
+        : [];
+      setTanks(normalized);
+    } catch {
+      setTanks([]);
+    }
   };
 
   useEffect(() => {
@@ -46,29 +59,58 @@ export default function AddTank() {
     if (!tank.capacity) return alert("Enter capacity");
 
     const payload = {
-      ...tank,
+      tankId: tank.tankId.trim(),
+      fuelType: tank.fuelType,
       capacity: Number(tank.capacity),
+      // backward compatibility with older tank-master handlers
+      name: tank.tankId.trim(),
+      productType: tank.fuelType,
     };
 
-    const res = await fetch(`${BASE_URL}/tank-master`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) return alert("Failed to add tank");
-
-    alert("Tank added successfully!");
-    setTank({ tankId: "", fuelType: "Petrol", capacity: "" });
-    fetchTanks();
+    try {
+      await axios.post(`${BASE_URL}/tank-master`, payload);
+      alert("Tank added successfully!");
+      setTank({ tankId: "", fuelType: "Petrol", capacity: "" });
+      fetchTanks();
+    } catch (error: any) {
+      console.error("Add tank failed:", error?.response?.data || error?.message || error);
+      const message =
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        "Failed to add tank";
+      alert(message);
+    }
     
   };
 
   return (
     <>
     {/* <FullScreenLoader loading={loading} /> */}
-    <div className="add_continer_backend" >
-      {/* style={{ padding: 20 }}> */}
+    <div className="add_continer_backend module-page" >
+      <section className="module-hero">
+        <div>
+          <p className="module-hero-tag">MASTER DATA</p>
+          <h2>Tank Registry</h2>
+          <p>Create and maintain tank master records with capacity and fuel type controls.</p>
+        </div>
+      </section>
+
+      <section className="module-kpis">
+        <article className="module-kpi">
+          <span>Total Tanks</span>
+          <strong>{tanks.length}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Fuel Groups</span>
+          <strong>{new Set(tanks.map((t) => t.fuelType)).size}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Registry Status</span>
+          <strong style={{ fontSize: "18px" }}>{tanks.length ? "Active" : "Empty"}</strong>
+        </article>
+      </section>
+
+      <div className="module-surface">
       <h1>Add Tank </h1>
 
       <div className="tank_flex"
@@ -114,7 +156,7 @@ export default function AddTank() {
         </div>
       </div>
 <div  className="button_tank" >
-      <button onClick={handleSubmit} >
+      <button onClick={handleSubmit} className="module-btn-success" >
         Save Tank
       </button>
 </div>
@@ -148,6 +190,7 @@ export default function AddTank() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
     </>
   );

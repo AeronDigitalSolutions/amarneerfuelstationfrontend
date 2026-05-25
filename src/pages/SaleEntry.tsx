@@ -59,12 +59,26 @@ interface Sale {
   cashAmount?: number;
   upiAmount?: number;
   cardAmount?: number;
+  creditLineAmount?: number;
+  companyAccountAmount?: number;
+  totalReceivedAtPump?: number;
   totalPayment?: number;
   paymentMode?: PaymentMode;
   creditParty?: string;
   remarks?: string;
   attendant?: string;
   createdAt?: string;
+}
+
+interface CreditVehicleBreakdownRow {
+  accountId: string;
+  accountName: string;
+  vehicleNo: string;
+  fuelType: string;
+  settlementMode: string;
+  totalAmount: number;
+  transactionCount: number;
+  machineNos: string[];
 }
 
 
@@ -131,8 +145,13 @@ export default function SaleEntry(): JSX.Element {
   const [nozzleOpening, setNozzleOpening] = useState(0);
   const [nozzleClosing, setNozzleClosing] = useState(0);
   const [nozzleTestFuel, setNozzleTestFuel] = useState(0);
+  const [nozzleTestFuelContext, setNozzleTestFuelContext] = useState("");
   const [nozzleRate, setNozzleRate] = useState(0);
   const [nozzleAttendant, setNozzleAttendant] = useState("");
+  const [creditLineAmount, setCreditLineAmount] = useState(0);
+  const [companyAccountAmount, setCompanyAccountAmount] = useState(0);
+  const [creditFetchInfo, setCreditFetchInfo] = useState("");
+  const [creditVehicleRows, setCreditVehicleRows] = useState<CreditVehicleBreakdownRow[]>([]);
 
   /* ---------------------------------------------------------
         INITIAL LOAD
@@ -198,15 +217,68 @@ export default function SaleEntry(): JSX.Element {
   }, [entries]);
 
   useEffect(() => {
-    setTotalPayment(safe(cashAmount) + safe(upiAmount) + safe(cardAmount));
-  }, [cashAmount, upiAmount, cardAmount]);
+    setTotalPayment(
+      safe(cashAmount) +
+        safe(upiAmount) +
+        safe(cardAmount) +
+        safe(creditLineAmount) +
+        safe(companyAccountAmount)
+    );
+  }, [cashAmount, upiAmount, cardAmount, creditLineAmount, companyAccountAmount]);
+
+  useEffect(() => {
+    const fetchCreditSummary = async () => {
+      if (!modalOpen) {
+        setCreditLineAmount(0);
+        setCreditFetchInfo("");
+        setCreditVehicleRows([]);
+        return;
+      }
+      if (editSale) return;
+      if (!shift) {
+        setCreditLineAmount(0);
+        setCreditFetchInfo("");
+        setCreditVehicleRows([]);
+        return;
+      }
+
+      try {
+        const params = new URLSearchParams({ date, shift });
+        if (machineNo) params.set("machineNo", machineNo);
+        const res = await axios.get(`${BASE_URL}/credit/transaction/summary?${params.toString()}`);
+        setCreditLineAmount(safe(res.data?.creditLineAmount));
+        setCreditVehicleRows(Array.isArray(res.data?.vehicleBreakdown) ? res.data.vehicleBreakdown : []);
+        setCreditFetchInfo(
+          machineNo
+            ? `Auto fetched ${safe(res.data?.matchedCount)} credit transactions (${safe(res.data?.matchedVehicleCount)} vehicles) for ${shift} / ${machineNo}`
+            : `Auto fetched ${safe(res.data?.matchedCount)} credit transactions (${safe(res.data?.matchedVehicleCount)} vehicles) for shift ${shift}`
+        );
+      } catch (error) {
+        setCreditLineAmount(0);
+        setCreditVehicleRows([]);
+        setCreditFetchInfo(
+          machineNo
+            ? "No credit line records found for selected shift and machine."
+            : "No credit line records found for selected shift."
+        );
+      }
+    };
+
+    fetchCreditSummary();
+  }, [modalOpen, machineNo, shift, date, editSale]);
 
 
   /* =====================================================
            OPEN NOZZLE MODAL  (Dynamic fuel rates)
   ======================================================*/
   const openNozzleModal = async (nozzle: NozzleDef) => {
+    if (!shift) {
+      alert("Select shift first so test fuel can be auto-adjusted correctly.");
+      return;
+    }
+
     setActiveNozzle(nozzle);
+    setNozzleTestFuelContext(`Date ${date} • Shift ${shift}`);
 
     try {
       const res = await axios.get(`${BASE_URL}/fuel-rates`);
@@ -220,9 +292,13 @@ export default function SaleEntry(): JSX.Element {
     // auto test fuel
     try {
       if (selectedMachine?._id) {
-        const r = await axios.get(
-          `${BASE_URL}/fueltest/by-date?machineId=${selectedMachine._id}&nozzleNo=${nozzle.nozzleNo}&date=${date}`
-        );
+        const params = new URLSearchParams({
+          machineId: selectedMachine._id,
+          nozzleNo: String(nozzle.nozzleNo),
+          date,
+          shift,
+        });
+        const r = await axios.get(`${BASE_URL}/fueltest/by-date?${params.toString()}`);
         const sum = Array.isArray(r.data)
           ? r.data.reduce((acc: number, t: any) => acc + safe(t.liters), 0)
           : 0;
@@ -301,6 +377,9 @@ export default function SaleEntry(): JSX.Element {
       cashAmount,
       upiAmount,
       cardAmount,
+      creditLineAmount,
+      companyAccountAmount,
+      totalReceivedAtPump: safe(cashAmount) + safe(upiAmount) + safe(cardAmount),
       totalPayment,
       paymentMode,
       // creditParty,
@@ -338,6 +417,10 @@ export default function SaleEntry(): JSX.Element {
     setCashAmount(0);
     setUpiAmount(0);
     setCardAmount(0);
+    setCreditLineAmount(0);
+    setCompanyAccountAmount(0);
+    setCreditFetchInfo("");
+    setCreditVehicleRows([]);
     setTotalPayment(0);
     setRemarks("");
     setAttendant("");
@@ -370,8 +453,13 @@ export default function SaleEntry(): JSX.Element {
     setCashAmount(s.cashAmount || 0);
     setUpiAmount(s.upiAmount || 0);
     setCardAmount(s.cardAmount || 0);
+    setCreditLineAmount(s.creditLineAmount || 0);
+    setCompanyAccountAmount(s.companyAccountAmount || 0);
+    setCreditFetchInfo("");
+    setCreditVehicleRows([]);
     setTotalPayment(
       safe(s.cashAmount) + safe(s.upiAmount) + safe(s.cardAmount)
+      + safe(s.creditLineAmount) + safe(s.companyAccountAmount)
     );
 
     setRemarks(s.remarks || "");
@@ -433,9 +521,21 @@ export default function SaleEntry(): JSX.Element {
   const totalCash = sales.reduce((a, s) => a + safe(s.cashAmount), 0);
   const totalUpi = sales.reduce((a, s) => a + safe(s.upiAmount), 0);
   const totalCard = sales.reduce((a, s) => a + safe(s.cardAmount), 0);
+  const totalCreditLine = sales.reduce((a, s) => a + safe(s.creditLineAmount), 0);
+  const totalCompanyAccount = sales.reduce((a, s) => a + safe(s.companyAccountAmount), 0);
   const grandTotal = sales.reduce((a, s) => a + safe(s.totalAmount), 0);
+  const totalPumpCollection = sales.reduce(
+    (a, s) => a + safe(s.totalReceivedAtPump || (safe(s.cashAmount) + safe(s.upiAmount) + safe(s.cardAmount))),
+    0
+  );
   const totalReceivedFromSales = sales.reduce(
-    (a, s) => a + safe(s.cashAmount) + safe(s.upiAmount) + safe(s.cardAmount),
+    (a, s) =>
+      a +
+      safe(s.cashAmount) +
+      safe(s.upiAmount) +
+      safe(s.cardAmount) +
+      safe(s.creditLineAmount) +
+      safe(s.companyAccountAmount),
     0
   );
 
@@ -457,7 +557,29 @@ export default function SaleEntry(): JSX.Element {
   return (
     <>
      {/* <FullScreenLoader loading={loading} /> */}
-    <div className={styles.container}>
+    <div className={`${styles.container} module-page`}>
+      <section className="module-hero">
+        <div>
+          <p className="module-hero-tag">SALES OPERATIONS</p>
+          <h2>Machine-wise Sale Entry</h2>
+          <p>Track nozzle volumes, auto-adjust test fuel, and reconcile cash vs credit settlements in one place.</p>
+        </div>
+      </section>
+
+      <section className="module-kpis">
+        <article className="module-kpi">
+          <span>Records</span>
+          <strong>{sales.length}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Total Sales</span>
+          <strong style={{ fontSize: "22px" }}>₹{grandTotal.toFixed(2)}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Pump Collection</span>
+          <strong style={{ fontSize: "22px" }}>₹{totalPumpCollection.toFixed(2)}</strong>
+        </article>
+      </section>
 
       <div className={styles.header}>
         <h1 className={styles.title}>Fuel Sale Records</h1>
@@ -587,10 +709,13 @@ export default function SaleEntry(): JSX.Element {
                   </span>
                 </th>
                 <th>Total</th>
-                <th>Received</th>
+                <th>Total Settled</th>
+                <th>Pump Collection</th>
                 <th>Cash</th>
                 <th>UPI</th>
                 <th>Card</th>
+                <th>Credit Line</th>
+                <th>Company Account</th>
                 <th>Attendant</th>
                 <th>Actions</th>
               </tr>
@@ -613,11 +738,16 @@ export default function SaleEntry(): JSX.Element {
                     <td>
                       {(safe(s.cashAmount) +
                         safe(s.upiAmount) +
-                        safe(s.cardAmount)).toFixed(2)}
+                        safe(s.cardAmount) +
+                        safe(s.creditLineAmount) +
+                        safe(s.companyAccountAmount)).toFixed(2)}
                     </td>
+                    <td>{safe(s.totalReceivedAtPump || (safe(s.cashAmount) + safe(s.upiAmount) + safe(s.cardAmount))).toFixed(2)}</td>
                     <td>{safe(s.cashAmount).toFixed(2)}</td>
                     <td>{safe(s.upiAmount).toFixed(2)}</td>
                     <td>{safe(s.cardAmount).toFixed(2)}</td>
+                    <td>{safe(s.creditLineAmount).toFixed(2)}</td>
+                    <td>{safe(s.companyAccountAmount).toFixed(2)}</td>
                     <td>{s.attendant || "-"}</td>
 
                     <td>
@@ -638,7 +768,7 @@ export default function SaleEntry(): JSX.Element {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={12}>No records</td>
+                  <td colSpan={15}>No records</td>
                 </tr>
               )}
             </tbody>
@@ -651,9 +781,12 @@ export default function SaleEntry(): JSX.Element {
                 <td>{sales.reduce((a, s) => a + safe(s.totalLitres), 0).toFixed(2)}</td>
                 <td>{grandTotal.toFixed(2)}</td>
                 <td>{totalReceivedFromSales.toFixed(2)}</td>
+                <td>{totalPumpCollection.toFixed(2)}</td>
                 <td>{totalCash.toFixed(2)}</td>
                 <td>{totalUpi.toFixed(2)}</td>
                 <td>{totalCard.toFixed(2)}</td>
+                <td>{totalCreditLine.toFixed(2)}</td>
+                <td>{totalCompanyAccount.toFixed(2)}</td>
                 <td colSpan={2}></td>
               </tr>
             </tfoot>
@@ -817,6 +950,60 @@ export default function SaleEntry(): JSX.Element {
 
                 <div className={styles.row}>
                   <div className={styles.col}>
+                    <label>Credit Line (Auto)</label>
+                    <input type="number" value={creditLineAmount} readOnly />
+                  </div>
+                  <div className={styles.col}>
+                    <label>Company Account</label>
+                    <input
+                      type="number"
+                      value={companyAccountAmount}
+                      onChange={(e) => setCompanyAccountAmount(safe(e.target.value))}
+                    />
+                  </div>
+                  <div className={styles.col}>
+                    <label>Pump Collection</label>
+                    <input
+                      type="number"
+                      value={(safe(cashAmount) + safe(upiAmount) + safe(cardAmount)).toFixed(2)}
+                      readOnly
+                    />
+                  </div>
+                </div>
+                {creditFetchInfo ? <div className={styles.summaryRow}>{creditFetchInfo}</div> : null}
+
+                {creditVehicleRows.length > 0 ? (
+                  <div className={styles.creditBreakdownWrap}>
+                    <p className={styles.creditBreakdownTitle}>Auto-fetched Credit Vehicles ({creditVehicleRows.length})</p>
+                    <div className={styles.creditBreakdownTableWrap}>
+                      <table className={styles.creditBreakdownTable}>
+                        <thead>
+                          <tr>
+                            <th>Vehicle</th>
+                            <th>Account</th>
+                            <th>Fuel</th>
+                            <th>Machine</th>
+                            <th>Amount (₹)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {creditVehicleRows.map((row, idx) => (
+                            <tr key={`${row.accountId}-${row.vehicleNo}-${idx}`}>
+                              <td>{row.vehicleNo || "-"}</td>
+                              <td>{row.accountName || row.accountId}</td>
+                              <td>{row.fuelType || "-"}</td>
+                              <td>{row.machineNos?.length ? row.machineNos.join(", ") : "-"}</td>
+                              <td>{safe(row.totalAmount).toFixed(2)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className={styles.row}>
+                  <div className={styles.col}>
                     <label>Attendant</label>
                     <input
                       value={attendant}
@@ -916,6 +1103,10 @@ export default function SaleEntry(): JSX.Element {
                   <label>Test Fuel (Auto)</label>
                   <input value={nozzleTestFuel} readOnly />
                 </div>
+                <div className={styles.summaryRow}>
+                  <label>Auto Context</label>
+                  <input value={nozzleTestFuelContext} readOnly />
+                </div>
 
                 <div className={styles.summaryRow}>
                   <label>Attendant</label>
@@ -961,4 +1152,3 @@ export default function SaleEntry(): JSX.Element {
 }
 
 /** ---------------- END OF FILE ---------------- */
-

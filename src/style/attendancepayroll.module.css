@@ -1,367 +1,438 @@
-/* darktheme */
-.attendtd{
-  color: black;
-}
-[dark-theme='dark'].attendtd{
-  color: #fff;
-}
-
-/* modal theme */
-.addheading{
-  color: #000;
-}
-[dark-theme='dark'].addheading{
-  color: #fff;
-}
-
-
-.container {
-  padding: 30px;
-  font-family: "Inter", sans-serif;
-  /* background: linear-gradient(to bottom right, #f7faff, #eef2f7); */
-  min-height: 100vh;
-}
-
-/* ===========================================================
-   TITLES
-=========================================================== */
-h1,
-h2 {
-  color: #1e293b;
-  text-align: center;
-  margin-bottom: 18px;
-  font-weight: 700;
-}
-
-h1 {
-  font-size: 1.9rem;
-  margin-bottom: 25px;
-}
-
-h2 {
-  font-size: 1.3rem;
-}
-
-/* ===========================================================
-   PRIMARY ACTION BUTTONS (Add Employee / Add Attendance)
-=========================================================== */
-.primaryButton {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: white;
-  padding: 11px 22px;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s ease;
-}
-
-.primaryButton:hover {
-  background: linear-gradient(135deg, #1d4ed8, #1e40af);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
-}
-
-/* ===========================================================
-   ACTION BUTTONS ROW
-=========================================================== */
-.toggleGroup {
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-  margin-bottom: 25px;
-}
-
-/* ===========================================================
-   FILTER CARD WRAPPER
-=========================================================== */
-.filterCard {
-  background: #ffffff;
-  padding: 20px;
-  margin: 20px auto;
-  border-radius: 18px;
+.page {
   width: 100%;
-  max-width: 1100px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  max-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+.actionRow {
   display: flex;
-  flex-direction: column;
-  gap: 18px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-/* ===========================================================
-   TOGGLE BUTTONS (Single Date / Date Range)
-=========================================================== */
-.toggleButton {
-  padding: 10px 22px;
-  border-radius: 30px;
-  border: 1px solid #cbd5e1;
+.filterSurface {
+  border-radius: 18px;
+  border: 1px solid #dbeafe;
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(2, 6, 23, 0.06);
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+}
+
+.filterTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.toggleRow {
+  display: inline-flex;
+  gap: 8px;
   background: #f1f5f9;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: 0.25s ease;
-  color: #475569;
+  border-radius: 999px;
+  padding: 4px;
 }
 
-.toggleButton:hover {
-  background: #e2e8f0;
+.toggleBtn {
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
 }
 
 .toggleActive {
-  background: #2563eb !important;
-  color: white !important;
-  border-color: #2563eb !important;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
 }
 
-/* ===========================================================
-   FILTER ROW (Compact Layout)
-=========================================================== */
-.filterRow {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  /* flex-wrap: wrap; */
-}
-.btn_attendance{
-  width: 100%;
-  justify-content: center;
-  display: flex;
-}
-
-/* Input styling inside filter bar */
-.filterInput {
-  padding: 11px 14px;
-  border-radius: 10px;
-  border: 1px solid #cbd5e1;
-  /* background: #f8fafc; */
-  font-size: 0.95rem;
-  min-width: 160px;
-  transition: 0.25s ease;
-}
-
-.filterInput:focus {
-  border-color: #2563eb;
-  background: #ffffff;
-  box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
-}
-
-/* CLEAR BUTTON */
-.clearButton {
-  /* padding: 10px 18px; */
-  padding: 13px 40px;
-  border-radius: 10px;
-  background: #fff1f2;
-  color: #dc2626;
+.clearBtn {
   border: 1px solid #fecaca;
+  background: #fff1f2;
+  color: #be123c;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
   cursor: pointer;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.filterGrid input,
+.filterGrid select {
+  border-radius: 10px;
+  border: 1px solid #bfdbfe;
+  padding: 10px 12px;
+  background: #f8fbff;
+}
+
+.filterGrid input:focus,
+.filterGrid select:focus {
+  outline: none;
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.filterMeta {
+  font-size: 13px;
+  color: #475569;
   font-weight: 600;
-  transition: 0.25s ease;
 }
 
-.clearButton:hover {
-  background: #fee2e2;
-  transform: translateY(-2px);
+.tableHeadRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
-/* ===========================================================
-   SECTION CARD (Table wrapper)
-=========================================================== */
-.section {
-  background: #ffffff;
-  padding: 22px;
-  margin-top: 25px;
-  border-radius: 18px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+.tableHeadRow h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 24px;
 }
 
-/* ===========================================================
-   TABLE STYLING
-=========================================================== */
-.tableContainer {
+.tableHeadRow span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tableWrap {
+  width: 100%;
   overflow-x: auto;
-  margin-top: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
 }
 
 .table {
   width: 100%;
+  min-width: 980px;
   border-collapse: collapse;
-  min-width: 800px;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 11px;
+  text-align: left;
+  white-space: nowrap;
 }
 
 .table th {
-  background: #f1f5f9;
-  padding: 12px;
-  border-bottom: 1px solid #e2e8f0;
-  font-weight: 600;
-  /* font-size: 16px; */
-  color: #1e293b;
-}
-
-.table td {
-  padding: 12px;
-  border-bottom: 1px solid #e2e8f0;
-  text-align: center;
-  font-size: 0.95rem;
-}
-
-/* .table tbody tr:nth-child(even) {
   background: #f8fafc;
-} */
+  color: #334155;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
 
 .table tbody tr:hover {
-  background: #eaf3ff;
-  transition: 0.25s ease;
+  background: #f8fbff;
 }
 
-
-/* ===========================================================
-   DELETE BUTTON
-=========================================================== */
-.deleteButton {
-  background: #ef4444;
-  color: white;
-  padding: 7px 14px;
-  border: none;
-  border-radius: 10px;
+.clickableRow {
   cursor: pointer;
-  transition: 0.25s ease;
-  font-size: 0.9rem;
 }
 
-.deleteButton:hover {
-  background: #dc2626;
-  transform: scale(1.07);
+.emptyCell {
+  text-align: center;
+  color: #64748b;
+  font-weight: 600;
+  padding: 22px;
 }
 
-/* ===========================================================
-   MODAL OVERLAY
-=========================================================== */
-.modalOverlay {
+.shiftLabel {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.shiftTimeLabel {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.statusChip {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.statusPresent {
+  background: #ecfdf5;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.statusAbsent {
+  background: #fff1f2;
+  color: #9f1239;
+  border: 1px solid #fda4af;
+}
+
+.deleteBtn {
+  border: 1px solid #fecaca;
+  background: #ef4444;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 7px 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.modalBackdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+  background: rgba(15, 23, 42, 0.58);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
-  animation: fadeIn 0.25s ease;
+  z-index: 900;
+  padding: 16px;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ===========================================================
-   MODAL CONTENT
-=========================================================== */
-.modalContent {
+.modalCard {
+  width: 860px;
+  max-width: 98%;
+  max-height: 92vh;
+  overflow-y: auto;
   background: #ffffff;
-  width: 520px;
-  max-width: 90%;
-  padding: 26px;
   border-radius: 18px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  animation: zoomIn 0.25s ease;
+  border: 1px solid #dbeafe;
+  box-shadow: 0 22px 50px rgba(2, 6, 23, 0.28);
+  padding: 22px;
 }
 
-@keyframes zoomIn {
-  from { transform: scale(0.85); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+.modalCard h3 {
+  margin: 0 0 4px;
+  color: #0f172a;
+  font-size: 30px;
+  line-height: 1.1;
 }
 
-.modalContent h3 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.4rem;
-  font-weight: 700;
+.modalSubtext {
+  margin: 0 0 18px;
+  color: #64748b;
+  font-size: 14px;
 }
 
-/* ===========================================================
-   MODAL FORM GRID
-=========================================================== */
 .formGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.formGrid > div {
+  display: grid;
+  gap: 6px;
+}
+
+.formGrid label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .formGrid input,
 .formGrid select {
-  padding: 11px 13px;
   border-radius: 10px;
-  border: 1px solid #cbd5e1;
-  /* background: #f8fafc; */
+  border: 1px solid #bfdbfe;
+  padding: 11px 12px;
+  background: #f8fbff;
+  font-size: 14px;
 }
 
 .formGrid input:focus,
 .formGrid select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 6px rgba(37, 99, 235, 0.3);
-  background: white;
+  outline: none;
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  background: #ffffff;
 }
 
-/* ===========================================================
-   MODAL BUTTONS
-=========================================================== */
-.modalButtons {
+.salaryPreview {
+  margin-top: 16px;
+  border: 1px solid #c7d2fe;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #eef2ff 0%, #f8fbff 100%);
+  padding: 14px;
+}
+
+.salaryPreview h4 {
+  margin: 0 0 10px;
+  color: #1e3a8a;
+  font-size: 18px;
+}
+
+.previewGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.previewGrid > div {
+  border-radius: 10px;
+  border: 1px solid #dbeafe;
+  background: #ffffff;
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.previewGrid span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.previewGrid strong {
+  color: #0f172a;
+  font-size: 16px;
+}
+
+.previewTotal {
+  margin: 12px 0 0;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.modalActions {
+  margin-top: 16px;
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
-.saveButton {
-  background: #2563eb;
-  color: white;
-  padding: 10px 18px;
+.salarySlipSurface {
+  margin-top: 14px;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f8fbff 0%, #eff6ff 100%);
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.salarySlipHead h4 {
+  margin: 0;
+  color: #1e3a8a;
+  font-size: 18px;
+}
+
+.salarySlipHead p {
+  margin: 4px 0 0;
+  color: #475569;
+  font-size: 13px;
+}
+
+.salarySlipControls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.salarySlipControls > div {
+  display: grid;
+  gap: 6px;
+}
+
+.salarySlipControls label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.salarySlipControls input {
   border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.25s ease;
+  border: 1px solid #bfdbfe;
+  padding: 10px 12px;
+  background: #ffffff;
 }
 
-.saveButton:hover {
-  background: #1d4ed8;
-  transform: translateY(-2px);
+.salarySlipBtnWrap {
+  display: flex !important;
+  justify-content: flex-end;
 }
 
-.cancelButton {
-  background: #94a3b8;
-  color: white;
-  padding: 10px 18px;
+.salarySlipGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.salarySlipGrid article {
+  border: 1px solid #dbeafe;
   border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.25s ease;
+  padding: 10px;
+  background: #ffffff;
+  display: grid;
+  gap: 6px;
 }
 
-.cancelButton:hover {
-  background: #64748b;
-  transform: translateY(-2px);
+.salarySlipGrid span {
+  font-size: 12px;
+  color: #64748b;
 }
 
-/* ===========================================================
-   RESPONSIVE
-=========================================================== */
-@media (max-width: 550px) {
-  .toggleGroup {
+.salarySlipGrid strong {
+  color: #0f172a;
+  font-size: 15px;
+}
+
+@media (max-width: 980px) {
+  .filterGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .previewGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .salarySlipGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .salarySlipControls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .formGrid,
+  .filterGrid,
+  .previewGrid,
+  .salarySlipGrid,
+  .salarySlipControls {
+    grid-template-columns: 1fr;
+  }
+
+  .actionRow,
+  .modalActions {
     flex-direction: column;
   }
 
-  .filterRow {
-    flex-direction: column;
-  }
-
-  .filterInput {
-    width: 100%;
-  }
-
-  .modalContent {
-    padding: 20px;
+  .salarySlipBtnWrap {
+    justify-content: stretch;
   }
 }

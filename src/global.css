@@ -1,148 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 
-/* GLOBAL FIX */
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
-/* Fix section extra spacing */
-.custom {
-  margin: 0 !important;
-  padding: 0 !important;
-  /* background: #fff; */
-}
-
-/* Remove extra top & bottom gap of custom_container */
-.custom_container {
-  padding: 20px 0 !important;
-  margin: 0 auto;
-}
-/* .testimonials-section{
-  color: #2563eb;
-} */
 :root {
-  /* 🌞 Light mode colors */
-  --bg-color: #f9fafb;
+  --bg-color: #f5f9fd;
   --card-color: #ffffff;
-  --text-color: #1f2937;
-  --border-color: #e5e7eb;
-  --accent-color: #2563eb;
-  --accent-hover: #1e40af;
+  --text-color: #182c42;
+  --border-color: #d7e5f3;
 }
 
-
-
-/* Dark Mode — LIGHT TEXT LOOK */
-[data-theme="dark"] .services_tittle {
-  background: linear-gradient(to top,  #0f172a, #fff); /* light gradient */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-[dark-theme='dark'].about-title {
-  background: linear-gradient(to top, #3a4969 , #4d6797);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-
-/* 🌙 Dark mode */
 [data-theme="dark"] {
-  --bg-color: #0f172a;
-  --card-color: #1e293b;
-  --text-color: #f1f5f9;
-  /* --text-color: #000; */
-  --border-color: #334155;
-  --accent-color: #3b82f6;
-  --accent-hover: #60a5fa;
+  --bg-color: #081526;
+  --card-color: #10263f;
+  --text-color: #d7ecff;
+  --border-color: #275073;
 }
 
-
-
-/* ==============================
-   🌍 Global Elements
-   ============================== */
 body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  font-family: "Poppins", "Segoe UI", sans-serif;
   margin: 0;
-  padding: 0;
-  transition: background 0.3s, color 0.3s;
-}
-
-.container,
-.section,
-.card {
-  background-color: var(--card-color);
+  min-height: 100vh;
+  background: var(--bg-color);
   color: var(--text-color);
-  border: 1px solid var(--border-color);
-  transition: background 0.3s, color 0.3s, border 0.3s;
-}
-.logo{
-  color: var(--text-color);
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
-input,
-select,
-textarea {
-  background-color: var(--card-color);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  transition: background 0.3s, color 0.3s, border 0.3s;
-}
-
-button {
-  background-color: var(--accent-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-button:hover {
-  background-color: var(--accent-hover);
-}
-
-/* ==============================
-   🌙 Theme Toggle Button
-   ============================== */
 .themeToggle {
   position: fixed;
-  top: 33rem;
-  right: 1rem;
+  bottom: 1.2rem;
+  right: 1.2rem;
   background: var(--card-color);
   color: var(--text-color);
   border: 1px solid var(--border-color);
-  border-radius: 50%;
+  border-radius: 999px;
   width: 42px;
   height: 42px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s;
-  z-index: 999;
-}
-@media (max-width: 780px) {
-  .themeToggle {
-    bottom: 2rem;
-    left: 1rem;
-    top: auto;       
-    left: auto;     
-    position: fixed;  
-  }
+  box-shadow: 0 8px 14px rgba(5, 25, 44, 0.16);
+  z-index: 120;
 }
 
 .themeToggle:hover {
-  transform: scale(1.1);
+  transform: translateY(-1px);
 }
 
-/* Smooth transitions */
-* {
-  transition: background-color 0.3s, color 0.3s, border 0.3s;
+@media (max-width: 760px) {
+  .themeToggle {
+    right: 0.9rem;
+    bottom: 0.9rem;
+  }
 }

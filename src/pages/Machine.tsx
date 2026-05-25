@@ -109,11 +109,34 @@ export default function MachinePage() {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
+    <div className={`${styles.container} module-page`}>
+      <section className="module-hero">
+        <div>
+          <p className="module-hero-tag">PUMP MANAGEMENT</p>
+          <h2>Machine & Nozzle Layout</h2>
+          <p>Configure machine identities and nozzle fuel mapping for accurate shift sales.</p>
+        </div>
+      </section>
+
+      <section className="module-kpis">
+        <article className="module-kpi">
+          <span>Total Machines</span>
+          <strong>{machines.length}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Fuel Types Available</span>
+          <strong>{dynamicFuelTypes.length}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Nozzle Config Status</span>
+          <strong style={{ fontSize: "18px" }}>{machines.length ? "Configured" : "Pending"}</strong>
+        </article>
+      </section>
+
+      <div className={`${styles.card} module-surface`}>
         <div className={styles.header}>
           <h2> Machine Management </h2>
-          <button className={styles.primaryBtn} onClick={() => setShowModal(true)}>
+          <button className="module-btn" onClick={() => setShowModal(true)}>
             Add Machine ➕
           </button>
         </div>

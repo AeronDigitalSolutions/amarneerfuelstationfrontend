@@ -22,7 +22,6 @@ export default function SignIn() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("Admin");
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
@@ -40,8 +39,8 @@ export default function SignIn() {
   }, []);
 
   const handleLogin = async () => {
-    if (!username || !password || !role) {
-      alert("All fields required");
+    if (!username || !password) {
+      alert("Username/email and password are required");
       return;
     }
 
@@ -51,7 +50,7 @@ export default function SignIn() {
       const res = await fetch(`${BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, role }),
+        body: JSON.stringify({ username, password }),
       });
 
       const data = await res.json();
@@ -63,29 +62,24 @@ export default function SignIn() {
 
       // Save auth data
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.user.id);
       localStorage.setItem("userRole", data.user.role);
       localStorage.setItem("username", data.user.username);
+      localStorage.setItem("modulePermissions", JSON.stringify(data.user.modulePermissions || {}));
+      localStorage.setItem("customRoleName", data.user.customRoleName || "");
 
       // REDIRECT BASED ON ROLE
       switch (data.user.role) {
-        case "Admin":
+        case "Owner":
+          navigate("/dashboardmain");
+          break;
+
+        case "SuperAdmin":
           navigate("/adminloginpage");
           break;
 
-        case "Manager":
-          navigate("/dashboard-manager");
-          break;
-
-        case "Cashier":
-          navigate("/dashboard-cashier");
-          break;
-
-        case "Accountant":
-          navigate("/dashboard-accountant");
-          break;
-
-        case "Attendant":
-          navigate("/dashboard-attendant");
+        case "Admin":
+          navigate("/dashboardmain");
           break;
 
         default:
@@ -129,20 +123,6 @@ export default function SignIn() {
               onClick={() => setShowPassword(!showPassword)}
             />
           </div>
-
-          {/* ROLE DROPDOWN */}
-          <select
-            className="input-box_sign"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          >
-            <option>Admin</option>
-            <option>Manager</option>
-            <option>Cashier</option>
-            <option>Accountant</option>
-            <option>Attendant</option>
-          </select>
-
           <button className="login-btn" onClick={handleLogin}>
             Login
           </button>

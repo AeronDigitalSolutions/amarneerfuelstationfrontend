@@ -1,5 +1,5 @@
 // import FullScreenLoader from "../component/FullScreenLoader";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -36,6 +36,41 @@ type Account = {
   dueDate?: string | null;
   status?: "normal" | "overLimit" | "dueSoon" | "overdue";
   lastReminderSent?: string | null;
+  transactions?: CreditTransaction[];
+};
+
+type CreditTransaction = {
+  date?: string;
+  type?: "Sale" | "Payment" | string;
+  amount?: number;
+  paymentMode?: string;
+  vehicleNo?: string;
+  fuelType?: string;
+  rate?: number;
+  volume?: number;
+  machineNo?: string;
+  shift?: string;
+  saleDate?: string;
+  dueDate?: string;
+  settlementMode?: string;
+};
+
+type Machine = {
+  _id?: string;
+  machineNo: string;
+  machineName: string;
+};
+
+type ShiftOption = {
+  _id: string;
+  shiftName: string;
+  startTime: string;
+  endTime: string;
+};
+
+type FuelRatesData = {
+  rates: Record<string, number>;
+  updatedAt?: string;
 };
 
 export default function CreditLineManagement() {
@@ -52,6 +87,9 @@ export default function CreditLineManagement() {
   const [selectedAcc, setSelectedAcc] = useState<Account | null>(null);
 
   const [showBillModal, setShowBillModal] = useState(false);
+  const [machines, setMachines] = useState<Machine[]>([]);
+  const [shiftOptions, setShiftOptions] = useState<ShiftOption[]>([]);
+  const [fuelRates, setFuelRates] = useState<FuelRatesData | null>(null);
 
   const [emailSending, setEmailSending] = useState(false);
   const [reminderSending, setReminderSending] = useState(false);
@@ -78,8 +116,11 @@ export default function CreditLineManagement() {
     rate: 0,
     volume: 0,
     amount: 0,
-      dueDays: 15,   // ⭐ NEW FIELD
-
+    dueDate: "",
+    machineNo: "",
+    shift: "",
+    saleDate: new Date().toISOString().split("T")[0],
+    settlementMode: "CreditLine",
   });
 
   const [paymentData, setPaymentData] = useState({
@@ -97,6 +138,9 @@ export default function CreditLineManagement() {
 
   useEffect(() => {
     fetchAccounts();
+    fetchMachines();
+    fetchShifts();
+    fetchFuelRates();
   }, []);
 
   const fetchAccounts = async () => {
@@ -111,6 +155,7 @@ export default function CreditLineManagement() {
           dueDate: a.dueDate ?? null,
           status: a.status ?? "normal",
           lastReminderSent: a.lastReminderSent ?? null,
+          transactions: Array.isArray(a.transactions) ? a.transactions : [],
         }))
       );
     } catch (err) {
@@ -120,6 +165,69 @@ export default function CreditLineManagement() {
       // setLoading(false);
     }
   };
+
+  const fetchMachines = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/machines`);
+      setMachines(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("❌ Failed to fetch machines:", err);
+      setMachines([]);
+    }
+  };
+
+  const fetchShifts = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/shifts`);
+      setShiftOptions(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("❌ Failed to fetch shifts:", err);
+      setShiftOptions([]);
+    }
+  };
+
+  const fetchFuelRates = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/fuel-rates`);
+      setFuelRates(res.data);
+    } catch (err) {
+      console.error("❌ Failed to fetch fuel rates:", err);
+      setFuelRates(null);
+    }
+  };
+
+  useEffect(() => {
+    if (!selectedAcc?._id) return;
+    const next = accounts.find((a) => a._id === selectedAcc._id);
+    if (next) setSelectedAcc(next);
+  }, [accounts, selectedAcc?._id]);
+
+  const normalizeFuelKey = (val: string) => val.trim().toLowerCase();
+
+  const getCurrentRateForFuel = (fuelType: string) => {
+    const rates = fuelRates?.rates || {};
+    const target = normalizeFuelKey(fuelType);
+
+    const exact = Object.entries(rates).find(
+      ([key]) => normalizeFuelKey(key) === target
+    );
+    if (exact) return Number(exact[1]) || 0;
+
+    const fallback = Object.entries(rates).find(([key]) =>
+      normalizeFuelKey(key).includes(target)
+    );
+    if (fallback) return Number(fallback[1]) || 0;
+
+    return 0;
+  };
+
+  const selectedSaleAccount = accounts.find(
+    (a) => a.accountId === saleData.accountId
+  );
+
+  const selectedSaleVehicle = selectedSaleAccount?.vehicles.find(
+    (v) => v.vehicleNo === saleData.vehicleNo
+  );
 
   /* ---------- PDF GENERATION ---------- */
   const generatePDF = () => {
@@ -362,33 +470,71 @@ export default function CreditLineManagement() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    const numeric = ["rate", "volume", "amount", "dueDays"]; // 👈 include dueDays
+    const numeric = ["rate", "volume", "amount"];
 
     setSaleData((prev) => {
-const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) : value };
+      const updated: any = {
+        ...prev,
+        [name]: numeric.includes(name) ? Number(value) : value,
+      };
       const rate = Number(updated.rate);
       const volume = Number(updated.volume);
       const amount = Number(updated.amount);
 
-      if (name === "volume") updated.amount = rate * volume;
+      if (name === "volume") updated.amount = Number((rate * volume).toFixed(2));
       else if (name === "amount")
-        updated.volume = rate > 0 ? amount / rate : 0;
-      else if (name === "rate") updated.amount = rate * volume;
+        updated.volume = rate > 0 ? Number((amount / rate).toFixed(3)) : 0;
+      else if (name === "rate") updated.amount = Number((rate * volume).toFixed(2));
+
+      if (name === "saleDate" && !prev.dueDate) {
+        const dt = new Date(`${value}T00:00:00`);
+        dt.setDate(dt.getDate() + 15);
+        updated.dueDate = dt.toISOString().split("T")[0];
+      }
 
       return updated;
     });
   };
 
   const saveSale = async () => {
-    if (!saleData.accountId || !saleData.vehicleNo) {
-      alert("Select Account & Vehicle");
+    if (
+      !saleData.accountId ||
+      !saleData.vehicleNo ||
+      !saleData.machineNo ||
+      !saleData.shift ||
+      !saleData.saleDate ||
+      !saleData.dueDate
+    ) {
+      alert("Select Account, Vehicle, Machine, Shift, Sale Date and Due Date");
       return;
     }
-    const payload = { ...saleData, type: "Sale",   dueDays: saleData.dueDays   // ⭐ SEND TO BACKEND
- };
+    if (Number(saleData.volume) <= 0 || Number(saleData.amount) <= 0) {
+      alert("Volume and amount must be greater than 0");
+      return;
+    }
+
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const saleTs = new Date(`${saleData.saleDate}T00:00:00`).getTime();
+    const dueTs = new Date(`${saleData.dueDate}T00:00:00`).getTime();
+    const dueDays = Math.max(1, Math.ceil((dueTs - saleTs) / msPerDay));
+
+    const payload = { ...saleData, type: "Sale", dueDays };
     try {
       await axios.post(`${BASE_URL}/credit/transaction`, payload);
       await fetchAccounts();
+      setSaleData({
+        accountId: "",
+        vehicleNo: "",
+        fuelType: "Petrol",
+        rate: 0,
+        volume: 0,
+        amount: 0,
+        dueDate: "",
+        machineNo: "",
+        shift: "",
+        saleDate: new Date().toISOString().split("T")[0],
+        settlementMode: "CreditLine",
+      });
       setShowSaleModal(false);
     } catch (err) {
       console.error(err);
@@ -424,6 +570,15 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
     (a) => a.accountId === paymentData.accountId
   );
 
+  const paymentHistoryPreview = useMemo(() => {
+    const tx = Array.isArray(selectedPaymentAccount?.transactions)
+      ? selectedPaymentAccount!.transactions
+      : [];
+    return [...tx]
+      .sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime())
+      .slice(0, 6);
+  }, [selectedPaymentAccount]);
+
   useEffect(() => {
     if (selectedPaymentAccount) {
       setPaymentData((prev) => ({
@@ -434,6 +589,68 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentData.accountId, selectedPaymentAccount]);
+
+  useEffect(() => {
+    if (!showSaleModal) return;
+    setSaleData((prev) => {
+      if (prev.dueDate) return prev;
+      const base = prev.saleDate || new Date().toISOString().split("T")[0];
+      const dt = new Date(`${base}T00:00:00`);
+      dt.setDate(dt.getDate() + 15);
+      return { ...prev, dueDate: dt.toISOString().split("T")[0] };
+    });
+  }, [showSaleModal]);
+
+  useEffect(() => {
+    if (!saleData.accountId) return;
+
+    setSaleData((prev) => {
+      const account = accounts.find((a) => a.accountId === prev.accountId);
+      if (!account) return prev;
+
+      const hasVehicle = account.vehicles.some((v) => v.vehicleNo === prev.vehicleNo);
+      if (hasVehicle) return prev;
+
+      const firstVehicle = account.vehicles[0];
+      if (!firstVehicle) {
+        return {
+          ...prev,
+          vehicleNo: "",
+          fuelType: account.fuelType || prev.fuelType,
+          rate: getCurrentRateForFuel(account.fuelType || prev.fuelType),
+        };
+      }
+
+      return {
+        ...prev,
+        vehicleNo: firstVehicle.vehicleNo,
+        fuelType: firstVehicle.fuelType || account.fuelType,
+        rate: getCurrentRateForFuel(firstVehicle.fuelType || account.fuelType),
+      };
+    });
+  }, [saleData.accountId, accounts, fuelRates]);
+
+  useEffect(() => {
+    if (!saleData.accountId || !saleData.vehicleNo) return;
+
+    setSaleData((prev) => {
+      const account = accounts.find((a) => a.accountId === prev.accountId);
+      if (!account) return prev;
+
+      const vehicle = account.vehicles.find((v) => v.vehicleNo === prev.vehicleNo);
+      const resolvedFuelType = vehicle?.fuelType || account.fuelType || prev.fuelType;
+      const liveRate = getCurrentRateForFuel(resolvedFuelType);
+      const effectiveRate = liveRate > 0 ? liveRate : Number(prev.rate || 0);
+      const volume = Number(prev.volume || 0);
+
+      return {
+        ...prev,
+        fuelType: resolvedFuelType,
+        rate: effectiveRate,
+        amount: Number((effectiveRate * volume).toFixed(2)),
+      };
+    });
+  }, [saleData.vehicleNo, saleData.accountId, accounts, fuelRates]);
 
   const savePayment = async () => {
     if (!paymentData.accountId || paymentData.amountPaid <= 0) {
@@ -500,26 +717,59 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
     );
   };
 
+  const formatDateTime = (d?: string) => (d ? new Date(d).toLocaleString() : "-");
+
+  const accountTransactions = useMemo(() => {
+    const tx = Array.isArray(selectedAcc?.transactions) ? selectedAcc!.transactions : [];
+    const sorted = [...tx].sort(
+      (a, b) => new Date(a.date || 0).getTime() - new Date(b.date || 0).getTime()
+    );
+
+    let runningOutstanding = 0;
+    return sorted.map((row) => {
+      const amount = Number(row.amount || 0);
+      const isPayment = String(row.type || "").toLowerCase() === "payment";
+      runningOutstanding += isPayment ? -amount : amount;
+      return {
+        ...row,
+        amount,
+        isPayment,
+        debit: isPayment ? 0 : amount,
+        credit: isPayment ? amount : 0,
+        runningOutstanding: Number(runningOutstanding.toFixed(2)),
+      };
+    });
+  }, [selectedAcc]);
+
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} module-page`}>
+      <section className="module-hero">
+        <div>
+          <p className="module-hero-tag">CREDIT GOVERNANCE</p>
+          <h2>Credit Line Management</h2>
+          <p>Track account-wise sales, payments, dues, and machine-shift linked credit settlements.</p>
+        </div>
+      </section>
       <h1>Credit Line System</h1>
 
-      <div className={styles.topBar}>
-        <div className={styles.topButtons}>
-          <input
-            type="text"
-            className={styles.searchBar}
-            placeholder="Search accounts (ID, Name, Phone, Aadhaar, PAN, Vehicle...)"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button onClick={() => setShowCreditModal(true)}>
-            Add Credit Account
-          </button>
-          <button onClick={() => setShowSaleModal(true)}>Update Sale</button>
-          <button onClick={openPaymentModal}>Update Payment</button>
-        </div>
-      </div>
+      <section className={styles.actionBar}>
+        <input
+          type="text"
+          className={styles.searchBar}
+          placeholder="Search accounts (ID, Name, Phone, Aadhaar, PAN, Vehicle...)"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button className={styles.primaryAction} onClick={() => setShowCreditModal(true)}>
+          Add Credit Account
+        </button>
+        <button className={styles.primaryAction} onClick={() => setShowSaleModal(true)}>
+          Update Sale
+        </button>
+        <button className={styles.primaryAction} onClick={openPaymentModal}>
+          Update Payment
+        </button>
+      </section>
 
       <h2>Accounts List</h2>
       <div className={styles.tableContainer}>
@@ -586,7 +836,7 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
           onClick={() => setShowViewModal(false)}
         >
           <div
-            className={`${styles.modalForm} ${styles.modalScrollable}`}
+            className={`${styles.modalForm} ${styles.modalScrollable} ${styles.wideModal}`}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -598,73 +848,111 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
 
             <h2>Account Details</h2>
 
-            <p>
-              <b>ID:</b> {selectedAcc.accountId}
-            </p>
-            <p>
-              <b>Name:</b> {selectedAcc.accountName}
-            </p>
-            <p>
-              <b>Company:</b> {selectedAcc.companyName}
-            </p>
-            <p>
-              <b>Phone:</b> {selectedAcc.phoneNo}
-            </p>
-            <p>
-              <b>Email:</b> {selectedAcc.email}
-            </p>
-            <p>
-              <b>Aadhaar:</b> {selectedAcc.aadhaarNo}
-            </p>
-            <p>
-              <b>PAN:</b> {selectedAcc.panNo}
-            </p>
+            <section className={styles.accountKpis}>
+              <article>
+                <span>Credit Limit</span>
+                <strong>₹{Number(selectedAcc.creditLimit || 0).toFixed(2)}</strong>
+              </article>
+              <article>
+                <span>Outstanding</span>
+                <strong className={(selectedAcc.outstanding ?? 0) > (selectedAcc.creditLimit ?? 0) ? styles.kpiDanger : styles.kpiSafe}>
+                  ₹{Number(selectedAcc.outstanding || 0).toFixed(2)}
+                </strong>
+              </article>
+              <article>
+                <span>Available Limit</span>
+                <strong>
+                  ₹{Math.max(0, Number((selectedAcc.creditLimit || 0) - (selectedAcc.outstanding || 0))).toFixed(2)}
+                </strong>
+              </article>
+              <article>
+                <span>Status / Due</span>
+                <strong>{renderStatusBadge(selectedAcc)}</strong>
+                <small>{formatDate(selectedAcc.dueDate)}</small>
+              </article>
+            </section>
 
-            <p>
-              <b>Credit Limit:</b> ₹{selectedAcc.creditLimit}
-            </p>
+            <section className={styles.profileGrid}>
+              <div><label>Account ID</label><p>{selectedAcc.accountId}</p></div>
+              <div><label>Account Name</label><p>{selectedAcc.accountName}</p></div>
+              <div><label>Company</label><p>{selectedAcc.companyName || "-"}</p></div>
+              <div><label>Phone</label><p>{selectedAcc.phoneNo || "-"}</p></div>
+              <div><label>Email</label><p>{selectedAcc.email || "-"}</p></div>
+              <div><label>Contact Person</label><p>{selectedAcc.contactPerson || "-"}</p></div>
+              <div><label>Aadhaar</label><p>{selectedAcc.aadhaarNo || "-"}</p></div>
+              <div><label>PAN</label><p>{selectedAcc.panNo || "-"}</p></div>
+              <div><label>Last Reminder</label><p>{selectedAcc.lastReminderSent ? new Date(selectedAcc.lastReminderSent).toLocaleString() : "-"}</p></div>
+            </section>
 
-            <p>
-              <b>Outstanding:</b>{" "}
-              <span
-                style={{
-                  color:
-                    (selectedAcc.outstanding ?? 0) >
-                    (selectedAcc.creditLimit ?? 0)
-                      ? "red"
-                      : "green",
-                }}
-              >
-                ₹{selectedAcc.outstanding}
-              </span>
-            </p>
+            <section className={styles.vehiclesStrip}>
+              <h3>Registered Vehicles</h3>
+              <div className={styles.vehicleChips}>
+                {selectedAcc.vehicles?.length ? (
+                  selectedAcc.vehicles.map((v) => (
+                    <span key={v.vehicleNo} className={styles.vehicleChip}>
+                      {v.vehicleNo} • {v.fuelType}
+                    </span>
+                  ))
+                ) : (
+                  <span className={styles.emptyMuted}>No vehicles linked.</span>
+                )}
+              </div>
+            </section>
 
-            <p>
-              <b>Status:</b> {renderStatusBadge(selectedAcc)}
-            </p>
-
-            <p>
-              <b>Due Date:</b> {formatDate(selectedAcc.dueDate)}
-            </p>
-
-            <p>
-              <b>Last Reminder:</b>{" "}
-              {selectedAcc.lastReminderSent
-                ? new Date(selectedAcc.lastReminderSent).toLocaleString()
-                : "-"}
-            </p>
-
-            <h3>Vehicles</h3>
-            {selectedAcc.vehicles?.map((v) => (
-              <p key={v.vehicleNo}>
-                {v.vehicleNo} ({v.fuelType})
-              </p>
-            ))}
+            <section className={styles.ledgerSection}>
+              <div className={styles.ledgerHead}>
+                <h3>Account Ledger</h3>
+                <span>{accountTransactions.length} entries</span>
+              </div>
+              <div className={styles.ledgerTableWrap}>
+                <table className={styles.ledgerTable}>
+                  <thead>
+                    <tr>
+                      <th>Date & Time</th>
+                      <th>Type</th>
+                      <th>Particulars</th>
+                      <th>Vehicle</th>
+                      <th>Machine / Shift</th>
+                      <th>Mode</th>
+                      <th>Debit</th>
+                      <th>Credit</th>
+                      <th>Running Outstanding</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {accountTransactions.length ? (
+                      accountTransactions.map((row: any, idx) => (
+                        <tr key={`${row.date || "tx"}-${idx}`}>
+                          <td>{formatDateTime(row.date)}</td>
+                          <td>
+                            <span className={row.isPayment ? styles.txCredit : styles.txDebit}>
+                              {row.isPayment ? "Credit" : "Debit"}
+                            </span>
+                          </td>
+                          <td>{row.type === "Sale" ? "Credit Fuel Sale" : "Payment Received"}</td>
+                          <td>{row.vehicleNo || "-"}</td>
+                          <td>{row.machineNo ? `${row.machineNo}${row.shift ? ` / ${row.shift}` : ""}` : row.shift || "-"}</td>
+                          <td>{row.paymentMode || row.settlementMode || "-"}</td>
+                          <td>{row.debit ? `₹${row.debit.toFixed(2)}` : "-"}</td>
+                          <td>{row.credit ? `₹${row.credit.toFixed(2)}` : "-"}</td>
+                          <td>₹{Number(row.runningOutstanding || 0).toFixed(2)}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={9} className={styles.emptyLedger}>
+                          No payment/sale history available for this account yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
 
             {(selectedAcc.outstanding ?? 0) >
               (selectedAcc.creditLimit ?? 0) && (
-              <>
-                <hr />
+              <div className={styles.viewActionRow}>
                 <button
                   className={styles.billBtn}
                   onClick={() => setShowBillModal(true)}
@@ -673,14 +961,13 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
                 </button>
                 <button
                   className={styles.billBtn}
-                  style={{ marginLeft: 10 }}
                   onClick={() => sendReminder(selectedAcc.accountId)}
                   disabled={reminderSending}
                   title="Send reminder email for this account"
                 >
-                  {reminderSending ? "Sending..." : "🔔 Send Reminder"}
+                  {reminderSending ? "Sending..." : "Send Reminder"}
                 </button>
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -820,7 +1107,7 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
           onClick={() => setShowCreditModal(false)}
         >
           <div
-            className={`${styles.modalForm} ${styles.modalScrollable}`}
+            className={`${styles.modalForm} ${styles.modalScrollable} ${styles.premiumModalForm}`}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -832,86 +1119,123 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
 
             <h2>Add Credit Account</h2>
 
-            <label>Account ID</label>
-            <input
-              name="accountId"
-              value={newAccount.accountId}
-              onChange={handleAccountChange}
-            />
+            <p className={styles.saleModalHint}>
+              Create account profile, set limit, and attach vehicles for tracked credit operations.
+            </p>
 
-            <label>Account Name</label>
-            <input
-              name="accountName"
-              value={newAccount.accountName}
-              onChange={handleAccountChange}
-            />
+            <div className={styles.saleGridTwo}>
+              <div className={styles.fieldBlock}>
+                <label>Account ID</label>
+                <input
+                  name="accountId"
+                  value={newAccount.accountId}
+                  onChange={handleAccountChange}
+                  placeholder="e.g. AC-102"
+                />
+              </div>
 
-            <label>Phone</label>
-            <input
-              name="phoneNo"
-              value={newAccount.phoneNo}
-              onChange={handleAccountChange}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Account Name</label>
+                <input
+                  name="accountName"
+                  value={newAccount.accountName}
+                  onChange={handleAccountChange}
+                  placeholder="e.g. Sharma Logistics"
+                />
+              </div>
 
-            <label>Email</label>
-            <input
-              name="email"
-              value={newAccount.email}
-              onChange={handleAccountChange}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Phone</label>
+                <input
+                  name="phoneNo"
+                  value={newAccount.phoneNo}
+                  onChange={handleAccountChange}
+                  placeholder="Phone number"
+                />
+              </div>
 
-            <label>Company Name</label>
-            <input
-              name="companyName"
-              value={newAccount.companyName}
-              onChange={handleAccountChange}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Email</label>
+                <input
+                  name="email"
+                  value={newAccount.email}
+                  onChange={handleAccountChange}
+                  placeholder="Email address"
+                />
+              </div>
 
-            <label>Aadhaar No</label>
-            <input
-              name="aadhaarNo"
-              value={newAccount.aadhaarNo}
-              onChange={handleAccountChange}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Company Name</label>
+                <input
+                  name="companyName"
+                  value={newAccount.companyName}
+                  onChange={handleAccountChange}
+                  placeholder="Company / Organization"
+                />
+              </div>
 
-            <label>PAN No</label>
-            <input
-              name="panNo"
-              value={newAccount.panNo}
-              onChange={handleAccountChange}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Contact Person</label>
+                <input
+                  name="contactPerson"
+                  value={newAccount.contactPerson}
+                  onChange={handleAccountChange}
+                  placeholder="Primary contact name"
+                />
+              </div>
 
-            <label>Upload Document</label>
-            <input
-              type="file"
-              onChange={handleDocumentUpload}
-              className={styles.fullRow}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Aadhaar No</label>
+                <input
+                  name="aadhaarNo"
+                  value={newAccount.aadhaarNo}
+                  onChange={handleAccountChange}
+                  placeholder="Aadhaar"
+                />
+              </div>
 
-            <label>Fuel Type</label>
-            <select
-              name="fuelType"
-              value={newAccount.fuelType}
-              onChange={handleAccountChange}
-            >
-              <option>Petrol</option>
-              <option>Diesel</option>
-            </select>
+              <div className={styles.fieldBlock}>
+                <label>PAN No</label>
+                <input
+                  name="panNo"
+                  value={newAccount.panNo}
+                  onChange={handleAccountChange}
+                  placeholder="PAN"
+                />
+              </div>
 
-            <label>Credit Limit</label>
-            <input
-              name="creditLimit"
-              type="number"
-              value={newAccount.creditLimit}
-              onChange={handleAccountChange}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Fuel Type</label>
+                <select
+                  name="fuelType"
+                  value={newAccount.fuelType}
+                  onChange={handleAccountChange}
+                >
+                  <option>Petrol</option>
+                  <option>Diesel</option>
+                </select>
+              </div>
 
-            <label>Contact Person</label>
-            <input
-              name="contactPerson"
-              value={newAccount.contactPerson}
-              onChange={handleAccountChange}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Credit Limit</label>
+                <input
+                  name="creditLimit"
+                  type="number"
+                  value={newAccount.creditLimit}
+                  onChange={handleAccountChange}
+                  placeholder="Set account credit limit"
+                />
+              </div>
+            </div>
+
+            <div className={styles.fieldBlock}>
+              <label>Upload Document</label>
+              <input
+                type="file"
+                onChange={handleDocumentUpload}
+                className={styles.fullRow}
+              />
+            </div>
 
             <button
               className={styles.addVehicleBtn}
@@ -948,7 +1272,7 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
           onClick={() => setShowSaleModal(false)}
         >
           <div
-            className={`${styles.modalForm} ${styles.modalScrollable}`}
+            className={`${styles.modalForm} ${styles.modalScrollable} ${styles.premiumModalForm}`}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -959,85 +1283,167 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
             </button>
 
             <h2>Update Sale</h2>
+            <p className={styles.saleModalHint}>
+              Select account and vehicle. Fuel type and live rate are auto-fetched from setup.
+            </p>
 
-            <label>Account</label>
-            <select
-              name="accountId"
-              value={saleData.accountId}
-              onChange={handleSaleChange}
-            >
-              <option value="">Select Account</option>
-              {accounts.map((acc) => (
-                <option key={acc._id} value={acc.accountId}>
-                  {acc.accountId} — {acc.accountName}
-                </option>
-              ))}
-            </select>
+            <div className={styles.saleGridTwo}>
+              <div className={styles.fieldBlock}>
+                <label>Account</label>
+                <select
+                  name="accountId"
+                  value={saleData.accountId}
+                  onChange={handleSaleChange}
+                >
+                  <option value="">Select Credit Account</option>
+                  {accounts.map((acc) => (
+                    <option key={acc._id} value={acc.accountId}>
+                      {acc.accountId} — {acc.accountName}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <label>Vehicle</label>
-            <select
-              name="vehicleNo"
-              value={saleData.vehicleNo}
-              onChange={handleSaleChange}
-            >
-              <option value="">Select Vehicle</option>
-              {accounts
-                .find((a) => a.accountId === saleData.accountId)
-                ?.vehicles.map((v) => (
-                  <option key={v.vehicleNo} value={v.vehicleNo}>
-                    {v.vehicleNo}
-                  </option>
-                ))}
-            </select>
+              <div className={styles.fieldBlock}>
+                <label>Vehicle</label>
+                <select
+                  name="vehicleNo"
+                  value={saleData.vehicleNo}
+                  onChange={handleSaleChange}
+                  disabled={!saleData.accountId}
+                >
+                  <option value="">Select Vehicle</option>
+                  {selectedSaleAccount?.vehicles.map((v) => (
+                    <option key={v.vehicleNo} value={v.vehicleNo}>
+                      {v.vehicleNo}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <button
-              className={styles.addVehicleBtn}
-              onClick={() => setShowVehicleModal(true)}
-            >
-              + Add Vehicle
-            </button>
+              <div className={styles.fieldBlock}>
+                <label>Fuel Type (Auto)</label>
+                <input
+                  name="fuelType"
+                  value={saleData.fuelType}
+                  readOnly
+                  placeholder="Auto from selected vehicle"
+                />
+              </div>
 
-            <label>Fuel Type</label>
-            <select
-              name="fuelType"
-              value={saleData.fuelType}
-              onChange={handleSaleChange}
-            >
-              <option>Petrol</option>
-              <option>Diesel</option>
-            </select>
+              <div className={styles.fieldBlock}>
+                <label>
+                  Rate/Litre (Auto)
+                  {fuelRates?.updatedAt ? (
+                    <span className={styles.metaTag}>
+                      Updated {new Date(fuelRates.updatedAt).toLocaleDateString()}
+                    </span>
+                  ) : null}
+                </label>
+                <input
+                  name="rate"
+                  type="number"
+                  value={saleData.rate}
+                  readOnly
+                  placeholder="Auto from fuel rates"
+                />
+              </div>
 
-            <label>Rate</label>
-            <input
-              name="rate"
-              type="number"
-              value={saleData.rate}
-              onChange={handleSaleChange}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Volume (L)</label>
+                <input
+                  name="volume"
+                  type="number"
+                  step="0.01"
+                  value={saleData.volume}
+                  onChange={handleSaleChange}
+                  placeholder="Enter filled volume"
+                />
+              </div>
 
-            <label>Volume (L)</label>
-            <input
-              name="volume"
-              type="number"
-              value={saleData.volume}
-              onChange={handleSaleChange}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Total Amount</label>
+                <input
+                  name="amount"
+                  type="number"
+                  step="0.01"
+                  value={saleData.amount}
+                  readOnly
+                  placeholder="Auto from rate x volume"
+                />
+              </div>
 
-            <label>Total Amount</label>
-            <input
-              name="amount"
-              type="number"
-              value={saleData.amount}
-              onChange={handleSaleChange}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Machine</label>
+                <select
+                  name="machineNo"
+                  value={saleData.machineNo}
+                  onChange={handleSaleChange}
+                >
+                  <option value="">Select Machine</option>
+                  {machines.map((m) => (
+                    <option key={m._id || m.machineNo} value={m.machineNo}>
+                      {m.machineNo} - {m.machineName}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-<label>Due Days</label>
-<input
-  name="dueDays"
-  type="number"
-  value={saleData.dueDays}
-  onChange={handleSaleChange}
-/>
+              <div className={styles.fieldBlock}>
+                <label>Shift</label>
+                <select
+                  name="shift"
+                  value={saleData.shift}
+                  onChange={handleSaleChange}
+                >
+                  <option value="">Select Shift</option>
+                  {shiftOptions.map((s) => (
+                    <option key={s._id} value={s.shiftName}>
+                      {s.shiftName} ({s.startTime} - {s.endTime})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.fieldBlock}>
+                <label>Sale Date</label>
+                <input
+                  name="saleDate"
+                  type="date"
+                  value={saleData.saleDate}
+                  onChange={handleSaleChange}
+                />
+              </div>
+
+              <div className={styles.fieldBlock}>
+                <label>Due Date</label>
+                <input
+                  name="dueDate"
+                  type="date"
+                  value={saleData.dueDate}
+                  onChange={handleSaleChange}
+                />
+              </div>
+            </div>
+
+            <div className={styles.fieldBlock}>
+              <label>Settlement Mode</label>
+              <select
+                name="settlementMode"
+                value={saleData.settlementMode}
+                onChange={handleSaleChange}
+              >
+                <option value="CreditLine">Credit Line</option>
+                <option value="CompanyAccount">Company Account</option>
+              </select>
+            </div>
+
+            {selectedSaleAccount && selectedSaleVehicle && (
+              <p className={styles.saleInlineInfo}>
+                {selectedSaleAccount.accountName} • {selectedSaleVehicle.vehicleNo} •{" "}
+                {saleData.fuelType} • ₹{Number(saleData.rate || 0).toFixed(2)}/L
+              </p>
+            )}
 
             <button className={styles.submitBtn} onClick={saveSale}>
               Submit Sale
@@ -1053,7 +1459,7 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
           onClick={() => setShowPaymentModal(false)}
         >
           <div
-            className={`${styles.modalForm} ${styles.modalScrollable}`}
+            className={`${styles.modalForm} ${styles.modalScrollable} ${styles.premiumModalForm}`}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -1064,56 +1470,103 @@ const updated: any = { ...prev, [name]: numeric.includes(name) ? Number(value) :
             </button>
 
             <h2>Update Payment</h2>
+            <p className={styles.saleModalHint}>
+              Post payment against selected account and instantly reconcile outstanding balance.
+            </p>
 
-            <label>Account</label>
-            <select
-              name="accountId"
-              value={paymentData.accountId}
-              onChange={handlePaymentChange}
-            >
-              <option value="">Select Account</option>
-              {accounts.map((acc) => (
-                <option key={acc._id} value={acc.accountId}>
-                  {acc.accountId} — {acc.accountName}
-                </option>
-              ))}
-            </select>
+            <div className={styles.saleGridTwo}>
+              <div className={styles.fieldBlock}>
+                <label>Account</label>
+                <select
+                  name="accountId"
+                  value={paymentData.accountId}
+                  onChange={handlePaymentChange}
+                >
+                  <option value="">Select Account</option>
+                  {accounts.map((acc) => (
+                    <option key={acc._id} value={acc.accountId}>
+                      {acc.accountId} — {acc.accountName}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <label>Credit Limit</label>
-            <input value={paymentData.creditLimit} disabled />
+              <div className={styles.fieldBlock}>
+                <label>Payment Mode</label>
+                <select
+                  name="paymentMode"
+                  value={paymentData.paymentMode}
+                  onChange={handlePaymentChange}
+                >
+                  <option>Cash</option>
+                  <option>Card</option>
+                  <option>UPI</option>
+                </select>
+              </div>
 
-            <label>Outstanding</label>
-            <input value={paymentData.outstanding} disabled />
+              <div className={styles.fieldBlock}>
+                <label>Credit Limit</label>
+                <input value={paymentData.creditLimit} disabled />
+              </div>
 
-            <label>Paying Amount</label>
-            <input
-              name="amountPaid"
-              type="number"
-              value={paymentData.amountPaid}
-              onChange={handlePaymentChange}
-            />
+              <div className={styles.fieldBlock}>
+                <label>Outstanding</label>
+                <input value={paymentData.outstanding} disabled />
+              </div>
 
-            <label>Payment Mode</label>
-            <select
-              name="paymentMode"
-              value={paymentData.paymentMode}
-              onChange={handlePaymentChange}
-            >
-              <option>Cash</option>
-              <option>Card</option>
-              <option>UPI</option>
-            </select>
+              <div className={styles.fieldBlock}>
+                <label>Paying Amount</label>
+                <input
+                  name="amountPaid"
+                  type="number"
+                  value={paymentData.amountPaid}
+                  onChange={handlePaymentChange}
+                  placeholder="Enter payment amount"
+                />
+              </div>
 
-            <label>New Outstanding</label>
-            <input
-              value={(paymentData.outstanding ?? 0) - (paymentData.amountPaid ?? 0)}
-              disabled
-              className={
-                paymentData.amountPaid >= (paymentData.outstanding ?? 0)
-                  ? styles.green
-                  : styles.red
-              }
-            />
+              <div className={styles.fieldBlock}>
+                <label>New Outstanding</label>
+                <input
+                  value={(paymentData.outstanding ?? 0) - (paymentData.amountPaid ?? 0)}
+                  disabled
+                  className={
+                    paymentData.amountPaid >= (paymentData.outstanding ?? 0)
+                      ? styles.green
+                      : styles.red
+                  }
+                />
+              </div>
+            </div>
+
+            {selectedPaymentAccount ? (
+              <div className={styles.paymentHistoryBox}>
+                <div className={styles.paymentHistoryHead}>
+                  <h4>Recent Account Activity</h4>
+                  <span>{paymentHistoryPreview.length} latest entries</span>
+                </div>
+                <div className={styles.paymentHistoryList}>
+                  {paymentHistoryPreview.length ? (
+                    paymentHistoryPreview.map((row, idx) => {
+                      const isPayment = String(row.type || "").toLowerCase() === "payment";
+                      return (
+                        <article key={`${row.date || "row"}-${idx}`} className={styles.paymentHistoryItem}>
+                          <div>
+                            <strong>{isPayment ? "Payment Received" : "Credit Sale"}</strong>
+                            <p>{formatDateTime(row.date)}</p>
+                          </div>
+                          <div className={isPayment ? styles.txCredit : styles.txDebit}>
+                            {isPayment ? "+" : "-"} ₹{Number(row.amount || 0).toFixed(2)}
+                          </div>
+                        </article>
+                      );
+                    })
+                  ) : (
+                    <p className={styles.emptyMuted}>No history available yet.</p>
+                  )}
+                </div>
+              </div>
+            ) : null}
 
             <button className={styles.submitBtn} onClick={savePayment}>
               Submit Payment

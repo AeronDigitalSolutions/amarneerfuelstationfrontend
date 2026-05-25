@@ -15,6 +15,7 @@ type Tank = {
   productType: string;
   capacity: number;
   openingStock: number | "";
+  dipVolume: number | "";
   quantityReceived: number | "";
   soldQuantity: number | "";
   lowStockAlertLevel: number | "";
@@ -61,14 +62,12 @@ export default function TankManagement() {
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [editId, setEditId] = useState("");
-
   const [tank, setTank] = useState<Tank>({
     tankId: "",
     productType: "",
     capacity: 0,
     openingStock: "",
+    dipVolume: "",
     quantityReceived: "",
     soldQuantity: "",
     lowStockAlertLevel: "",
@@ -108,11 +107,17 @@ export default function TankManagement() {
     try {
       const res = await fetch(`${BASE_URL}/tanks`);
       const data = await res.json();
-      data.sort(
+      const normalized = Array.isArray(data)
+        ? data.map((row: any) => ({
+            ...row,
+            dipVolume: row?.dipVolume == null ? "" : Number(row.dipVolume),
+          }))
+        : [];
+      normalized.sort(
         (a: Tank, b: Tank) =>
           new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
       );
-      setTanks(data);
+      setTanks(normalized);
     } catch (err) {
       console.error("Failed to fetch tanks:", err);
     }
@@ -191,33 +196,23 @@ export default function TankManagement() {
       );
 
     if (prevEntries.length === 0) {
-      updated.openingStock = "";
-      updated.soldQuantity = "";
-      setIsUpdating(false);
-      setEditId("");
+      updated.openingStock = 0;
+      updated.soldQuantity = 0;
+      updated.dipVolume = "";
       updated.invoiceDensity = "";
       updated.chambers = [];
     } else {
       const last = prevEntries[0];
       updated.openingStock = last.closingStock;
 
-      setIsUpdating(true);
-      setEditId(last._id || "");
-
       const startIso = last.dateTime || last.createdAt || "";
       const endIso = updated.dateTime;
 
       const sold = calculateSoldLitres(startIso, endIso, tm.fuelType);
       updated.soldQuantity = sold;
-
-      // if returning to edit flow, preserve invoiceDensity/chambers if present
-      updated.invoiceDensity = last.invoiceDensity ?? "";
-      updated.chambers = Array.isArray(last.chambers)
-        ? last.chambers.map((c: any) => ({
-            chamberName: c.chamberName,
-            fuelDensity: c.fuelDensity === "" || c.fuelDensity == null ? "" : Number(c.fuelDensity) || ""
-          }))
-        : [];
+      updated.dipVolume = "";
+      updated.invoiceDensity = "";
+      updated.chambers = [];
     }
 
     setTank(updated);
@@ -276,10 +271,19 @@ export default function TankManagement() {
   // submit
   const handleSubmit = async () => {
     if (!tank.tankId) return alert("Select Tank ID");
+    if (tank.dipVolume === "") return alert("Enter Dip Volume");
+
+    const calculatedVolume = num(tank.closingStock);
+    const dipVolumeValue = num(tank.dipVolume);
+    const volumeDiff = Number((calculatedVolume - dipVolumeValue).toFixed(2));
+    if (Math.abs(volumeDiff) > 0.01) {
+      return alert(`Dip Volume mismatch: difference is ${volumeDiff} L`);
+    }
 
     const payload: any = {
       ...tank,
       openingStock: num(tank.openingStock),
+      dipVolume: num(tank.dipVolume),
       quantityReceived: num(tank.quantityReceived),
       soldQuantity: num(tank.soldQuantity),
       lowStockAlertLevel: num(tank.lowStockAlertLevel),
@@ -295,23 +299,14 @@ export default function TankManagement() {
     };
 
     try {
-      let res: Response;
-      if (isUpdating && editId) {
-        res = await fetch(`${BASE_URL}/tanks/${editId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        res = await fetch(`${BASE_URL}/tanks`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-      }
+      const res = await fetch(`${BASE_URL}/tanks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
       if (res.ok) {
-        alert(isUpdating ? "Tank updated!" : "Tank saved!");
+        alert("Tank saved!");
         await Promise.all([fetchTanks(), fetchSales()]);
         resetForm();
         setModalOpen(false);
@@ -335,6 +330,7 @@ export default function TankManagement() {
       productType: "",
       capacity: 0,
       openingStock: "",
+      dipVolume: "",
       quantityReceived: "",
       soldQuantity: "",
       lowStockAlertLevel: "",
@@ -349,9 +345,6 @@ export default function TankManagement() {
       invoiceDensity: "",
       chambers: [],
     });
-
-    setIsUpdating(false);
-    setEditId("");
   };
 
   // ---- Filter helpers ----
@@ -389,11 +382,37 @@ export default function TankManagement() {
   });
 
   // if (loading) return <p>Loading...</p>;
+  const calculatedVolume = num(tank.closingStock);
+  const dipVolumeValue = num(tank.dipVolume);
+  const dipDifference = Number((calculatedVolume - dipVolumeValue).toFixed(2));
+  const dipMatch = Math.abs(dipDifference) < 0.01;
 
   return (
     <>
-    <FullScreenLoader loading={loading} />
-    <div className={styles.container}>
+      <FullScreenLoader loading={loading} />
+    <div className={`${styles.container} module-page`}>
+      <section className="module-hero">
+        <div>
+          <p className="module-hero-tag">INVENTORY CONTROL</p>
+          <h2>Tank Stock Management</h2>
+          <p>Monitor opening, received, sold, and closing stock with invoice density and chamber-level detail.</p>
+        </div>
+      </section>
+
+      <section className="module-kpis">
+        <article className="module-kpi">
+          <span>Tank Masters</span>
+          <strong>{tankMasters.length}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Stock Records</span>
+          <strong>{tanks.length}</strong>
+        </article>
+        <article className="module-kpi">
+          <span>Sales Records</span>
+          <strong>{sales.length}</strong>
+        </article>
+      </section>
       <h1>Fuel Tank Management</h1>
 
       {/* ADD NEW BUTTON */}
@@ -481,7 +500,7 @@ export default function TankManagement() {
           }}
         >
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <h2>{isUpdating ? "🔄 Update Tank Entry" : "Add Tank Entry"}</h2>
+            <h2>Add Tank Entry</h2>
 
             <button className={styles.closeBtn} onClick={() => setModalOpen(false)}>
               ✖
@@ -523,6 +542,14 @@ export default function TankManagement() {
                 placeholder="Sold (L)"
                 value={tank.soldQuantity}
                 
+              />
+
+              <input
+                name="dipVolume"
+                type="number"
+                placeholder="Dip Volume (L)"
+                value={tank.dipVolume}
+                onChange={handleChange}
               />
 
               <input
@@ -623,13 +650,35 @@ export default function TankManagement() {
                 Closing Stock: <strong>{tank.closingStock} L</strong>
               </p>
               <p>
+                Dip Volume: <strong>{tank.dipVolume === "" ? "—" : `${tank.dipVolume} L`}</strong>
+              </p>
+              <p>
+                Difference: <strong>{tank.dipVolume === "" ? "—" : `${dipDifference} L`}</strong>
+              </p>
+              <p>
                 Total Amount: <strong>₹{tank.totalAmount}</strong>
               </p>
             </div>
+            {tank.dipVolume !== "" ? (
+              <div
+                style={{
+                  marginTop: 8,
+                  marginBottom: 12,
+                  padding: "10px 12px",
+                  borderRadius: 8,
+                  border: `1px solid ${dipMatch ? "#86efac" : "#fda4af"}`,
+                  background: dipMatch ? "#f0fdf4" : "#fff1f2",
+                  color: dipMatch ? "#166534" : "#9f1239",
+                  fontWeight: 700,
+                }}
+              >
+                {dipMatch ? "Dip Volume matches calculated closing stock." : `Dip mismatch: ${dipDifference} L`}
+              </div>
+            ) : null}
 
             <div style={{ display: "flex", gap: 8 }}>
               <button className={styles.saveButton} onClick={handleSubmit}>
-                {isUpdating ? "🔄 Update Tank Entry" : "💾 Save Tank Entry"}
+                💾 Save Tank Entry
               </button>
               <button className={styles.smallBtn} onClick={() => { resetForm(); setModalOpen(false); }}>
                 Cancel
@@ -650,6 +699,7 @@ export default function TankManagement() {
               <th>Fuel</th>
               <th>Capacity</th>
               <th>Closing Stock</th>
+              <th>Dip Volume</th>
               <th>Low Alert</th>
               <th>Supplier</th>
               <th>Amount</th>
@@ -658,7 +708,7 @@ export default function TankManagement() {
           <tbody>
             {filteredTanks.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: "center", padding: "18px" }}>
+                <td colSpan={9} style={{ textAlign: "center", padding: "18px" }}>
                   No records found
                 </td>
               </tr>
@@ -670,6 +720,7 @@ export default function TankManagement() {
                   <td>{t.productType}</td>
                   <td>{t.capacity}</td>
                   <td>{t.closingStock}</td>
+                  <td>{t.dipVolume === "" ? "-" : t.dipVolume}</td>
                   <td>{t.lowStockAlertLevel}</td>
                   <td>{t.supplierName}</td>
                   <td>₹{t.totalAmount}</td>

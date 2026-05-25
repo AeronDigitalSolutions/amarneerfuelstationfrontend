@@ -58,7 +58,7 @@ const serviceModules = [
     icon: FaGaugeHigh,
   },
   {
-    title: "Whole Day Report",
+    title: "Generate Report",
     description: "Generate a complete operational view of daily sales, fuel tests, and collections.",
     route: "/wholeday",
     label: "Reporting",
